@@ -1,0 +1,25 @@
+{
+  "name": "oceanbase-deploy",
+  "version": "1.0.0",
+  "description": "OceanBase OBD deploy skill for any AI agent (Cursor, Claude Code, Windsurf, etc.)",
+  "main": "SKILL.md",
+  "keywords": [
+    "oceanbase",
+    "obd",
+    "deploy",
+    "cursor",
+    "agent",
+    "skill",
+    "instructions"
+  ],
+  "files": [
+    "SKILL.md",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oceanbase/oceanbase-skills.git",
+    "directory": "oceanbase-deploy"
+  },
+  "license": "MIT"
+}
