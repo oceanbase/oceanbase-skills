@@ -1,6 +1,6 @@
 ---
 name: oceanbase-deploy
-description: Manage OceanBase clusters using obd. Supports deploying (including interactive mode), starting, stopping, destroying, redeploying, upgrading, and testing clusters; SeekDB (obd seekdb) install/takeover, primary-standby switchover/failover/decouple. OCP defaults to ocp-ce; ocp-express only when explicitly requested. Also covers OCP takeover and monitoring.
+description: Manage OceanBase clusters using obd. Supports deploying (including interactive mode), starting, stopping, destroying, redeploying, upgrading, and testing clusters; SeekDB (obd seekdb) install/takeover, primary-standby switchover/failover/decouple. OCP defaults to ocp-ce; when users explicitly ask for ocp-express, explain that obshell dashboard replaces it and recommend deploying OceanBase CE directly for dashboard access on port 2886. Also covers OCP takeover and monitoring.
 ---
 
 # OceanBase Deployer (obd)
@@ -17,7 +17,7 @@ If `obd` is not installed, you can download the RPM package from the OceanBase m
 
 ## OCP 术语约定（必读）
 - 用户说 **「部署 OCP」「OCP」「上 OCP」** 等且**未**单独说明时，一律指 **OCP 社区版（OCP CE）**，在 OBD 配置里使用组件 **`ocp-ce`**（按官方 OCP CE 部署文档与示例 YAML 编写依赖与 `global` 参数）。
-- **`ocp-express`** 是**轻量 Web 控制台**，与 OCP CE 不同。**仅当用户明确要求**「OCP Express」「ocp-express」「轻量 OCP / express」等时，才部署或推荐 `ocp-express`。
+- **`ocp-express`** 是历史上的轻量 Web 控制台能力。**当用户明确要求**「OCP Express」「ocp-express」「轻量 OCP / express」等时，不再继续推荐或部署 `ocp-express`；应明确提示：**`ocp-express` 的能力已被 `obshell dashboard` 取代，直接部署 OceanBase 社区版即可通过 `2886` 端口访问。**
 - **禁止**把「部署 OCP」默认当成 `ocp-express`。
 - `obd cluster check4ocp` / `export-to-ocp` 面向的是已运行的 **OCP CE（或企业版 OCP）** 管控面，不是 `ocp-express`。
 
@@ -36,7 +36,7 @@ If `obd` is not installed, you can download the RPM package from the OceanBase m
   ```bash
   obd demo
   ```
-  - Use `-c` to specify components (e.g., `oceanbase-ce`, `obproxy-ce`, `obagent`). For **OCP** use **`ocp-ce`** unless the user explicitly asked for **`ocp-express`**.
+  - Use `-c` to specify components (e.g., `oceanbase-ce`, `obproxy-ce`, `obagent`). For **OCP** use **`ocp-ce`** by default. If the user explicitly asks for **`ocp-express`**, do not switch components automatically; instead explain that `ocp-express` has been replaced by `obshell dashboard`, and that deploying `oceanbase-ce` directly provides access on port `2886`.
   - Example: `obd demo -c oceanbase-ce,obproxy-ce`
 
 ### Cluster Management
@@ -223,7 +223,7 @@ Manage local and remote package repositories.
 -   **Clean Mirrors**: `obd mirror clean`
 
 ### Testing
-**Skill 功能测试**：覆盖集群/租户/备份、与 **OCP CE** 对接、镜像与各组件时，按上文 **OCP 术语约定**：默认测 **`ocp-ce`**；仓库示例里若含 **`ocp-express`**，仅表示「轻量控制台」场景，不等于「部署 OCP」的默认含义。
+**Skill 功能测试**：覆盖集群/租户/备份、与 **OCP CE** 对接、镜像与各组件时，按上文 **OCP 术语约定**：默认测 **`ocp-ce`**；若测试需求提到 **`ocp-express`**，应先提示其能力已被 **`obshell dashboard`** 取代，优先改为验证直接部署 OceanBase 社区版后的 `2886` 端口访问能力。
 
 **obd test 压测**：Run built-in tests on the cluster. **Do not install ob-sysbench, obtpch, or obtpcc via yum**: when the machine is online, OBD will automatically pull and install these dependencies when you run the corresponding `obd test` command. For non-interactive execution (e.g. in scripts or CI), set auto-confirm before running tests: `obd env set IO_DEFAULT_CONFIRM 1`. When running a full test suite, **do not abort on first failure**: run all test cases to completion, then produce a single test report summarizing pass/fail/skip and brief notes for each item.
 
@@ -263,6 +263,10 @@ To deploy a cluster named "my-cluster" using "config.yaml":
 ```bash
 obd cluster deploy my-cluster -c config.yaml
 ```
+
+### Explicitly Requesting OCP Express
+User: "帮我部署 ocp-express。"
+Agent: "`ocp-express` 是轻量版 OCP，但它的能力已经被 `obshell dashboard` 取代。直接部署 OceanBase 社区版后，就可以通过 `2886` 端口访问 dashboard；因此这里不再继续推荐部署 `ocp-express`。"
 
 ### Destroying a Cluster (Requires Confirmation)
 User: "Destroy the my-cluster cluster."
