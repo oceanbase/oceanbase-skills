@@ -46,7 +46,47 @@ https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanba
 
 Download or copy the `SKILL.md` content and paste it into your agent's system prompt, rules file, or custom instructions.
 
----
+### Example prompts
+
+After loading a skill, ask for concrete tasks instead of vague requests.
+
+For `oceanbase-deploy`, examples include:
+
+```text
+部署一个本机 OceanBase 开源版本，能快速跑起来就行
+```
+
+```text
+用 obd demo 快速部署一个本机演示环境
+```
+
+```text
+用 config.yaml 部署一个名为 test-cluster 的 OceanBase 社区版集群
+```
+
+```text
+帮我部署 OCP
+```
+
+```text
+部署并启动一个 SeekDB 实例
+```
+
+```text
+创建一个 SeekDB 主备集群，并告诉我主库和备库分别怎么部署
+```
+
+```text
+帮我直接启动 test-cluster，并检查启动后状态
+```
+
+```text
+对 test-cluster 的 mysql 租户跑一个 sysbench 测试
+```
+
+```text
+帮我部署 OCP 社区版
+```
 
 ## Agent Integration
 

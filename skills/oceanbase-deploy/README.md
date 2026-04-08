@@ -1,68 +1,169 @@
 # oceanbase-deploy
 
-OceanBase OBD 部署与运维说明，供**任意 AI Agent**（Cursor、Claude Code、Windsurf、自定义 Agent 等）加载使用。内容为纯 Markdown，与具体产品解耦。
+OceanBase OBD 部署与运维 Skill，供任意 AI Agent 加载使用。加载 `SKILL.md` 之后，直接按下面的提示词提问即可。
 
-源码与版本管理：[oceanbase/oceanbase-skills](https://github.com/oceanbase/oceanbase-skills) 仓库内 **`oceanbase-deploy/`** 目录。
+源码位置：[`oceanbase/oceanbase-skills`](https://github.com/oceanbase/oceanbase-skills) 的 `skills/oceanbase-deploy/` 目录。
 
-## 安装
+## 快速用法
 
-```bash
-npm install oceanbase-deploy
+把 `SKILL.md` 加到 Agent 的规则、系统提示词或项目说明里后，直接描述你的目标。最有效的提问方式是：
+
+- 说清楚你要操作的对象：集群名、租户名、配置文件名、目标版本。
+- 说清楚你要做的动作：部署、启动、停止、扩容、备份、压测、接管。
+- 如果是高风险操作，明确是否允许销毁数据。
+
+例如，不要只说：
+
+```text
+帮我处理一下 OceanBase
 ```
 
-## 在不同 Agent 中使用
+更推荐这样说：
 
-### 任意支持「从文件/URL 加载说明」的 Agent
-
-**方式一：从 npm 包路径加载**
-
-安装后，说明文件在：
-
-- `node_modules/oceanbase-deploy/SKILL.md`
-
-在 Agent 的「自定义指令 / Rules / System prompt」中配置为该文件路径，或对话时让 Agent 读取该文件即可。
-
-**方式二：从 URL 加载（无需 npm）**
-
-若你的 Agent 支持从 URL 加载说明，可使用仓库原始文件地址，例如：
-
-- `https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/oceanbase-deploy/SKILL.md`
-
-### Cursor
-
-1. **项目内使用**：把本包中的说明复制到 Cursor 技能目录。
-   ```bash
-   mkdir -p .cursor/skills/oceanbase-deploy
-   cp node_modules/oceanbase-deploy/SKILL.md .cursor/skills/oceanbase-deploy/SKILL.md
-   ```
-2. 或在 Cursor 设置中指定「额外说明」指向 `node_modules/oceanbase-deploy/SKILL.md`。
-
-### Claude Code / Claude for VS Code
-
-在项目根或工作区中创建 `.claude/instructions.md`（或产品支持的说明路径），将 `SKILL.md` 的内容粘贴进去，或写入：
-
-```
-See instructions in node_modules/oceanbase-deploy/SKILL.md
+```text
+用 obd 部署一个名为 test-cluster 的 OceanBase 社区版集群，配置文件是 config.yaml
 ```
 
-具体以当前产品的「自定义指令」文档为准。
+## 13 个最常用提示词
 
-### Windsurf
+下面这些提示词可以直接复制给 Agent。
 
-在 Windsurf 的 Rules / 项目规则中，添加对 `node_modules/oceanbase-deploy/SKILL.md` 的引用，或将其内容粘贴到规则文件。详见 Windsurf 的「规则/上下文」配置说明。
+1. 部署 OceanBase 开源版本
 
-### 其他 Agent（通用）
+```text
+部署一个本机 OceanBase 开源版本，能快速跑起来就行
+```
 
-- 若 Agent 支持「系统提示词 / 规则文件」：把 `SKILL.md` 的路径或内容配置进去。
-- 若 Agent 支持「读取 URL」：使用上述 raw GitHub 链接。
-- 若 Agent 仅支持「对话中给上下文」：在对话开始时发送「请按以下说明操作」，并粘贴或附上 `SKILL.md` 内容。
+2. 用 `obd demo` 快速起演示环境
 
-## 包内文件
+```text
+用 obd demo 快速部署一个本机演示环境
+```
+
+3. 用配置文件部署集群
+
+```text
+用 config.yaml 部署一个名为 test-cluster 的 OceanBase 社区版集群
+```
+
+4. 交互式部署
+
+```text
+交互式部署一个 OceanBase 集群，名字叫 demo-cluster
+```
+
+5. 安装 / 部署 OCP
+
+```text
+帮我部署 OCP
+```
+
+说明：默认会按 `OCP CE` 处理，不会默认切到 `ocp-express`。
+
+6. 启动并检查状态
+
+```text
+帮我直接启动 test-cluster，并检查启动后状态
+```
+
+7. 停止集群
+
+```text
+停止 test-cluster 集群
+```
+
+8. 创建租户
+
+```text
+在 test-cluster 上创建一个名为 mysql 的租户
+```
+
+9. 配置并执行备份
+
+```text
+给 test-cluster 上的 mysql 租户配置备份路径并执行一次备份
+```
+
+10. 部署并启动 SeekDB
+
+```text
+部署并启动一个 SeekDB 实例
+```
+
+11. 创建 SeekDB 主备集群
+
+```text
+创建一个 SeekDB 主备集群，并告诉我主库和备库分别怎么部署
+```
+
+12. 查看 SeekDB 主备切换建议
+
+```text
+查看 seekdb-test 的拓扑，如果主库挂了该用 switchover 还是 failover
+```
+
+13. 运行压测
+
+```text
+对 test-cluster 的 mysql 租户跑一个 sysbench 测试
+```
+
+## 其他常见提示词
+
+```text
+查看 test-cluster 当前状态，并告诉我有没有异常
+```
+
+```text
+查看 test-cluster 上有哪些租户
+```
+
+```text
+对 test-cluster 执行 mysqltest，测试集是 basic
+```
+
+```text
+跑一遍这个 Skill 涵盖的 OBD 功能测试，并输出测试报告
+```
+
+```text
+帮我部署 OCP 社区版
+```
+
+
+
+## 提问建议
+
+- 想让 Agent 直接执行时，明确说“帮我执行”。
+- 想先看方案时，明确说“先不要执行，只给我命令和步骤”。
+- 涉及销毁、重建、故障切换时，明确说“我确认允许高风险操作”或“先不要执行破坏性命令”。
+
+## 三种推荐问法
+
+### 1. 先要方案，不立即执行
+
+```text
+我要部署一个三节点 OceanBase 社区版集群，先不要执行，只给我 obd 配置建议和命令
+```
+
+### 2. 允许 Agent 直接操作
+
+```text
+帮我直接启动 test-cluster，并检查启动后状态
+```
+
+### 3. 高风险操作前要求确认
+
+```text
+我要重建 test-cluster，但在你执行 destroy 或 redeploy 前必须先征求我确认
+```
+
+## 文件说明
 
 | 文件 | 说明 |
 |------|------|
-| `SKILL.md` | 供任意 Agent 使用的 OBD 部署与运维说明（主内容） |
-| `README.md` | 本说明（安装与多 Agent 使用方式） |
+| `SKILL.md` | 供 Agent 实际加载的主说明文件 |
+| `README.md` | 面向用户的使用说明与提示词示例 |
 
 ## License
 
