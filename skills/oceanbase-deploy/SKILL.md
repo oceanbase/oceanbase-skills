@@ -38,6 +38,7 @@ If `obd` is not installed, you can download the RPM package from the OceanBase m
   ```
   - Use `-c` to specify components (e.g., `oceanbase-ce`, `obproxy-ce`, `obagent`). For **OCP** use **`ocp-ce`** by default. If the user explicitly asks for **`ocp-express`**, do not switch components automatically; instead explain that `ocp-express` has been replaced by `obshell dashboard`, and that deploying `oceanbase-ce` directly provides access on port `2886`.
   - Example: `obd demo -c oceanbase-ce,obproxy-ce`
+  - **Note**: `obd demo` uses default ports 2881 (MySQL), 2882 (RPC), and 2886 (obshell). If those ports are in use by another OB instance on the same machine, the demo will fail with a port-conflict error. Use a config file with alternate ports in that case.
 
 ### Cluster Management
 
@@ -152,9 +153,10 @@ SeekDB 是 OBD 管理的轻量数据库组件。以下命令**仅对包含 seekd
 
 ### SeekDB 安装与接管（行为说明）
 
-- **`obd seekdb install`**：交互式安装单机 SeekDB。
-- **`obd seekdb install --primary`**：以主机群模式安装，开启 RPC，供备机同步日志。
-- **`obd seekdb install --standby`**：以备机群模式安装，从已部署且状态为 **RUNNING** 的 SeekDB 主库列表中选择主库；备机侧用于 redo 的磁盘可用空间需 **不小于主库配置的 `log_disk_size`**。**`--standby` 与 `--primary` 不可同时使用。**
+- **`obd seekdb install`**：交互式安装单机 SeekDB。**需要真实 TTY 终端**，无法通过管道传入输入自动化；如需脚本化部署，改用 `obd seekdb deploy <name> -c <config>`。
+- **`obd seekdb install --primary`**：以主机群模式安装，开启 RPC，供备机同步日志。**同样需要 TTY**。
+- **`obd seekdb install --standby`**：以备机群模式安装，从已部署且状态为 **RUNNING** 的 SeekDB 主库列表中选择主库；备机侧用于 redo 的磁盘可用空间需 **不小于主库配置的 `log_disk_size`**。**`--standby` 与 `--primary` 不可同时使用。同样需要 TTY。⚠️ 备库必须部署在与主库不同的 IP 上**；若主备 IP 相同，OBD 会抑制 `--role=STANDBY` 启动参数（同机防冲突逻辑），导致备库以主库模式启动，日志无法同步。
+- **⚠️ 非交互式部署无法建立真实主备同步**：`obd seekdb deploy -c config.yaml` 方式即使在 YAML 中设置了 `log_restore_source`，OBD 也不会向 seekdb 进程传入 `--role=STANDBY` 启动参数，备库进程会以主库模式启动，日志无法从主库同步。建立真实主备同步**必须**通过 `obd seekdb install --standby`（需要 TTY）且主备**位于不同 IP**。
 - **`obd seekdb list`**：只列出包含 seekdb 组件的部署。
 - **`obd seekdb deploy` / `start` / `stop` / `restart` / `display` / `destroy`**：生命周期与普通 OBD 部署相同，但**仅适用于包含 seekdb 的部署**。
 - **`obd seekdb takeover`**：接管**并非由 OBD 部署**的已有 SeekDB 实例。必填 **`--home-path`**；还需通过配置或交互提供主机、`mysql_port`、`root` 密码及 SSH 等信息，由 OBD 生成配置并纳入管理。
@@ -192,8 +194,14 @@ SeekDB 是 OBD 管理的轻量数据库组件。以下命令**仅对包含 seekd
 - **destroy**：销毁带备集群的主时，必须显式加 `--ignore-standby`，否则报错并提示风险。
 - **failover**：仅当主集群已 stop 或不可达时允许执行；主仍存活时应使用 **switchover**。
 - `--standby` 与 `--primary` 不可同时指定。备机模式会校验主库 `enable_rpc_service`，未开启时需先重启主或稍后处理。
+- **同机部署限制**：主备必须部署在不同 IP 的机器上。若主备 IP 相同，OBD 的同机防冲突逻辑会将 `mock_primary_rpc_info` 置为 None，导致备库进程不传 `--role=STANDBY`，备库以主库模式启动（`ACCESS_MODE=APPEND`），日志无法同步。
 
 ## Advanced Scenarios
+
+### OS & Environment Requirements
+- **GLIBC**: OceanBase CE 4.3+ el8 packages require GLIBC 2.27+ (RHEL/CentOS 8+ or compatible). AliOS 7 / CentOS 7 ship GLIBC 2.17 — use the **el7 package of OceanBase CE ≤4.3.x** (e.g. `4.3.5.5`) for those OS versions. OBD only needs to run on the control machine; it SSHes to remote nodes to deploy, so remote nodes do not need OBD installed.
+- **OCP CE packages**: `ocp-ce` is **not** in the public community mirror by default. It requires an internal or separately provided mirror. Use `obd mirror list` to verify package availability before planning an OCP CE deployment.
+- **Port isolation on the same host**: When co-deploying multiple OB stacks on one machine, ensure each uses distinct ports for MySQL (2881), RPC (2882), and obshell (2886). Pass `obshell_port` in the config to override the default 2886.
 
 ### OCP Takeover Preparation
 Prepare an OBD-deployed cluster to be managed by a **full OCP** instance (**OCP CE** `ocp-ce` or enterprise OCP), not OCP Express.
@@ -211,6 +219,8 @@ Prepare an OBD-deployed cluster to be managed by a **full OCP** instance (**OCP 
 You can add GUI-based monitoring to a cluster.
 -   **Scenario 1**: If OBAgent is NOT deployed, add `obagent`, `prometheus`, and `grafana` to the config and redeploy/start.
 -   **Scenario 2**: If OBAgent IS deployed, add `prometheus` and `grafana` to the config, manually configure Prometheus to scrape OBAgent, and redeploy.
+-   **Note**: When OBD deploys Prometheus it enables HTTP basic auth. The generated credentials (admin + random password) are shown in `obd cluster display <name>`. Use those credentials when accessing the Prometheus web UI or API (e.g., `curl -u admin:<password> http://<host>:9090/-/ready`).
+-   **Component deletion order**: Components with dependants must be deleted after their dependants. For example, delete `grafana` and `prometheus` before deleting `obagent`; otherwise OBD returns a "still depends" error. Use `obd cluster component del <name> grafana prometheus` together, then `obd cluster component del <name> obagent`.
 
 ### Mirror & Repository Management
 Manage local and remote package repositories.
@@ -235,13 +245,13 @@ Manage local and remote package repositories.
   ```bash
   obd test sysbench <deploy_name> --tenant=<tenant> --script-name=<script>
   ```
--   **TPC-H**: Run TPC-H benchmark (OBD auto-installs obtpch when online).
+-   **TPC-H**: Run TPC-H benchmark (OBD auto-installs obtpch when online). `--remote-tbl-dir` is **required** to specify a directory for TPC-H table files on the server.
   ```bash
-  obd test tpch <deploy_name> --tenant=<tenant>
+  obd test tpch <deploy_name> --tenant=<tenant> --remote-tbl-dir=<server_dir>
   ```
--   **TPC-C**: Run TPC-C benchmark (OBD auto-installs obtpcc when online; Java may still need to be installed separately if missing).
+-   **TPC-C**: Run TPC-C benchmark (OBD auto-installs obtpcc when online; Java may still need to be installed separately if missing). Use `--run-mins` (not `--running-minutes`) to cap the run duration.
   ```bash
-  obd test tpcc <deploy_name> --tenant=<tenant>
+  obd test tpcc <deploy_name> --tenant=<tenant> --warehouses=<n> --run-mins=<minutes>
   ```
 
 ## Usage Examples
