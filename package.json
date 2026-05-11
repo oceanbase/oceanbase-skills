@@ -1,0 +1,30 @@
+{
+  "name": "oceanbase-skills",
+  "version": "2.0.0",
+  "description": "OceanBase AI Agent Skills — cluster management, tenant management, SeekDB, testing and benchmarks via obd",
+  "workspaces": [
+    "skills/*"
+  ],
+  "files": [
+    "skills/",
+    "README.md",
+    "AGENTS.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "oceanbase",
+    "obd",
+    "deploy",
+    "seekdb",
+    "agent",
+    "skill",
+    "cursor",
+    "claude-code",
+    "windsurf"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oceanbase/oceanbase-skills.git"
+  },
+  "license": "MIT"
+}
