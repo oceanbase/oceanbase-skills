@@ -1,8 +1,7 @@
 {
   "name": "oceanbase-deploy",
-  "version": "1.0.0",
-  "description": "OceanBase OBD deploy skill for any AI agent (Cursor, Claude Code, Windsurf, etc.)",
-  "main": "SKILL.md",
+  "version": "2.0.0",
+  "description": "OceanBase OBD deploy & ops overview skill — routes to cluster-management, tenant-management, seekdb, testing-and-benchmark",
   "keywords": [
     "oceanbase",
     "obd",
@@ -14,12 +13,16 @@
   ],
   "files": [
     "SKILL.md",
-    "README.md"
+    "README.md",
+    "cluster-management/",
+    "tenant-management/",
+    "seekdb/",
+    "testing-and-benchmark/"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/oceanbase/oceanbase-skills.git",
-    "directory": "oceanbase-deploy"
+    "directory": "skills/oceanbase-deploy"
   },
   "license": "MIT"
 }
