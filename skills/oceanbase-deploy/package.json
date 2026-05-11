@@ -2,6 +2,7 @@
   "name": "oceanbase-deploy",
   "version": "2.0.0",
   "description": "OceanBase OBD deploy & ops overview skill — routes to cluster-management, tenant-management, seekdb, testing-and-benchmark",
+  "main": "SKILL.md",
   "keywords": [
     "oceanbase",
     "obd",
