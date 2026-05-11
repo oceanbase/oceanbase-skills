@@ -14,7 +14,11 @@
   ],
   "files": [
     "SKILL.md",
-    "README.md"
+    "README.md",
+    "cluster-management/",
+    "tenant-management/",
+    "seekdb/",
+    "testing-and-benchmark/"
   ],
   "repository": {
     "type": "git",
