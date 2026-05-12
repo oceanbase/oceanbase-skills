@@ -38,14 +38,6 @@ done
 
 Claude Code will automatically discover all skills under `.claude/skills/` and offer them when relevant.
 
-### npm install (all skills)
-
-```bash
-npm install oceanbase-skills
-```
-
-All skill files are available under `node_modules/oceanbase-skills/skills/`.
-
 ### Load a single skill from GitHub URL
 
 ```
@@ -58,38 +50,18 @@ https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanba
 
 ### Claude Code
 
-**Option A — From npm:**
-
-```bash
-npm install oceanbase-skills
-
-# Copy all skills + references
-mkdir -p .claude/skills/oceanbase-deploy
-cp node_modules/oceanbase-skills/skills/oceanbase-deploy/SKILL.md .claude/skills/oceanbase-deploy/
-for s in cluster-management tenant-management seekdb testing-and-benchmark; do
-  mkdir -p .claude/skills/oceanbase-deploy/$s
-  cp node_modules/oceanbase-skills/skills/oceanbase-deploy/$s/SKILL.md .claude/skills/oceanbase-deploy/$s/
-  [ -d node_modules/oceanbase-skills/skills/oceanbase-deploy/$s/references ] && \
-    cp -r node_modules/oceanbase-skills/skills/oceanbase-deploy/$s/references .claude/skills/oceanbase-deploy/$s/
-done
-```
-
-**Option B — From GitHub (no npm):**
-
-Use the one-liner in [Quick Start](#claude-code--one-line-install-all-skills) above.
+Use the one-liner in [Quick Start](#claude-code--one-line-install-all-skills) above, or manually place `SKILL.md` files into `.claude/skills/oceanbase-deploy/`.
 
 ### Cursor
 
 ```bash
-npm install oceanbase-skills
-
 mkdir -p .cursor/skills/oceanbase-deploy
-cp node_modules/oceanbase-skills/skills/oceanbase-deploy/SKILL.md .cursor/skills/oceanbase-deploy/
+curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanbase-deploy/SKILL.md" \
+  -o .cursor/skills/oceanbase-deploy/SKILL.md
 for s in cluster-management tenant-management seekdb testing-and-benchmark; do
   mkdir -p .cursor/skills/oceanbase-deploy/$s
-  cp node_modules/oceanbase-skills/skills/oceanbase-deploy/$s/SKILL.md .cursor/skills/oceanbase-deploy/$s/
-  [ -d node_modules/oceanbase-skills/skills/oceanbase-deploy/$s/references ] && \
-    cp -r node_modules/oceanbase-skills/skills/oceanbase-deploy/$s/references .cursor/skills/oceanbase-deploy/$s/
+  curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanbase-deploy/$s/SKILL.md" \
+    -o .cursor/skills/oceanbase-deploy/$s/SKILL.md
 done
 ```
 
@@ -179,7 +151,7 @@ After loading the skills, ask your agent for concrete tasks. Below are examples 
 oceanbase-skills/
 ├── README.md
 ├── AGENTS.md
-├── package.json                       # npm: oceanbase-skills
+├── package.json
 ├── LICENSE
 └── skills/
     └── oceanbase-deploy/              # All skills live here
