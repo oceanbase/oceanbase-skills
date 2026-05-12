@@ -20,14 +20,6 @@ OceanBase OBD 部署与运维 Skill 集合，供任意 AI Agent 加载使用。
 
 ## 安装方式
 
-### npm 安装（总包）
-
-```bash
-npm install oceanbase-skills
-```
-
-所有 skill 文件位于 `node_modules/oceanbase-skills/skills/` 目录下。
-
 ### Claude Code 一键安装（全部 skill）
 
 ```bash
@@ -53,37 +45,18 @@ https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanba
 
 ### Claude Code
 
-**方式 A — npm 安装后复制（含 references）：**
-
-```bash
-npm install oceanbase-skills
-
-mkdir -p .claude/skills/oceanbase-deploy
-cp node_modules/oceanbase-skills/skills/oceanbase-deploy/SKILL.md .claude/skills/oceanbase-deploy/
-for s in cluster-management tenant-management seekdb testing-and-benchmark; do
-  mkdir -p .claude/skills/oceanbase-deploy/$s
-  cp node_modules/oceanbase-skills/skills/oceanbase-deploy/$s/SKILL.md .claude/skills/oceanbase-deploy/$s/
-  [ -d node_modules/oceanbase-skills/skills/oceanbase-deploy/$s/references ] && \
-    cp -r node_modules/oceanbase-skills/skills/oceanbase-deploy/$s/references .claude/skills/oceanbase-deploy/$s/
-done
-```
-
-**方式 B — 从 GitHub 直接下载：**
-
-使用上方 [一键安装](#claude-code-一键安装全部-skill) 命令。
+使用上方 [一键安装](#claude-code-一键安装全部-skill) 命令，或手动将 `SKILL.md` 文件放入 `.claude/skills/oceanbase-deploy/` 目录。
 
 ### Cursor
 
 ```bash
-npm install oceanbase-skills
-
 mkdir -p .cursor/skills/oceanbase-deploy
-cp node_modules/oceanbase-skills/skills/oceanbase-deploy/SKILL.md .cursor/skills/oceanbase-deploy/
+curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanbase-deploy/SKILL.md" \
+  -o .cursor/skills/oceanbase-deploy/SKILL.md
 for s in cluster-management tenant-management seekdb testing-and-benchmark; do
   mkdir -p .cursor/skills/oceanbase-deploy/$s
-  cp node_modules/oceanbase-skills/skills/oceanbase-deploy/$s/SKILL.md .cursor/skills/oceanbase-deploy/$s/
-  [ -d node_modules/oceanbase-skills/skills/oceanbase-deploy/$s/references ] && \
-    cp -r node_modules/oceanbase-skills/skills/oceanbase-deploy/$s/references .cursor/skills/oceanbase-deploy/$s/
+  curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanbase-deploy/$s/SKILL.md" \
+    -o .cursor/skills/oceanbase-deploy/$s/SKILL.md
 done
 ```
 
