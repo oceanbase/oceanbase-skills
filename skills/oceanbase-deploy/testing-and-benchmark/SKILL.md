@@ -1,6 +1,6 @@
 ---
 name: testing-and-benchmark
-description: Run OceanBase performance tests and benchmarks using obd test. Supports mysqltest, Sysbench, TPC-H, and TPC-C. Use when users want to benchmark, stress test, run functional tests, or evaluate OceanBase cluster performance. Also use when users mention sysbench, TPC-H, TPC-C, or obd test.
+description: Run OceanBase performance benchmarks and functional tests using obd test. Supports Sysbench, TPC-H, TPC-C benchmarks and mysqltest functional tests. Use when users want to benchmark, stress test, run functional tests, or evaluate OceanBase cluster performance. Also use when users mention sysbench, TPC-H, TPC-C, mysqltest, or obd test.
 compatibility: Requires obd CLI and a running OceanBase cluster with a test tenant.
 metadata:
   author: oceanbase
@@ -9,12 +9,12 @@ metadata:
 
 # OceanBase Testing & Benchmark (obd test)
 
-Run performance benchmarks and functional tests on OceanBase clusters using `obd test`.
+Run performance benchmarks (Sysbench, TPC-H, TPC-C) and functional tests (mysqltest) on OceanBase clusters using `obd test`.
 
 ## When to Use This Skill
 
-- Running Sysbench, TPC-H, or TPC-C benchmarks
-- Running mysqltest functional tests
+- Running performance benchmarks: Sysbench, TPC-H, TPC-C
+- Running functional tests: mysqltest
 - Evaluating cluster performance under load
 
 **For cluster deployment and management:** Use [cluster-management](../cluster-management/SKILL.md).
@@ -35,23 +35,23 @@ Run performance benchmarks and functional tests on OceanBase clusters using `obd
 
 ## Test Commands
 
-### MySQL Test
+### MySQL Test (Functional)
 ```bash
 obd test mysqltest <deploy_name> --test-set <test_set>
 ```
 
-### Sysbench
+### Sysbench (Benchmark)
 ```bash
 obd test sysbench <deploy_name> --tenant=<tenant> --script-name=<script>
 ```
 
-### TPC-H
+### TPC-H (Benchmark)
 ```bash
 obd test tpch <deploy_name> --tenant=<tenant> --remote-tbl-dir=<server_dir>
 ```
 `--remote-tbl-dir` is **required** — specifies where TPC-H table files are stored on the server.
 
-### TPC-C
+### TPC-C (Benchmark)
 ```bash
 obd test tpcc <deploy_name> --tenant=<tenant> --warehouses=<n> --run-mins=<minutes>
 ```
@@ -96,4 +96,4 @@ When testing OCP-related functionality, default to `ocp-ce`. If a test mentions 
 
 - [cluster-management](../cluster-management/SKILL.md) — Deploy and manage clusters
 - [tenant-management](../tenant-management/SKILL.md) — Create test tenants
-- [seekdb](../seekdb/SKILL.md) — SeekDB operations
+- [seekdb](../seekdb/SKILL.md) — seekdb operations

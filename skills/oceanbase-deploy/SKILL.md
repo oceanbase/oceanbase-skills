@@ -1,6 +1,6 @@
 ---
 name: oceanbase-deploy
-description: Overview skill for OceanBase deployment and operations using obd. Routes to specialized skills for cluster management, tenant management, SeekDB, and testing. Use as a starting point when the user's intent is not yet clear, or for general OceanBase obd questions. Also use when users mention OceanBase, obd, or want an overview of available OceanBase operations.
+description: Overview skill for OceanBase deployment and operations using obd. Routes to specialized skills for cluster management, tenant management, seekdb, and testing. Use as a starting point when the user's intent is not yet clear, or for general OceanBase obd questions. Also use when users mention OceanBase, obd, or want an overview of available OceanBase operations.
 compatibility: Requires obd CLI installed on the control machine.
 metadata:
   author: oceanbase
@@ -17,8 +17,8 @@ This is the entry point for OceanBase operations via `obd`. Use the specialized 
 |-------|----------|
 | [cluster-management](cluster-management/SKILL.md) | Deploy, start, stop, upgrade, scale out clusters. OCP CE takeover. Monitoring setup. |
 | [tenant-management](tenant-management/SKILL.md) | Create/drop tenants, backup, restore, optimize workloads. |
-| [seekdb](seekdb/SKILL.md) | SeekDB install, deploy, HA (switchover/failover/decouple). |
-| [testing-and-benchmark](testing-and-benchmark/SKILL.md) | Sysbench, TPC-H, TPC-C, mysqltest benchmarks. |
+| [seekdb](seekdb/SKILL.md) | seekdb install, deploy, HA (switchover/failover/decouple). |
+| [testing-and-benchmark](testing-and-benchmark/SKILL.md) | Sysbench, TPC-H, TPC-C benchmarks; mysqltest functional tests. |
 
 ## Quick Start
 
