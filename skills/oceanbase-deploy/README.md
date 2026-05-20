@@ -11,8 +11,8 @@ OceanBase OBD 部署与运维 Skill 集合，供任意 AI Agent 加载使用。
 | [`oceanbase-deploy`](./) | 总览入口，路由到具体 skill |
 | [`cluster-management`](./cluster-management/) | 集群生命周期：部署、启停、升级、扩容、OCP CE 接管、监控 |
 | [`tenant-management`](./tenant-management/) | 租户管理：创建、删除、优化、备份恢复 |
-| [`seekdb`](./seekdb/) | SeekDB：安装、部署、主备复制、switchover/failover/decouple |
-| [`testing-and-benchmark`](./testing-and-benchmark/) | 压测：Sysbench、TPC-H、TPC-C、mysqltest |
+| [`seekdb`](./seekdb/) | seekdb：安装、部署、主备复制、switchover/failover/decouple |
+| [`testing-and-benchmark`](./testing-and-benchmark/) | 压测：Sysbench、TPC-H、TPC-C；功能测试：mysqltest |
 
 > 更多 skill 持续开发中，计划覆盖：内核调优、SQL 诊断、数据迁移等。
 
@@ -106,14 +106,14 @@ done
 给 test-cluster 上的 mysql 租户配置备份路径并执行一次备份
 ```
 
-### SeekDB
+### seekdb
 
 ```text
-部署并启动一个 SeekDB 实例
+部署并启动一个 seekdb 实例
 ```
 
 ```text
-创建一个 SeekDB 主备集群，并告诉我主库和备库分别怎么部署
+创建一个 seekdb 主备集群，并告诉我主库和备库分别怎么部署
 ```
 
 ```text

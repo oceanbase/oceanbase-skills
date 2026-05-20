@@ -23,7 +23,7 @@ Official quick-start guide: [https://www.oceanbase.com/docs/common-obd-cn-100000
 - Managing mirrors and repositories
 
 **For tenant operations (create, drop, backup, restore):** Use [tenant-management](../tenant-management/SKILL.md).
-**For SeekDB:** Use [seekdb](../seekdb/SKILL.md).
+**For seekdb:** Use [seekdb](../seekdb/SKILL.md).
 **For benchmarks and testing:** Use [testing-and-benchmark](../testing-and-benchmark/SKILL.md).
 **Overview & routing:** See [oceanbase-deploy](../SKILL.md).
 
@@ -176,5 +176,5 @@ obd cluster destroy my-cluster
 ## Related Skills
 
 - [tenant-management](../tenant-management/SKILL.md) — Tenant CRUD, backup, restore
-- [seekdb](../seekdb/SKILL.md) — SeekDB lifecycle and HA
-- [testing-and-benchmark](../testing-and-benchmark/SKILL.md) — Sysbench, TPC-H, TPC-C
+- [seekdb](../seekdb/SKILL.md) — seekdb lifecycle and HA
+- [testing-and-benchmark](../testing-and-benchmark/SKILL.md) — Sysbench, TPC-H, TPC-C benchmarks; mysqltest functional tests

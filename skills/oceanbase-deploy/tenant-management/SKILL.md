@@ -20,7 +20,7 @@ Manage tenants within an OceanBase CE cluster using `obd cluster tenant` command
 - Restoring tenants from backup
 
 **For cluster lifecycle (deploy, start, stop, upgrade):** Use [cluster-management](../cluster-management/SKILL.md).
-**For SeekDB:** Use [seekdb](../seekdb/SKILL.md).
+**For seekdb:** Use [seekdb](../seekdb/SKILL.md).
 **For benchmarks:** Use [testing-and-benchmark](../testing-and-benchmark/SKILL.md).
 
 ---
@@ -90,5 +90,5 @@ obd cluster tenant backup test-cluster mysql
 ## Related Skills
 
 - [cluster-management](../cluster-management/SKILL.md) — Cluster lifecycle and deployment
-- [seekdb](../seekdb/SKILL.md) — SeekDB lifecycle and HA
+- [seekdb](../seekdb/SKILL.md) — seekdb lifecycle and HA
 - [testing-and-benchmark](../testing-and-benchmark/SKILL.md) — Performance testing

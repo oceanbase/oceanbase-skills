@@ -8,7 +8,7 @@ Detailed parameters and usage for each OBD test tool.
 obd test mysqltest <deploy_name> --test-set <test_set> [options]
 ```
 
-Runs mysqltest functional test cases against the cluster.
+Runs mysqltest **functional** test cases against the cluster (not a performance benchmark).
 
 ### Common Options
 - `--test-set <test_set>`: Test suite name (e.g., `basic`)

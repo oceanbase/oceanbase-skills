@@ -1,6 +1,6 @@
-# SeekDB Install Modes
+# seekdb Install Modes
 
-Detailed behavior of SeekDB installation modes and their constraints.
+Detailed behavior of seekdb installation modes and their constraints.
 
 ## Interactive Install (Default)
 
@@ -8,7 +8,7 @@ Detailed behavior of SeekDB installation modes and their constraints.
 obd seekdb install
 ```
 
-- Installs a single-node SeekDB interactively.
+- Installs a single-node seekdb interactively.
 - **Requires a real TTY terminal** — cannot be automated via pipe input.
 - For scripted/CI deployment, use `obd seekdb deploy <name> -c <config>` instead.
 
@@ -29,7 +29,7 @@ obd seekdb install --standby
 ```
 
 - Installs as a standby cluster.
-- Interactively selects from deployed and RUNNING SeekDB primaries.
+- Interactively selects from deployed and RUNNING seekdb primaries.
 - **Requires TTY.**
 - The standby's available disk for redo logs must be **no less than** the primary's configured `log_disk_size`.
 - `--standby` and `--primary` cannot be used together.
@@ -57,7 +57,7 @@ Even if `log_restore_source` is set in the YAML config, OBD does **not** pass `-
 obd seekdb takeover <name> --home-path <path>
 ```
 
-Takes over a SeekDB instance **not deployed by OBD**:
+Takes over a seekdb instance **not deployed by OBD**:
 - `--home-path` is required.
 - Also needs host, `mysql_port`, `root` password, and SSH information (via config or interactive input).
 - OBD generates configuration and brings the instance under management.

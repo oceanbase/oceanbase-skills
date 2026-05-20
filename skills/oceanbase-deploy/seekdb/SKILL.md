@@ -1,23 +1,23 @@
 ---
 name: seekdb
-description: Manage SeekDB instances using obd seekdb commands. Install, deploy, start, stop, destroy, and takeover SeekDB. Set up primary-standby replication, perform switchover, failover, and decouple operations. Use when users mention SeekDB, obd seekdb, or need a lightweight OceanBase-based database with primary-standby HA capabilities.
-compatibility: Requires obd CLI with SeekDB support.
+description: Manage seekdb instances using obd seekdb commands. Install, deploy, start, stop, destroy, and takeover seekdb. Set up primary-standby replication, perform switchover, failover, and decouple operations. Use when users mention seekdb, obd seekdb, or need a lightweight OceanBase-based database with primary-standby HA capabilities.
+compatibility: Requires obd CLI with seekdb support.
 metadata:
   author: oceanbase
   version: "1.0"
 ---
 
-# SeekDB Management (obd seekdb)
+# seekdb Management (obd seekdb)
 
-SeekDB is a lightweight database component managed by OBD. All `obd seekdb` commands only apply to deployments containing the seekdb component.
+seekdb is a lightweight database component managed by OBD. All `obd seekdb` commands only apply to deployments containing the seekdb component.
 
 ## When to Use This Skill
 
-- Installing or deploying SeekDB instances
-- Managing SeekDB lifecycle (start, stop, restart, destroy)
+- Installing or deploying seekdb instances
+- Managing seekdb lifecycle (start, stop, restart, destroy)
 - Setting up primary-standby replication
 - Performing switchover, failover, or decouple operations
-- Taking over existing SeekDB instances not deployed by OBD
+- Taking over existing seekdb instances not deployed by OBD
 
 **For OceanBase cluster management:** Use [cluster-management](../cluster-management/SKILL.md).
 **For tenant operations:** Use [tenant-management](../tenant-management/SKILL.md).
@@ -81,7 +81,7 @@ See [references/ha-operations.md](references/ha-operations.md) for detailed swit
 
 ## Usage Examples
 
-### Deploy and Start SeekDB
+### Deploy and Start seekdb
 ```bash
 obd seekdb deploy my-seekdb -c seekdb-config.yaml
 obd seekdb start my-seekdb

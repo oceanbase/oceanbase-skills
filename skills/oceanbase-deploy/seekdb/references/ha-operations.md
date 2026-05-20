@@ -1,4 +1,4 @@
-# SeekDB HA Operations
+# seekdb HA Operations
 
 Primary-standby switchover, failover, and decouple procedures.
 
