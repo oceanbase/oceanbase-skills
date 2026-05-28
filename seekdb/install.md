@@ -35,6 +35,7 @@ From the results, infer the best installation options and present them to the us
 - Linux x86_64 with yum → offer yum/systemd and Docker
 - Linux aarch64 with apt → offer apt/systemd and Docker
 - Python 3.8+ found → also offer embedded pip mode
+- Windows detected (MINGW64/MSYS/win32) → offer MSI installer
 
 ---
 
@@ -43,8 +44,10 @@ From the results, infer the best installation options and present them to the us
 Ask the user which mode they want (if not already clear from context):
 
 > "I can see you're on [OS]. Which mode would you like?
-> - **Server mode** (Homebrew / Docker / yum / apt) — runs a standalone server process
+> - **Server mode** (Homebrew / Docker / yum / apt / Windows MSI) — runs a standalone server process
 > - **Embedded mode** (pip install) — runs inside your Python process, no server needed (Linux only)"
+>
+> If on Windows, directly proceed to Phase 3F (MSI is the only supported method).
 
 ---
 
@@ -398,15 +401,193 @@ Confirm success and show:
 
 ---
 
+## Phase 3F – Server mode: Windows MSI
+
+**Supported systems:** Windows 10 (22H2+), Windows 11, Windows Server 2022+ (x86_64 only)
+**Requirements:** 1-core CPU, 2G RAM, MySQL client installed, Administrator privileges for service registration.
+
+> **Important agent note:** The seekdb MSI bundles a GUI configurator (seekdbConfigurator.exe) that **cannot** be automated by a CLI agent — it is a WPF application requiring interactive GUI and UAC elevation. Instead, the agent should install the MSI (silently or let user click through), then perform all configuration and service setup via command line.
+
+**Step 1 – Check environment**
+
+Run:
+```bash
+uname -s        # MINGW64 / MSYS / CYGWIN indicates Windows Git Bash
+cmd.exe /c ver  # Windows version
+```
+Also check if running in an elevated (Administrator) terminal:
+```bash
+net session > /dev/null 2>&1 && echo "Elevated" || echo "Not elevated"
+```
+Check for MySQL client:
+```bash
+command -v mysql || mysql --version 2>/dev/null
+```
+If MySQL client is not available, suggest: install via `winget install Oracle.MySQL` or download from https://dev.mysql.com/downloads/shell/.
+
+**Step 2 – Install the MSI**
+
+The MSI download URL:
+```
+https://mirrors.oceanbase.com/oceanbase/community/stable/windows/11/x86_64/seekdb-1.3.0.0-win64.msi
+```
+
+Check if seekdb is already installed:
+```bash
+command -v seekdb.exe || where.exe seekdb.exe 2>/dev/null
+```
+If already installed, skip to Step 3.
+
+**Option A – Silent install (requires elevated terminal):**
+
+If the terminal is elevated, install silently — this skips both the MSI wizard and the configurator:
+```bash
+# Download MSI
+curl -fSL -o /tmp/seekdb.msi "https://mirrors.oceanbase.com/oceanbase/community/stable/windows/11/x86_64/seekdb-1.3.0.0-win64.msi"
+
+# Silent install, skip configurator, log to file
+msiexec //i "$(cygpath -w /tmp/seekdb.msi)" //qn //norestart WIXUI_EXITDIALOGOPTIONALCHECKBOX=0 //l*v "$(cygpath -w /tmp/seekdb_install.log)"
+```
+After installation, verify seekdb.exe is in PATH (may need to restart the shell or source the environment):
+```bash
+# Refresh PATH in current session
+export PATH="$PATH:/c/Program Files/seekdb/bin"
+seekdb.exe --version
+```
+If silent install fails, check the log at `/tmp/seekdb_install.log` and diagnose.
+
+**Option B – User-assisted install (non-elevated terminal):**
+
+If the terminal is NOT elevated, the agent cannot silently install due to UAC. Instead:
+
+1. Download the MSI:
+```bash
+curl -fSL -o /tmp/seekdb.msi "https://mirrors.oceanbase.com/oceanbase/community/stable/windows/11/x86_64/seekdb-1.3.0.0-win64.msi"
+```
+
+2. Tell the user:
+> "I've downloaded the MSI installer. Please double-click `seekdb.msi` to install, or run the following in an **Administrator terminal**:
+> ```
+> msiexec /i C:\path\to\seekdb.msi
+> ```
+> **Important: Uncheck 'Run seekdb Configurator'** at the end of the install wizard — I will handle configuration for you via command line."
+
+3. Wait for the user to confirm installation is complete, then verify:
+```bash
+export PATH="$PATH:/c/Program Files/seekdb/bin"
+seekdb.exe --version
+```
+
+**Step 3 – Configure SeekDB**
+
+Create the data directory and configuration file:
+```bash
+SEEKDB_DATA="C:/ProgramData/seekdb"
+mkdir -p "$SEEKDB_DATA/store/redo" "$SEEKDB_DATA/etc"
+
+cat > "$SEEKDB_DATA/etc/seekdb.cnf" << 'CONF'
+# seekdb Configuration File
+base-dir=C:/ProgramData/seekdb
+data-dir=C:/ProgramData/seekdb/store
+redo-dir=C:/ProgramData/seekdb/store/redo
+port=2881
+cpu_count=4
+memory_limit=2G
+CONF
+```
+
+Adjust `cpu_count` and `memory_limit` based on the user's machine:
+- Development use: `cpu_count=4`, `memory_limit=2G`
+- Server use: `cpu_count` = half of total cores, `memory_limit=4G`
+- Dedicated use: `cpu_count` = total cores, `memory_limit=8G`
+
+If the user wants a custom port or data directory, edit the values accordingly.
+
+**Step 4 – Initialize the database**
+
+Check if the database already exists:
+```bash
+ls "$SEEKDB_DATA/store/.meta" 2>/dev/null && echo "Already initialized" || echo "Needs initialization"
+```
+
+If initialization is needed, run (this may take a few minutes):
+```bash
+seekdb.exe --base-dir="C:/ProgramData/seekdb" --nodaemon --port=2881 --parameter memory_limit=2G --parameter cpu_count=4
+```
+Wait for the process to exit with code 0. If it fails, check the output for errors and diagnose.
+
+> **Note:** First-time initialization creates the system tables and may take 1–3 minutes depending on hardware. The process will exit automatically when done.
+
+**Step 5 – Install and start the Windows service**
+
+This step requires Administrator privileges. If the terminal is not elevated, ask the user to run these commands in an Administrator terminal.
+
+Install the service:
+```bash
+seekdb.exe --install-service seekdb --base-dir="C:/ProgramData/seekdb" --port=2881 --parameter memory_limit=2G --parameter cpu_count=4
+```
+
+Configure auto-start:
+```bash
+sc.exe config seekdb start= auto
+```
+
+Start the service:
+```bash
+sc.exe start seekdb
+```
+
+**Step 6 – Verify the service is running**
+
+Check service status:
+```bash
+sc.exe query seekdb
+```
+The output should show `STATE : 4 RUNNING`. If not, check the event log:
+```bash
+powershell -Command "Get-EventLog -LogName Application -Source seekdb -Newest 10 2>$null || Get-WinEvent -FilterHashtable @{LogName='Application';ProviderName='seekdb'} -MaxEvents 10 2>$null"
+```
+
+Also verify connectivity:
+```bash
+mysql -h 127.0.0.1 -P 2881 -u root -e "SELECT 'SeekDB is running!' AS status;"
+```
+
+**Step 7 – (Optional) Configure Windows Firewall**
+
+If the user needs remote access, open the firewall port:
+```bash
+netsh advfirewall firewall add rule name="seekdb TCP 2881" dir=in action=allow protocol=TCP localport=2881
+```
+
+**Step 8 – Done**
+
+Confirm success and show connection info:
+- MySQL port: `127.0.0.1:2881`
+- Config file: `C:\ProgramData\seekdb\etc\seekdb.cnf`
+- Data directory: `C:\ProgramData\seekdb\store`
+- Service management:
+  - Start: `sc.exe start seekdb`
+  - Stop: `sc.exe stop seekdb`
+  - Status: `sc.exe query seekdb`
+  - Restart: `sc.exe stop seekdb && sc.exe start seekdb`
+- Uninstall:
+  1. Stop and remove service: `seekdb.exe --remove-service seekdb`
+  2. Uninstall MSI: `msiexec /x {product-code} /qn` or via Windows Settings > Apps
+  3. (Optional) Remove data: `rmdir /s /q C:\ProgramData\seekdb`
+
+---
+
 ## OS / method compatibility
 
-| Method            | Linux x86_64 | Linux aarch64 | macOS |
-|-------------------|:---:|:---:|:---:|
-| pip (embedded)    | ✅  | ✅  | ❌  |
-| yum / systemd     | ✅  | ✅  | ❌  |
-| apt / systemd     | ✅  | ✅  | ❌  |
-| Docker            | ✅  | ✅  | ✅  |
-| Homebrew          | ❌  | ❌  | ✅  |
+| Method            | Linux x86_64 | Linux aarch64 | macOS | Windows x86_64 |
+|-------------------|:---:|:---:|:---:|:---:|
+| pip (embedded)    | ✅  | ✅  | ❌  | ❌  |
+| yum / systemd     | ✅  | ✅  | ❌  | ❌  |
+| apt / systemd     | ✅  | ✅  | ❌  | ❌  |
+| Docker            | ✅  | ✅  | ✅  | ❌  |
+| Homebrew          | ❌  | ❌  | ✅  | ❌  |
+| MSI / Windows Svc | ❌  | ❌  | ❌  | ✅  |
 
 ---
 
@@ -415,4 +596,5 @@ Confirm success and show:
 - Deploy by systemd: https://docs.seekdb.ai/seekdb/deploy-by-systemd/
 - pyseekdb embedded install: https://docs.seekdb.ai/seekdb/pyseekdb-sdk-get-started/#install-pyseekdb
 - Docker image: https://github.com/oceanbase/docker-images/blob/main/seekdb/README.md
+- Windows MSI download: https://mirrors.oceanbase.com/oceanbase/community/stable/windows/11/x86_64/seekdb-1.3.0.0-win64.msi
 - Full documentation: https://www.oceanbase.ai/docs/seekdb-overview/
