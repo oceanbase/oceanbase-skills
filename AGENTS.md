@@ -20,23 +20,31 @@ oceanbase-skills/
 ├── AGENTS.md             # This file
 ├── package.json          # npm: oceanbase-skills
 ├── LICENSE
-└── skills/
-    └── oceanbase-deploy/         # All skills live under this directory
-        ├── SKILL.md              # Overview & routing
-        ├── README.md
-        ├── package.json          # npm: oceanbase-deploy (legacy)
-        ├── cluster-management/   # Cluster lifecycle
-        │   ├── SKILL.md
-        │   └── references/
-        ├── tenant-management/    # Tenant ops
-        │   ├── SKILL.md
-        │   └── references/
-        ├── seekdb/               # SeekDB lifecycle & HA
-        │   ├── SKILL.md
-        │   └── references/
-        └── testing-and-benchmark/ # Benchmarks
-            ├── SKILL.md
-            └── references/
+├── skills/
+│   └── oceanbase-deploy/         # obd-based skill family
+│       ├── SKILL.md              # Overview & routing
+│       ├── README.md
+│       ├── package.json          # npm: oceanbase-deploy (legacy)
+│       ├── cluster-management/   # Cluster lifecycle
+│       │   ├── SKILL.md
+│       │   └── references/
+│       ├── tenant-management/    # Tenant ops
+│       │   ├── SKILL.md
+│       │   └── references/
+│       ├── seekdb/               # obd-managed SeekDB: lifecycle & HA
+│       │   ├── SKILL.md
+│       │   └── references/
+│       └── testing-and-benchmark/ # Benchmarks
+│           ├── SKILL.md
+│           └── references/
+└── seekdb/                       # SeekDB product skill family (standalone)
+    ├── SKILL.md                  # Overview & routing
+    ├── install/                  # Install on Linux/macOS/Windows
+    │   ├── SKILL.md
+    │   └── references/
+    └── build/                    # Build from source
+        ├── SKILL.md
+        └── references/
 ```
 
 ### Conventions
@@ -55,8 +63,11 @@ oceanbase-skills/
 | `skills/oceanbase-deploy` | `oceanbase-deploy` | Overview and routing to specialized skills |
 | `skills/oceanbase-deploy/cluster-management` | `cluster-management` | Cluster deploy, start, stop, upgrade, OCP CE, monitoring |
 | `skills/oceanbase-deploy/tenant-management` | `tenant-management` | Tenant CRUD, backup, restore |
-| `skills/oceanbase-deploy/seekdb` | `seekdb` | SeekDB lifecycle, primary-standby HA |
+| `skills/oceanbase-deploy/seekdb` | `seekdb` | obd-managed SeekDB lifecycle, primary-standby HA |
 | `skills/oceanbase-deploy/testing-and-benchmark` | `testing-and-benchmark` | Sysbench, TPC-H, TPC-C, mysqltest |
+| `seekdb` | `seekdb` (product) | Standalone SeekDB product: overview and routing |
+| `seekdb/install` | `seekdb-install` | Install SeekDB on Linux/macOS/Windows (Homebrew / Docker / yum / apt / MSI / pip) |
+| `seekdb/build` | `seekdb-build` | Build SeekDB from source: macOS, Linux, Android cross, Windows, Python wheel |
 
 ---
 
