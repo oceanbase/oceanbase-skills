@@ -22,7 +22,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/oceanbase/oceanbase-skills.git",
-    "directory": "oceanbase-deploy"
+    "directory": "skills/oceanbase-deploy"
   },
   "license": "MIT"
 }
