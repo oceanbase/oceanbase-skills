@@ -13,8 +13,9 @@ Each skill is a self-contained directory with a `SKILL.md` file (plus optional `
 | [`oceanbase-deploy`](./skills/oceanbase-deploy/) | Overview & routing — start here if unsure which skill to use |
 | [`cluster-management`](./skills/oceanbase-deploy/cluster-management/) | Cluster lifecycle: deploy, start, stop, upgrade, scale out, OCP CE takeover, monitoring |
 | [`tenant-management`](./skills/oceanbase-deploy/tenant-management/) | Tenant CRUD, backup, restore, workload optimization |
-| [`seekdb`](./skills/oceanbase-deploy/seekdb/) | SeekDB install, deploy, primary-standby HA (switchover / failover / decouple) |
+| [`seekdb`](./skills/oceanbase-deploy/seekdb/) | obd-managed SeekDB: lifecycle and primary-standby HA (switchover / failover / decouple) |
 | [`testing-and-benchmark`](./skills/oceanbase-deploy/testing-and-benchmark/) | Sysbench, TPC-H, TPC-C, mysqltest benchmarks |
+| [`seekdb` (product)](./seekdb/) | SeekDB product skill: install on Linux/macOS/Windows (Homebrew / Docker / yum / apt / MSI / pip) and build from source |
 
 > More skills are on the way. Planned areas include OceanBase kernel tuning, SQL diagnostics, migration, and more.
 
@@ -34,6 +35,17 @@ for s in cluster-management tenant-management seekdb testing-and-benchmark; do
   curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanbase-deploy/$s/SKILL.md" \
     -o .claude/skills/oceanbase-deploy/$s/SKILL.md
 done
+
+# SeekDB product skill (install + build) — separate top-level skill
+mkdir -p .claude/skills/seekdb
+curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/seekdb/SKILL.md" \
+  -o .claude/skills/seekdb/SKILL.md
+for s in install build; do
+  mkdir -p .claude/skills/seekdb/$s/references
+  curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/seekdb/$s/SKILL.md" \
+    -o .claude/skills/seekdb/$s/SKILL.md
+done
+# Optional: pull reference files on demand from seekdb/{install,build}/references/
 ```
 
 Claude Code will automatically discover all skills under `.claude/skills/` and offer them when relevant.
@@ -62,6 +74,16 @@ for s in cluster-management tenant-management seekdb testing-and-benchmark; do
   mkdir -p .cursor/skills/oceanbase-deploy/$s
   curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanbase-deploy/$s/SKILL.md" \
     -o .cursor/skills/oceanbase-deploy/$s/SKILL.md
+done
+
+# SeekDB product skill
+mkdir -p .cursor/skills/seekdb
+curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/seekdb/SKILL.md" \
+  -o .cursor/skills/seekdb/SKILL.md
+for s in install build; do
+  mkdir -p .cursor/skills/seekdb/$s
+  curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/seekdb/$s/SKILL.md" \
+    -o .cursor/skills/seekdb/$s/SKILL.md
 done
 ```
 
@@ -113,7 +135,7 @@ After loading the skills, ask your agent for concrete tasks. Below are examples 
 给 test-cluster 上的 mysql 租户配置备份路径并执行一次备份
 ```
 
-### SeekDB
+### SeekDB (obd-managed)
 
 ```text
 部署并启动一个 SeekDB 实例
@@ -125,6 +147,20 @@ After loading the skills, ask your agent for concrete tasks. Below are examples 
 
 ```text
 查看 seekdb-test 的拓扑，如果主库挂了该用 switchover 还是 failover
+```
+
+### SeekDB (product — install & build)
+
+```text
+在我的 macOS 上装一个 SeekDB
+```
+
+```text
+用 Docker 跑一个 SeekDB，并打通 2881 端口
+```
+
+```text
+帮我从源码编出一个 release 版 SeekDB，再打成 rpm 包
 ```
 
 ### Testing & Benchmark
@@ -153,31 +189,50 @@ oceanbase-skills/
 ├── AGENTS.md
 ├── package.json
 ├── LICENSE
-└── skills/
-    └── oceanbase-deploy/              # All skills live here
-        ├── SKILL.md                   # Overview & routing
-        ├── README.md
-        ├── package.json
-        ├── cluster-management/        # Cluster lifecycle
-        │   ├── SKILL.md
-        │   └── references/
-        │       ├── config-deployment.md
-        │       ├── ocp-ce.md
-        │       ├── monitoring.md
-        │       └── mirror-management.md
-        ├── tenant-management/         # Tenant ops
-        │   ├── SKILL.md
-        │   └── references/
-        │       └── backup-restore.md
-        ├── seekdb/                    # SeekDB lifecycle & HA
-        │   ├── SKILL.md
-        │   └── references/
-        │       ├── install-modes.md
-        │       └── ha-operations.md
-        └── testing-and-benchmark/     # Benchmarks
-            ├── SKILL.md
-            └── references/
-                └── test-commands.md
+├── skills/
+│   └── oceanbase-deploy/              # obd-based skills
+│       ├── SKILL.md                   # Overview & routing
+│       ├── README.md
+│       ├── package.json
+│       ├── cluster-management/        # Cluster lifecycle
+│       │   ├── SKILL.md
+│       │   └── references/
+│       │       ├── config-deployment.md
+│       │       ├── ocp-ce.md
+│       │       ├── monitoring.md
+│       │       └── mirror-management.md
+│       ├── tenant-management/         # Tenant ops
+│       │   ├── SKILL.md
+│       │   └── references/
+│       │       └── backup-restore.md
+│       ├── seekdb/                    # obd-managed SeekDB: lifecycle & HA
+│       │   ├── SKILL.md
+│       │   └── references/
+│       │       ├── install-modes.md
+│       │       └── ha-operations.md
+│       └── testing-and-benchmark/     # Benchmarks
+│           ├── SKILL.md
+│           └── references/
+│               └── test-commands.md
+└── seekdb/                            # SeekDB product skill (standalone)
+    ├── SKILL.md                       # Overview & routing
+    ├── install/                       # Install on Linux/macOS/Windows
+    │   ├── SKILL.md
+    │   └── references/
+    │       ├── pip-embedded.md
+    │       ├── macos-homebrew.md
+    │       ├── docker.md
+    │       ├── linux-yum.md
+    │       ├── linux-apt.md
+    │       └── windows-msi.md
+    └── build/                         # Build from source
+        ├── SKILL.md
+        └── references/
+            ├── build-macos.md
+            ├── build-linux.md
+            ├── build-android.md
+            ├── build-windows.md
+            └── build-python-wheel.md
 ```
 
 Each skill follows the **Agent Skills Specification**:
