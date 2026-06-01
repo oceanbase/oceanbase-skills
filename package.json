@@ -2,12 +2,12 @@
   "name": "oceanbase-skills",
   "version": "2.0.0",
   "description": "OceanBase AI Agent Skills — cluster management, tenant management, SeekDB, testing and benchmarks via obd",
-  "main": "skills/oceanbase-deploy/SKILL.md",
+  "main": "oceanbase-deploy/SKILL.md",
   "workspaces": [
-    "skills/*"
+    "oceanbase-deploy"
   ],
   "files": [
-    "skills/",
+    "oceanbase-deploy/",
     "README.md",
     "AGENTS.md",
     "LICENSE"
