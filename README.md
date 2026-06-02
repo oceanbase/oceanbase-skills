@@ -8,14 +8,23 @@ Each skill is a self-contained directory with a `SKILL.md` file (plus optional `
 
 ## Available Skills
 
+### oceanbase-deploy — OceanBase 部署与运维 (via obd)
+
 | Skill | Description |
 |-------|-------------|
 | [`oceanbase-deploy`](./skills/oceanbase-deploy/) | Overview & routing — start here if unsure which skill to use |
 | [`cluster-management`](./skills/oceanbase-deploy/cluster-management/) | Cluster lifecycle: deploy, start, stop, upgrade, scale out, OCP CE takeover, monitoring |
 | [`tenant-management`](./skills/oceanbase-deploy/tenant-management/) | Tenant CRUD, backup, restore, workload optimization |
-| [`seekdb`](./skills/oceanbase-deploy/seekdb/) | obd-managed SeekDB: lifecycle and primary-standby HA (switchover / failover / decouple) |
+| [`seekdb (obd)`](./skills/oceanbase-deploy/seekdb/) | obd-managed SeekDB: primary-standby HA (switchover / failover / decouple) |
 | [`testing-and-benchmark`](./skills/oceanbase-deploy/testing-and-benchmark/) | Sysbench, TPC-H, TPC-C, mysqltest benchmarks |
-| [`seekdb` (product)](./seekdb/) | SeekDB product skill: install on Linux/macOS/Windows (Homebrew / Docker / yum / apt / MSI / pip) and build from source |
+
+### seekdb — SeekDB 独立安装与编译构建
+
+| Skill | Description |
+|-------|-------------|
+| [`seekdb`](./skills/seekdb/) | Overview & routing for standalone SeekDB |
+| [`seekdb/install`](./skills/seekdb/install/) | Install/deploy SeekDB via Homebrew, Docker, yum, apt, pip, Windows MSI |
+| [`seekdb/build`](./skills/seekdb/build/) | Build SeekDB from source for macOS, Linux, Android, Windows, Python wheel |
 
 > More skills are on the way. Planned areas include OceanBase kernel tuning, SQL diagnostics, migration, and more.
 
@@ -23,10 +32,22 @@ Each skill is a self-contained directory with a `SKILL.md` file (plus optional `
 
 ## Quick Start
 
-### Claude Code — One-line install (all skills)
+### Install via skills.sh (recommended)
 
 ```bash
-# Copy all skills into your project at once
+# Install the oceanbase-deploy skill (includes all sub-skills)
+npx skills add oceanbase/oceanbase-skills --skill oceanbase-deploy
+
+# Install the seekdb standalone skill (install / build from source)
+npx skills add oceanbase/oceanbase-skills --skill seekdb
+
+# Or install all skills from this repo
+npx skills add oceanbase/oceanbase-skills
+```
+
+### Manual install — Claude Code
+
+```bash
 mkdir -p .claude/skills/oceanbase-deploy
 curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanbase-deploy/SKILL.md" \
   -o .claude/skills/oceanbase-deploy/SKILL.md
@@ -36,19 +57,16 @@ for s in cluster-management tenant-management seekdb testing-and-benchmark; do
     -o .claude/skills/oceanbase-deploy/$s/SKILL.md
 done
 
-# SeekDB product skill (install + build) — separate top-level skill
+# SeekDB standalone skill (install + build)
 mkdir -p .claude/skills/seekdb
-curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/seekdb/SKILL.md" \
+curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/seekdb/SKILL.md" \
   -o .claude/skills/seekdb/SKILL.md
 for s in install build; do
   mkdir -p .claude/skills/seekdb/$s/references
-  curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/seekdb/$s/SKILL.md" \
+  curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/seekdb/$s/SKILL.md" \
     -o .claude/skills/seekdb/$s/SKILL.md
 done
-# Optional: pull reference files on demand from seekdb/{install,build}/references/
 ```
-
-Claude Code will automatically discover all skills under `.claude/skills/` and offer them when relevant.
 
 ### Load a single skill from GitHub URL
 
@@ -60,36 +78,17 @@ https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanba
 
 ## Agent Integration
 
-### Claude Code
-
-Use the one-liner in [Quick Start](#claude-code--one-line-install-all-skills) above, or manually place `SKILL.md` files into `.claude/skills/oceanbase-deploy/`.
-
-### Cursor
+### Claude Code / Cursor / Windsurf (via skills.sh)
 
 ```bash
-mkdir -p .cursor/skills/oceanbase-deploy
-curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanbase-deploy/SKILL.md" \
-  -o .cursor/skills/oceanbase-deploy/SKILL.md
-for s in cluster-management tenant-management seekdb testing-and-benchmark; do
-  mkdir -p .cursor/skills/oceanbase-deploy/$s
-  curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanbase-deploy/$s/SKILL.md" \
-    -o .cursor/skills/oceanbase-deploy/$s/SKILL.md
-done
-
-# SeekDB product skill
-mkdir -p .cursor/skills/seekdb
-curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/seekdb/SKILL.md" \
-  -o .cursor/skills/seekdb/SKILL.md
-for s in install build; do
-  mkdir -p .cursor/skills/seekdb/$s
-  curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/seekdb/$s/SKILL.md" \
-    -o .cursor/skills/seekdb/$s/SKILL.md
-done
+npx skills add oceanbase/oceanbase-skills --skill oceanbase-deploy
 ```
 
-### Windsurf
+`npx skills add` 会自动检测你的 IDE（Claude Code、Cursor、Windsurf 等）并安装到对应目录。
 
-In Windsurf's Rules or project context configuration, add the path to the skill file or paste its contents.
+### Claude Code (manual)
+
+Use the curl commands in [Quick Start](#manual-install--claude-code) above, or manually place `SKILL.md` files into `.claude/skills/oceanbase-deploy/`.
 
 ### Other Agents
 
@@ -135,7 +134,7 @@ After loading the skills, ask your agent for concrete tasks. Below are examples 
 给 test-cluster 上的 mysql 租户配置备份路径并执行一次备份
 ```
 
-### SeekDB (obd-managed)
+### SeekDB (obd-managed HA)
 
 ```text
 部署并启动一个 SeekDB 实例
@@ -149,18 +148,18 @@ After loading the skills, ask your agent for concrete tasks. Below are examples 
 查看 seekdb-test 的拓扑，如果主库挂了该用 switchover 还是 failover
 ```
 
-### SeekDB (product — install & build)
+### SeekDB (standalone install / build)
 
 ```text
-在我的 macOS 上装一个 SeekDB
+在我的 Mac 上安装 SeekDB
 ```
 
 ```text
-用 Docker 跑一个 SeekDB，并打通 2881 端口
+用 Docker 部署一个 SeekDB 实例
 ```
 
 ```text
-帮我从源码编出一个 release 版 SeekDB，再打成 rpm 包
+帮我从源码编译 SeekDB 的 Linux rpm 包
 ```
 
 ### Testing & Benchmark
@@ -185,54 +184,38 @@ After loading the skills, ask your agent for concrete tasks. Below are examples 
 
 ```
 oceanbase-skills/
+├── .claude-plugin/
+│   └── marketplace.json               # skills.sh discovery manifest
 ├── README.md
 ├── AGENTS.md
 ├── package.json
 ├── LICENSE
-├── skills/
-│   └── oceanbase-deploy/              # obd-based skills
-│       ├── SKILL.md                   # Overview & routing
-│       ├── README.md
-│       ├── package.json
-│       ├── cluster-management/        # Cluster lifecycle
-│       │   ├── SKILL.md
-│       │   └── references/
-│       │       ├── config-deployment.md
-│       │       ├── ocp-ce.md
-│       │       ├── monitoring.md
-│       │       └── mirror-management.md
-│       ├── tenant-management/         # Tenant ops
-│       │   ├── SKILL.md
-│       │   └── references/
-│       │       └── backup-restore.md
-│       ├── seekdb/                    # obd-managed SeekDB: lifecycle & HA
-│       │   ├── SKILL.md
-│       │   └── references/
-│       │       ├── install-modes.md
-│       │       └── ha-operations.md
-│       └── testing-and-benchmark/     # Benchmarks
-│           ├── SKILL.md
-│           └── references/
-│               └── test-commands.md
-└── seekdb/                            # SeekDB product skill (standalone)
-    ├── SKILL.md                       # Overview & routing
-    ├── install/                       # Install on Linux/macOS/Windows
-    │   ├── SKILL.md
-    │   └── references/
-    │       ├── pip-embedded.md
-    │       ├── macos-homebrew.md
-    │       ├── docker.md
-    │       ├── linux-yum.md
-    │       ├── linux-apt.md
-    │       └── windows-msi.md
-    └── build/                         # Build from source
-        ├── SKILL.md
-        └── references/
-            ├── build-macos.md
-            ├── build-linux.md
-            ├── build-android.md
-            ├── build-windows.md
-            └── build-python-wheel.md
+└── skills/
+    ├── oceanbase-deploy/              # OceanBase obd deployment & ops
+    │   ├── SKILL.md                   # Overview & routing
+    │   ├── README.md
+    │   ├── package.json
+    │   ├── cluster-management/        # Cluster lifecycle
+    │   │   ├── SKILL.md
+    │   │   └── references/
+    │   ├── tenant-management/         # Tenant ops
+    │   │   ├── SKILL.md
+    │   │   └── references/
+    │   ├── seekdb/                    # obd-managed SeekDB HA
+    │   │   ├── SKILL.md
+    │   │   └── references/
+    │   └── testing-and-benchmark/     # Benchmarks
+    │       ├── SKILL.md
+    │       └── references/
+    └── seekdb/                        # Standalone SeekDB
+        ├── SKILL.md                   # Overview & routing
+        ├── package.json
+        ├── install/                   # Install via Homebrew/Docker/yum/apt/pip/MSI
+        │   ├── SKILL.md
+        │   └── references/
+        └── build/                     # Build from source (macOS/Linux/Android/Windows)
+            ├── SKILL.md
+            └── references/
 ```
 
 Each skill follows the **Agent Skills Specification**:

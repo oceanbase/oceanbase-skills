@@ -1,0 +1,35 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Build artifacts
+*.zip
+*.tar.gz
+dist/
+
+# Logs
+*.log
+
+# Blog drafts (may contain internal IPs / credentials)
+blog-*.md
+
+# Local config / secrets
+.env
+.env.local
+.claude/settings.local.json
+.claude/skills/
+
+# Hook output
+git-pre-push-hook-warn.log
