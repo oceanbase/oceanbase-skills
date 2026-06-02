@@ -17,9 +17,21 @@ If `jq` is missing: `sudo yum install -y jq`
 
 Ask the user if they have network access to the internet:
 
-- **Online install (recommended):**
+- **Online install — yum repo (recommended):**
 ```bash
-curl -fsSL https://obbusiness-private.oss-cn-shanghai.aliyuncs.com/download-center/opensource/seekdb/seekdb_install.sh | sudo bash
+yum-config-manager --add-repo https://mirrors.oceanbase.com/oceanbase/community/stable/el/\$releasever/\$basearch/
+sudo yum install -y seekdb
+```
+
+- **Online install — script (alternative):**
+
+> **Security note:** The following command downloads and executes a remote script with root privileges. Review the script content before running, or prefer the yum repo method above.
+
+```bash
+curl -fsSL https://obbusiness-private.oss-cn-shanghai.aliyuncs.com/download-center/opensource/seekdb/seekdb_install.sh -o /tmp/seekdb_install.sh
+# Review the script before executing:
+less /tmp/seekdb_install.sh
+sudo bash /tmp/seekdb_install.sh
 ```
 
 - **Offline install** (if user has downloaded the RPM package):

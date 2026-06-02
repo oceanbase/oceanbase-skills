@@ -44,6 +44,8 @@ Validates that the cluster meets OCP requirements.
 obd cluster export-to-ocp <deploy_name> -a <ocp_address> -u <user> -p <password>
 ```
 
+> **Security warning:** The `-p` flag passes the password as a command-line argument, which is visible in the process list (`ps aux`) and shell history. In sensitive environments, clear shell history after execution (`history -c` or `rm ~/.bash_history`). Where possible, use environment variables or interactive input to avoid password exposure.
+
 Registers the cluster with the OCP instance for centralized management.
 
 **Note**: `check4ocp` and `export-to-ocp` target a running OCP CE (or enterprise OCP) control plane, not `ocp-express`.

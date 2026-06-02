@@ -48,7 +48,7 @@ echo.
 
 :: Step 1: Install MSI
 echo [1/6] Installing SeekDB MSI...
-msiexec /i "C:\Users\admin\AppData\Local\Temp\seekdb.msi" /qn /norestart WIXUI_EXITDIALOGOPTIONALCHECKBOX=0
+msiexec /i "%TEMP%\seekdb.msi" /qn /norestart WIXUI_EXITDIALOGOPTIONALCHECKBOX=0
 if !ERRORLEVEL! NEQ 0 (
     echo       [FAILED] MSI install failed with code !ERRORLEVEL!
     goto :fail
@@ -186,8 +186,10 @@ Write a VBScript launcher to elevate the batch script (triggers one UAC prompt, 
 
 ```bash
 cat > /tmp/seekdb_elevate.vbs << 'VBS'
+Set wshShell = CreateObject("WScript.Shell")
 Set objShell = CreateObject("Shell.Application")
-objShell.ShellExecute "cmd.exe", "/c ""C:\Users\admin\AppData\Local\Temp\seekdb_setup.bat""", "", "runas", 1
+tempDir = wshShell.ExpandEnvironmentStrings("%TEMP%")
+objShell.ShellExecute "cmd.exe", "/c """ & tempDir & "\seekdb_setup.bat""", "", "runas", 1
 VBS
 ```
 
@@ -242,7 +244,7 @@ echo [2/4] Removing seekdb service...
 echo       Done.
 
 echo [3/4] Uninstalling MSI...
-msiexec /x "C:\Users\admin\AppData\Local\Temp\seekdb.msi" /qn /norestart
+msiexec /x "%TEMP%\seekdb.msi" /qn /norestart
 echo       MSI uninstall exit code: %ERRORLEVEL%
 
 echo [4/4] Cleaning data directory...
