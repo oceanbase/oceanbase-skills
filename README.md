@@ -56,6 +56,16 @@ for s in cluster-management tenant-management seekdb testing-and-benchmark; do
   curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanbase-deploy/$s/SKILL.md" \
     -o .claude/skills/oceanbase-deploy/$s/SKILL.md
 done
+
+# SeekDB standalone skill (install + build)
+mkdir -p .claude/skills/seekdb
+curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/seekdb/SKILL.md" \
+  -o .claude/skills/seekdb/SKILL.md
+for s in install build; do
+  mkdir -p .claude/skills/seekdb/$s/references
+  curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/seekdb/$s/SKILL.md" \
+    -o .claude/skills/seekdb/$s/SKILL.md
+done
 ```
 
 ### Load a single skill from GitHub URL
@@ -125,6 +135,10 @@ After loading the skills, ask your agent for concrete tasks. Below are examples 
 ```
 
 ### SeekDB (obd-managed HA)
+
+```text
+部署并启动一个 SeekDB 实例
+```
 
 ```text
 创建一个 SeekDB 主备集群，并告诉我主库和备库分别怎么部署
