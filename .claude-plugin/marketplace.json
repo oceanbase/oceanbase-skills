@@ -20,7 +20,7 @@
     },
     {
       "name": "seekdb",
-      "description": "SeekDB standalone install/deploy and build-from-source skills — Homebrew, Docker, yum, apt, pip, Windows MSI, cross-platform compilation",
+      "description": "SeekDB skill bundle — install/deploy, build-from-source, documentation lookup, seekdb-cli, data import (CSV/Excel), and query/export (scalar + hybrid search)",
       "source": "./",
       "strict": false,
       "skills": [

@@ -18,13 +18,17 @@ Each skill is a self-contained directory with a `SKILL.md` file (plus optional `
 | [`seekdb (obd)`](./skills/oceanbase-deploy/seekdb/) | obd-managed SeekDB: primary-standby HA (switchover / failover / decouple) |
 | [`testing-and-benchmark`](./skills/oceanbase-deploy/testing-and-benchmark/) | Sysbench, TPC-H, TPC-C, mysqltest benchmarks |
 
-### seekdb — SeekDB 独立安装与编译构建
+### seekdb — SeekDB 全生命周期技能（安装 / 编译 / 文档 / CLI / 导入 / 查询）
 
 | Skill | Description |
 |-------|-------------|
 | [`seekdb`](./skills/seekdb/) | Overview & routing for standalone SeekDB |
 | [`seekdb/install`](./skills/seekdb/install/) | Install/deploy SeekDB via Homebrew, Docker, yum, apt, pip, Windows MSI |
 | [`seekdb/build`](./skills/seekdb/build/) | Build SeekDB from source for macOS, Linux, Android, Windows, Python wheel |
+| [`seekdb/docs`](./skills/seekdb/docs/) | 文档检索 — SQL 语法、向量/混合检索、SDK、集成、部署等 ~1000 条文档目录检索 |
+| [`seekdb/cli`](./skills/seekdb/cli/) | `seekdb-cli` — SQL/schema/表数据画像/向量集合/AI 模型，全 JSON 输出，AI Agent 友好 |
+| [`seekdb/importing`](./skills/seekdb/importing/) | 导入 CSV/Excel 数据到 SeekDB，支持指定列向量化 |
+| [`seekdb/querying`](./skills/seekdb/querying/) | 查询/导出 — 标量过滤、混合检索（全文+语义），结果导出 CSV/Excel |
 
 > More skills are on the way. Planned areas include OceanBase kernel tuning, SQL diagnostics, migration, and more.
 
@@ -57,12 +61,12 @@ for s in cluster-management tenant-management seekdb testing-and-benchmark; do
     -o .claude/skills/oceanbase-deploy/$s/SKILL.md
 done
 
-# SeekDB standalone skill (install + build)
+# SeekDB skill bundle (install + build + docs + cli + importing + querying)
 mkdir -p .claude/skills/seekdb
 curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/seekdb/SKILL.md" \
   -o .claude/skills/seekdb/SKILL.md
-for s in install build; do
-  mkdir -p .claude/skills/seekdb/$s/references
+for s in install build docs cli importing querying; do
+  mkdir -p .claude/skills/seekdb/$s
   curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/seekdb/$s/SKILL.md" \
     -o .claude/skills/seekdb/$s/SKILL.md
 done
@@ -162,6 +166,24 @@ After loading the skills, ask your agent for concrete tasks. Below are examples 
 帮我从源码编译 SeekDB 的 Linux rpm 包
 ```
 
+### SeekDB (docs / cli / import / query)
+
+```text
+seekdb 的混合检索（hybrid search）SQL 语法是什么样的？
+```
+
+```text
+用 seekdb-cli 列出所有表，并把 orders 表的字段画像跑一下
+```
+
+```text
+把这个 Excel 导入 seekdb，把 Description 列做向量化
+```
+
+```text
+从 my_docs 集合里搜「部署最佳实践」，导出前 20 条到 results.xlsx
+```
+
 ### Testing & Benchmark
 
 ```text
@@ -207,15 +229,30 @@ oceanbase-skills/
     │   └── testing-and-benchmark/     # Benchmarks
     │       ├── SKILL.md
     │       └── references/
-    └── seekdb/                        # Standalone SeekDB
-        ├── SKILL.md                   # Overview & routing
+    └── seekdb/                        # Standalone SeekDB — full lifecycle
+        ├── SKILL.md                   # Overview & routing (6 sub-skills)
         ├── package.json
         ├── install/                   # Install via Homebrew/Docker/yum/apt/pip/MSI
         │   ├── SKILL.md
         │   └── references/
-        └── build/                     # Build from source (macOS/Linux/Android/Windows)
+        ├── build/                     # Build from source (macOS/Linux/Android/Windows)
+        │   ├── SKILL.md
+        │   └── references/
+        ├── docs/                      # Documentation catalog (~1000 entries)
+        │   ├── SKILL.md
+        │   ├── references/            # seekdb-docs-catalog.jsonl + examples
+        │   ├── seekdb-docs/           # Mirrored doc tree (optional, refreshable)
+        │   └── scripts/               # Maintainer scripts (update_docs.sh, generate_catalog.py)
+        ├── cli/                       # seekdb-cli usage guide
+        │   ├── SKILL.md
+        │   └── references/
+        ├── importing/                 # CSV/Excel import + vectorization
+        │   ├── SKILL.md
+        │   ├── scripts/               # import_to_seekdb.py, read_excel.py
+        │   └── example-data/          # sample_products.csv / .xlsx
+        └── querying/                  # Scalar + hybrid search, CSV/Excel export
             ├── SKILL.md
-            └── references/
+            └── scripts/               # query_from_seekdb.py
 ```
 
 Each skill follows the **Agent Skills Specification**:
