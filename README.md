@@ -8,7 +8,7 @@ Each skill is a self-contained directory with a `SKILL.md` file (plus optional `
 
 ## Available Skills
 
-### oceanbase-deploy — OceanBase 部署与运维 (via obd)
+### oceanbase-deploy — OceanBase Deployment & Operations (via obd)
 
 | Skill | Description |
 |-------|-------------|
@@ -88,7 +88,7 @@ https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanba
 npx skills add oceanbase/oceanbase-skills --skill oceanbase-deploy
 ```
 
-`npx skills add` 会自动检测你的 IDE（Claude Code、Cursor、Windsurf 等）并安装到对应目录。
+`npx skills add` automatically detects your IDE (Claude Code, Cursor, Windsurf, etc.) and installs to the right directory.
 
 ### Claude Code (manual)
 
