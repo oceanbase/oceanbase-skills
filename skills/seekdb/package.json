@@ -1,11 +1,14 @@
 {
   "name": "seekdb",
-  "version": "1.0.0",
-  "description": "OceanBase SeekDB skill — install, deploy, and build SeekDB from source across macOS, Linux, Android, Windows",
+  "version": "2.0.0",
+  "description": "OceanBase SeekDB skill bundle — install, build, documentation lookup, seekdb-cli, data import (CSV/Excel), and query/export (scalar + hybrid search)",
   "keywords": [
     "oceanbase",
     "seekdb",
     "pyseekdb",
+    "seekdb-cli",
+    "vector-search",
+    "hybrid-search",
     "agent",
     "skill",
     "instructions"
@@ -13,7 +16,11 @@
   "files": [
     "SKILL.md",
     "install/",
-    "build/"
+    "build/",
+    "docs/",
+    "cli/",
+    "importing/",
+    "querying/"
   ],
   "repository": {
     "type": "git",
