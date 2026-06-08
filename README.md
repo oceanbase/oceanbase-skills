@@ -18,17 +18,17 @@ Each skill is a self-contained directory with a `SKILL.md` file (plus optional `
 | [`seekdb (obd)`](./skills/oceanbase-deploy/seekdb/) | obd-managed SeekDB: primary-standby HA (switchover / failover / decouple) |
 | [`testing-and-benchmark`](./skills/oceanbase-deploy/testing-and-benchmark/) | Sysbench, TPC-H, TPC-C, mysqltest benchmarks |
 
-### seekdb — SeekDB 全生命周期技能（安装 / 编译 / 文档 / CLI / 导入 / 查询）
+### seekdb — SeekDB Full Lifecycle Skills (install / build / docs / CLI / import / query)
 
 | Skill | Description |
 |-------|-------------|
 | [`seekdb`](./skills/seekdb/) | Overview & routing for standalone SeekDB |
 | [`seekdb/install`](./skills/seekdb/install/) | Install/deploy SeekDB via Homebrew, Docker, yum, apt, pip, Windows MSI |
 | [`seekdb/build`](./skills/seekdb/build/) | Build SeekDB from source for macOS, Linux, Android, Windows, Python wheel |
-| [`seekdb/docs`](./skills/seekdb/docs/) | 文档检索 — SQL 语法、向量/混合检索、SDK、集成、部署等 ~1000 条文档目录检索 |
-| [`seekdb/cli`](./skills/seekdb/cli/) | `seekdb-cli` — SQL/schema/表数据画像/向量集合/AI 模型，全 JSON 输出，AI Agent 友好 |
-| [`seekdb/importing`](./skills/seekdb/importing/) | 导入 CSV/Excel 数据到 SeekDB，支持指定列向量化 |
-| [`seekdb/querying`](./skills/seekdb/querying/) | 查询/导出 — 标量过滤、混合检索（全文+语义），结果导出 CSV/Excel |
+| [`seekdb/docs`](./skills/seekdb/docs/) | Documentation search — SQL syntax, vector/hybrid search, SDK, integration, deployment; ~1000 doc catalog entries |
+| [`seekdb/cli`](./skills/seekdb/cli/) | `seekdb-cli` — SQL / schema / table data profiling / vector collections / AI models, all JSON output, AI-Agent friendly |
+| [`seekdb/importing`](./skills/seekdb/importing/) | Import CSV/Excel data into SeekDB, with per-column vectorization |
+| [`seekdb/querying`](./skills/seekdb/querying/) | Query/export — scalar filters, hybrid search (full-text + semantic), export results to CSV/Excel |
 
 > More skills are on the way. Planned areas include OceanBase kernel tuning, SQL diagnostics, migration, and more.
 
@@ -109,96 +109,96 @@ After loading the skills, ask your agent for concrete tasks. Below are examples 
 ### Cluster Management
 
 ```text
-部署一个本机 OceanBase 开源版本，能快速跑起来就行
+Deploy a local OceanBase community edition — just get it running quickly
 ```
 
 ```text
-用 config.yaml 部署一个名为 test-cluster 的 OceanBase 社区版集群
+Use config.yaml to deploy an OceanBase community edition cluster named test-cluster
 ```
 
 ```text
-帮我部署 OCP
+Help me deploy OCP
 ```
 
 ```text
-帮我直接启动 test-cluster，并检查启动后状态
+Start test-cluster directly and check its status after startup
 ```
 
 ```text
-如何给 ob-test 添加 Prometheus 和 Grafana 监控
+How do I add Prometheus and Grafana monitoring to ob-test
 ```
 
 ### Tenant Management
 
 ```text
-在 test-cluster 上创建一个名为 mysql 的租户
+Create a tenant named mysql on test-cluster
 ```
 
 ```text
-给 test-cluster 上的 mysql 租户配置备份路径并执行一次备份
+Configure the backup path for the mysql tenant on test-cluster and run a backup
 ```
 
 ### SeekDB (obd-managed HA)
 
 ```text
-部署并启动一个 SeekDB 实例
+Deploy and start a SeekDB instance
 ```
 
 ```text
-创建一个 SeekDB 主备集群，并告诉我主库和备库分别怎么部署
+Create a SeekDB primary-standby cluster and tell me how to deploy the primary and standby separately
 ```
 
 ```text
-查看 seekdb-test 的拓扑，如果主库挂了该用 switchover 还是 failover
+Show the topology of seekdb-test — if the primary goes down, should I use switchover or failover
 ```
 
 ### SeekDB (standalone install / build)
 
 ```text
-在我的 Mac 上安装 SeekDB
+Install SeekDB on my Mac
 ```
 
 ```text
-用 Docker 部署一个 SeekDB 实例
+Deploy a SeekDB instance with Docker
 ```
 
 ```text
-帮我从源码编译 SeekDB 的 Linux rpm 包
+Build the Linux rpm package of SeekDB from source
 ```
 
 ### SeekDB (docs / cli / import / query)
 
 ```text
-seekdb 的混合检索（hybrid search）SQL 语法是什么样的？
+What does the hybrid search SQL syntax look like in seekdb?
 ```
 
 ```text
-用 seekdb-cli 列出所有表，并把 orders 表的字段画像跑一下
+Use seekdb-cli to list all tables and run the column profile for the orders table
 ```
 
 ```text
-把这个 Excel 导入 seekdb，把 Description 列做向量化
+Import this Excel file into seekdb and vectorize the Description column
 ```
 
 ```text
-从 my_docs 集合里搜「部署最佳实践」，导出前 20 条到 results.xlsx
+Search "deployment best practices" in the my_docs collection and export the top 20 results to results.xlsx
 ```
 
 ### Testing & Benchmark
 
 ```text
-对 test-cluster 的 mysql 租户跑一个 sysbench 测试
+Run a sysbench test against the mysql tenant on test-cluster
 ```
 
 ```text
-给我跑 TPC-H 的完整命令和参数
+Give me the full TPC-H command and parameters
 ```
 
 ### Tips
 
-- Want the agent to execute directly? Say **"帮我执行"**.
-- Want a plan first? Say **"先不要执行，只给我命令和步骤"**.
-- For destructive operations, say **"我确认允许高风险操作"** or **"先不要执行破坏性命令"**.
+- Want the agent to execute directly? Say **"go ahead and run it"**.
+- Want a plan first? Say **"don't run anything yet, just give me the commands and steps"**.
+- For destructive operations, say **"I confirm high-risk operations are allowed"** or **"don't run destructive commands yet"**.
 
 ---
 
