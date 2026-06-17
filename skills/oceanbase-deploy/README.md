@@ -20,23 +20,34 @@ OceanBase OBD 部署与运维 Skill 集合，供任意 AI Agent 加载使用。
 
 ## 安装方式
 
-### Claude Code 一键安装（全部 skill）
+### skills.sh 一键安装（推荐）
 
 ```bash
-mkdir -p .claude/skills/oceanbase-deploy
-curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanbase-deploy/SKILL.md" \
-  -o .claude/skills/oceanbase-deploy/SKILL.md
-for s in cluster-management tenant-management seekdb testing-and-benchmark; do
-  mkdir -p .claude/skills/oceanbase-deploy/$s
-  curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanbase-deploy/$s/SKILL.md" \
-    -o .claude/skills/oceanbase-deploy/$s/SKILL.md
-done
+# 安装 oceanbase-deploy（包含全部子 skill）
+npx skills add oceanbase/oceanbase-skills --skill oceanbase-deploy
 ```
 
-### 从 GitHub 加载单个 skill
+`npx skills add` 会自动识别你的 IDE（Claude Code、Cursor、Windsurf 等）并安装到对应目录。
+
+### 手动安装（克隆后复制）
+
+克隆仓库后把 skill 目录复制到 Agent 的 skills 目录。克隆得到的是可校验、可固定版本的本地副本，避免在运行时从网络拉取 Agent 指令文件。
+
+```bash
+git clone https://github.com/oceanbase/oceanbase-skills.git
+cd oceanbase-skills
+mkdir -p .claude/skills
+cp -R skills/oceanbase-deploy .claude/skills/
+```
+
+Cursor、Windsurf 使用相同的布局，分别对应 `.cursor/skills/`、`.windsurf/skills/` 目录。
+
+### 在 GitHub 上浏览 skill
+
+直接在仓库中查看或下载各个 `SKILL.md` 文件：
 
 ```
-https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanbase-deploy/<skill-name>/SKILL.md
+https://github.com/oceanbase/oceanbase-skills/tree/master/skills/oceanbase-deploy
 ```
 
 ---
@@ -45,19 +56,20 @@ https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanba
 
 ### Claude Code
 
-使用上方 [一键安装](#claude-code-一键安装全部-skill) 命令，或手动将 `SKILL.md` 文件放入 `.claude/skills/oceanbase-deploy/` 目录。
+使用上方 [skills.sh 一键安装](#skillssh-一键安装推荐) 命令，或手动将 `SKILL.md` 文件放入 `.claude/skills/oceanbase-deploy/` 目录。
 
 ### Cursor
 
 ```bash
-mkdir -p .cursor/skills/oceanbase-deploy
-curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanbase-deploy/SKILL.md" \
-  -o .cursor/skills/oceanbase-deploy/SKILL.md
-for s in cluster-management tenant-management seekdb testing-and-benchmark; do
-  mkdir -p .cursor/skills/oceanbase-deploy/$s
-  curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanbase-deploy/$s/SKILL.md" \
-    -o .cursor/skills/oceanbase-deploy/$s/SKILL.md
-done
+npx skills add oceanbase/oceanbase-skills --skill oceanbase-deploy
+```
+
+或克隆仓库后手动复制：
+
+```bash
+git clone https://github.com/oceanbase/oceanbase-skills.git
+mkdir -p .cursor/skills
+cp -R oceanbase-skills/skills/oceanbase-deploy .cursor/skills/
 ```
 
 ### Windsurf
@@ -67,7 +79,6 @@ done
 ### 其他 Agent
 
 - **系统提示词 / 规则文件**：粘贴 `SKILL.md` 内容。
-- **URL 加载**：使用上方 GitHub raw 链接。
 - **会话上下文**：在会话开始时粘贴 `SKILL.md` 内容。
 
 ---
