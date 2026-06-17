@@ -49,33 +49,33 @@ npx skills add oceanbase/oceanbase-skills --skill seekdb
 npx skills add oceanbase/oceanbase-skills
 ```
 
-### Manual install — Claude Code
+### Manual install — clone and copy
+
+Clone the repository, then copy the skill directories into your agent's skills
+folder. Cloning gives you a verifiable, version-pinned copy of the skill files
+instead of fetching agent instructions over the network at runtime.
 
 ```bash
-mkdir -p .claude/skills/oceanbase-deploy
-curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanbase-deploy/SKILL.md" \
-  -o .claude/skills/oceanbase-deploy/SKILL.md
-for s in cluster-management tenant-management seekdb testing-and-benchmark; do
-  mkdir -p .claude/skills/oceanbase-deploy/$s
-  curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanbase-deploy/$s/SKILL.md" \
-    -o .claude/skills/oceanbase-deploy/$s/SKILL.md
-done
+git clone https://github.com/oceanbase/oceanbase-skills.git
+cd oceanbase-skills
 
-# SeekDB skill bundle (install + build + docs + cli + importing + querying)
-mkdir -p .claude/skills/seekdb
-curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/seekdb/SKILL.md" \
-  -o .claude/skills/seekdb/SKILL.md
-for s in install build docs cli importing querying; do
-  mkdir -p .claude/skills/seekdb/$s
-  curl -sL "https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/seekdb/$s/SKILL.md" \
-    -o .claude/skills/seekdb/$s/SKILL.md
-done
+# oceanbase-deploy (includes all sub-skills)
+mkdir -p .claude/skills
+cp -R skills/oceanbase-deploy .claude/skills/
+
+# SeekDB standalone skill bundle (install + build + docs + cli + importing + querying)
+cp -R skills/seekdb .claude/skills/
 ```
 
-### Load a single skill from GitHub URL
+Cursor and Windsurf use the same layout under `.cursor/skills/` and
+`.windsurf/skills/` respectively.
+
+### Browse the skills on GitHub
+
+Read or download individual `SKILL.md` files directly in the repository:
 
 ```
-https://raw.githubusercontent.com/oceanbase/oceanbase-skills/main/skills/oceanbase-deploy/<skill-name>/SKILL.md
+https://github.com/oceanbase/oceanbase-skills/tree/master/skills/oceanbase-deploy
 ```
 
 ---
@@ -92,12 +92,11 @@ npx skills add oceanbase/oceanbase-skills --skill oceanbase-deploy
 
 ### Claude Code (manual)
 
-Use the curl commands in [Quick Start](#manual-install--claude-code) above, or manually place `SKILL.md` files into `.claude/skills/oceanbase-deploy/`.
+Use the clone-and-copy steps in [Manual install](#manual-install--clone-and-copy) above, or manually place `SKILL.md` files into `.claude/skills/oceanbase-deploy/`.
 
 ### Other Agents
 
 - **System prompt / rules file**: paste the content of `SKILL.md`.
-- **URL-based loading**: use the raw GitHub link above.
 - **In-conversation context**: paste the `SKILL.md` content at the start of your session.
 
 ---
