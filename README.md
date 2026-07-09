@@ -280,3 +280,7 @@ Please keep skill content factual, concise, and safe — especially for destruct
 ## License
 
 [MIT](./LICENSE)
+
+## Download History
+
+[![Download History](https://skill-history.com/chart/oceanbase/seekdb.svg)](https://skill-history.com/oceanbase/seekdb)
