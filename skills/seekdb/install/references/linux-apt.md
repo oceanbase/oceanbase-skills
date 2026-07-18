@@ -57,18 +57,19 @@ sudo systemctl enable seekdb
 sudo systemctl status seekdb
 ```
 Success: `Active: active (running)` and `Status: seekdb is ready and running`.
-If `failed`, check: `journalctl -u seekdb -n 50 --no-pager`
+If `failed`, check: `journalctl -u seekdb -n 50 --no-pager`. Diagnose and fix the failure; do not stop after reporting it. If port 2881 is occupied, leave the existing process unchanged and follow the startup-recovery procedure in `../SKILL.md` to choose a free port, update `/etc/seekdb/seekdb.cnf`, restart, and verify.
 
 ## Step 6 — Verify connectivity
 
+Use port 2881 unless startup recovery selected another port:
 ```bash
-mysql -h 127.0.0.1 -u root -P 2881 -A -Dtest -e "SELECT 'SeekDB is running!' AS status;"
+mysql -h 127.0.0.1 -u root -P "${SEEKDB_PORT:-2881}" -A -Dtest -e "SELECT 'SeekDB is running!' AS status;"
 ```
 
 ## Step 7 — Done
 
 Confirm success and show:
-- MySQL port: `127.0.0.1:2881`
+- MySQL port: `127.0.0.1:${SEEKDB_PORT:-2881}` (report the resolved numeric port)
 - Config file: `/etc/seekdb/seekdb.cnf`
 - Service management: `sudo systemctl {start|stop|status} seekdb`
 - Uninstall: `sudo apt remove seekdb && sudo bash /var/lib/seekdb/seekdb_clean.sh`

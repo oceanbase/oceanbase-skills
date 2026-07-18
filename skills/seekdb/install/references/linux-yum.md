@@ -79,18 +79,19 @@ If `failed`, check the journal:
 ```bash
 journalctl -u seekdb -n 50 --no-pager
 ```
-Diagnose and fix any errors.
+Diagnose and fix any errors; do not stop merely because the first start failed. If the log reports an address/port conflict or port 2881 is already listening (for example, an existing OceanBase observer), leave the existing service unchanged. Follow the startup-recovery procedure in `../SKILL.md` to select a free port, update `/etc/seekdb/seekdb.cnf`, restart SeekDB, and verify on the new port.
 
 ## Step 6 — Verify connectivity
 
+Use port 2881 unless startup recovery selected another port:
 ```bash
-mysql -h 127.0.0.1 -u root -P 2881 -A -Dtest -e "SELECT 'SeekDB is running!' AS status;"
+mysql -h 127.0.0.1 -u root -P "${SEEKDB_PORT:-2881}" -A -Dtest -e "SELECT 'SeekDB is running!' AS status;"
 ```
 
 ## Step 7 — Done
 
 Confirm success and show:
-- MySQL port: `127.0.0.1:2881`
+- MySQL port: `127.0.0.1:${SEEKDB_PORT:-2881}` (report the resolved numeric port)
 - Config file: `/etc/seekdb/seekdb.cnf`
 - Service management: `sudo systemctl {start|stop|status} seekdb`
 - Uninstall: `sudo yum erase seekdb && sudo bash /var/lib/seekdb/seekdb_clean.sh`
