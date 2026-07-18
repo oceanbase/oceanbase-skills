@@ -25,14 +25,21 @@ sudo yum install -y seekdb
 
 - **Online install — script (alternative):**
 
-> **Security note:** The following command downloads and executes a remote script with root privileges. Review the script content before running, or prefer the yum repo method above.
+> **Security requirement:** Prefer the yum repo method above. Only use the script when its SHA-256 digest has been obtained from an official OceanBase release channel independently of the download URL. Do not continue when no official digest is available.
 
 ```bash
-curl -fsSL https://obbusiness-private.oss-cn-shanghai.aliyuncs.com/download-center/opensource/seekdb/seekdb_install.sh -o /tmp/seekdb_install.sh
-# Review the script before executing:
-less /tmp/seekdb_install.sh
-sudo bash /tmp/seekdb_install.sh
+: "${SEEKDB_INSTALL_SHA256:?Set this to the SHA-256 published by an official OceanBase release channel}"
+SEEKDB_INSTALL_SCRIPT="$(mktemp)"
+trap 'rm -f "$SEEKDB_INSTALL_SCRIPT"' EXIT
+curl --proto '=https' --tlsv1.2 -fL \
+  https://obbusiness-private.oss-cn-shanghai.aliyuncs.com/download-center/opensource/seekdb/seekdb_install.sh \
+  -o "$SEEKDB_INSTALL_SCRIPT"
+printf '%s  %s\n' "$SEEKDB_INSTALL_SHA256" "$SEEKDB_INSTALL_SCRIPT" | sha256sum --check --strict
+less "$SEEKDB_INSTALL_SCRIPT"
+sudo bash "$SEEKDB_INSTALL_SCRIPT"
 ```
+
+Stop if checksum verification fails. Visual review is additional defense, not a substitute for the checksum.
 
 - **Offline install** (if user has downloaded the RPM package):
 ```bash

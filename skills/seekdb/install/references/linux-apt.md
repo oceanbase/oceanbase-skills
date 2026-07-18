@@ -18,19 +18,16 @@ If `jq` is missing: `sudo apt install -y jq`
 
 Ask the user if they have network access to the internet:
 
-- **Online install (recommended):**
-```bash
-echo "deb [trusted=yes] http://mirrors.aliyun.com/oceanbase/community/stable/$(lsb_release -is | awk '{print tolower($0)}')/$(lsb_release -cs)/$(dpkg --print-architecture)/ ./" \
-  | sudo tee /etc/apt/sources.list.d/oceanbase.list
-sudo apt update
-sudo apt install seekdb
-```
+- **Online install:** Do not use an APT trust override; it disables repository signature verification. Until the official SeekDB documentation provides a signing-key URL and a `signed-by=` configuration, use the verified offline workflow below. Do not invent or fetch a signing key from an unofficial keyserver.
 
 - **Offline install** (if user has downloaded the DEB package):
 ```bash
-sudo dpkg -i seekdb-*.deb
+: "${SEEKDB_DEB_SHA256:?Set this to the SHA-256 published by an official OceanBase release channel}"
+: "${SEEKDB_DEB_FILE:?Set this to the exact downloaded .deb filename}"
+printf '%s  %s\n' "$SEEKDB_DEB_SHA256" "$SEEKDB_DEB_FILE" | sha256sum --check --strict
+sudo dpkg -i "$SEEKDB_DEB_FILE"
 ```
-If the user needs to download the DEB first, direct them to the seekdb software download center to pick their version, OS, and CPU architecture.
+Obtain the digest independently of the package URL. Stop if no official digest is available or verification fails. If the user needs to download the DEB first, direct them to the seekdb software download center to pick their version, OS, and CPU architecture.
 
 ## Step 3 — (Optional) Edit configuration
 

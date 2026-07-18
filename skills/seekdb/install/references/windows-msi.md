@@ -25,6 +25,23 @@ If MySQL client is not available, suggest: install via `winget install Oracle.My
 curl -fSL -o /tmp/seekdb.msi "https://mirrors.oceanbase.com/oceanbase/community/stable/windows/11/x86_64/seekdb-1.3.0.0-win64.msi"
 ```
 
+Verify the MSI's Authenticode signature before requesting elevation:
+
+```bash
+MSI_WINDOWS_PATH="$(cygpath -w /tmp/seekdb.msi)"
+powershell.exe -NoProfile -Command \
+  '$sig = Get-AuthenticodeSignature -LiteralPath $args[0]; $sig | Format-List Status,StatusMessage,SignerCertificate; if ($sig.Status -ne "Valid") { exit 1 }' \
+  "$MSI_WINDOWS_PATH"
+```
+
+Do not install if the command exits nonzero, the status is not `Valid`, or the signer is not OceanBase/Ant Group (or another publisher explicitly documented by the official SeekDB release page). If an official SHA-256 is published separately, also compare it with `Get-FileHash -Algorithm SHA256`; never use a digest from the MSI download location as the sole trust source.
+
+Copy the verified MSI to the location used by the elevated batch script:
+
+```bash
+cmd.exe //c copy /Y "$(cygpath -w /tmp/seekdb.msi)" "%TEMP%\seekdb.msi"
+```
+
 Check if seekdb is already installed:
 ```bash
 command -v seekdb.exe || where.exe seekdb.exe 2>/dev/null
