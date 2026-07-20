@@ -39,13 +39,7 @@ Each skill is a self-contained directory with a `SKILL.md` file (plus optional `
 ### Install via skills.sh (recommended)
 
 ```bash
-# Install the oceanbase-deploy skill (includes all sub-skills)
-npx skills add oceanbase/oceanbase-skills --skill oceanbase-deploy
-
-# Install the seekdb standalone skill (install / build from source)
-npx skills add oceanbase/oceanbase-skills --skill seekdb
-
-# Or install all skills from this repo
+# install all skills from this repo
 npx skills add oceanbase/oceanbase-skills
 ```
 
