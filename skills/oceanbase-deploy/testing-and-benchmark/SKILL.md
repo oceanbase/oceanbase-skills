@@ -1,99 +1,55 @@
 ---
 name: testing-and-benchmark
-description: Run OceanBase performance benchmarks and functional tests using obd test. Supports Sysbench, TPC-H, TPC-C benchmarks and mysqltest functional tests. Use when users want to benchmark, stress test, run functional tests, or evaluate OceanBase cluster performance. Also use when users mention sysbench, TPC-H, TPC-C, mysqltest, or obd test.
-compatibility: Requires obd CLI and a running OceanBase cluster with a test tenant.
+description: Run OceanBase functional tests and performance benchmarks through obd test, including mysqltest, Sysbench, TPC-H, and TPC-C. Use for correctness testing, benchmark preparation, load execution, result analysis, or cleanup. Do not use for ordinary tenant or cluster lifecycle work.
 metadata:
   author: oceanbase
-  version: "1.0"
+  version: "3.0"
 ---
 
-# OceanBase Testing & Benchmark (obd test)
+<!-- Compatibility anchors retained for published 2.x deep links. -->
+<a id="oceanbase-testing-benchmark-obd-test"></a>
+<a id="oceanbase-testing--benchmark-obd-test"></a>
+<a id="when-to-use-this-skill"></a>
+<a id="important-rules"></a>
+<a id="test-commands"></a>
+<a id="mysql-test-functional"></a>
+<a id="sysbench-benchmark"></a>
+<a id="tpc-h-benchmark"></a>
+<a id="tpc-h-benchmark-1"></a>
+<a id="tpc-c-benchmark"></a>
+<a id="tpc-c-benchmark-1"></a>
+<a id="usage-examples"></a>
+<a id="sysbench-quick-test"></a>
+<a id="skill-functional-test"></a>
+<a id="related-skills"></a>
 
-Run performance benchmarks (Sysbench, TPC-H, TPC-C) and functional tests (mysqltest) on OceanBase clusters using `obd test`.
+# OceanBase Testing and Benchmarking
 
-## When to Use This Skill
+Read [common-workflow.md](references/common-workflow.md) for every test. Then read exactly the selected tool reference:
 
-- Running performance benchmarks: Sysbench, TPC-H, TPC-C
-- Running functional tests: mysqltest
-- Evaluating cluster performance under load
+| Test | Required reference |
+|---|---|
+| Sysbench | [sysbench.md](references/sysbench.md) |
+| TPC-H | [tpch.md](references/tpch.md) |
+| TPC-C | [tpcc.md](references/tpcc.md) |
+| mysqltest | [mysqltest.md](references/mysqltest.md) |
 
-**For cluster deployment and management:** Use [cluster-management](../cluster-management/SKILL.md).
-**For tenant creation (needed before testing):** Use [tenant-management](../tenant-management/SKILL.md).
+## Shared Gates
 
----
+- Before selecting syntax, plugins, or artifacts, read [product and capability resolution](../references/product-and-capability-resolution.md).
+- Before any live controller/host/deployment query, SSH/SQL/API/network access, tool discovery that may install, data preparation, parameter change, external action, or load execution, read the [operation contract](../references/operation-contract.md).
+- Before reporting a test successful, read the [completion criteria](../references/completion-criteria.md).
+- After a failed, timed-out, interrupted, or mixed run, read [failure recovery and evidence](../references/failure-recovery-and-evidence.md) before retrying or cleaning.
+- Before removing a dataset, database object, generated file, tool, cache, or result, read [cleanup and ownership boundaries](../references/cleanup-boundaries.md).
 
-## Important Rules
+## Hard Boundaries
 
-1. **Do NOT install test tools via yum.** OBD auto-downloads `ob-sysbench`, `obtpch`, and `obtpcc` when online.
-2. **Non-interactive mode**: Set auto-confirm before scripted runs:
-   ```bash
-   obd env set IO_DEFAULT_CONFIRM 1
-   ```
-3. **Full test suite**: Do not abort on first failure. Run all test cases to completion, then produce a single report summarizing pass/fail/skip.
+- Benchmark preparation and workload execution can create, update, or delete tenant data. Use an approved test tenant and dataset; do not infer permission to load a production tenant.
+- For Sysbench, TPC-H, and TPC-C, pass the installed command's long optimization option explicitly. Use the no-OBD-optimization level for the default baseline; any parameter mutation or restart requires separate authorization. Do not add this benchmark-only option to mysqltest.
+- For Sysbench, TPC-H, and TPC-C, keep the built-in cluster status check enabled unless the user explicitly accepts a reviewed equivalent check. MySQLtest has a different option set. Never reuse a short option from a deployment command in an `obd test` command.
+- Tool availability, tool installation, test preparation, test execution, result collection, and cleanup are separate stages and permissions.
+- Inventory every required test binary before invoking `obd test`; supported OBD builds can install missing tools, JRE, OBClient, links, or profile entries as part of the test path. Stop for separate installation authorization rather than using the test command as discovery.
+- For mysqltest, keep the installed long option equivalent to `--disable-reboot` enabled unless the user separately authorizes the exact snapshot/redeploy behavior. In verified current plugins, an ordinary failed case can otherwise lead to a forced redeploy even without auto-retry.
+- Do not put database passwords in reusable commands, output, or reports.
 
----
-
-## Test Commands
-
-### MySQL Test (Functional)
-```bash
-obd test mysqltest <deploy_name> --test-set <test_set>
-```
-
-### Sysbench (Benchmark)
-```bash
-obd test sysbench <deploy_name> --tenant=<tenant> --script-name=<script>
-```
-
-### TPC-H (Benchmark)
-```bash
-obd test tpch <deploy_name> --tenant=<tenant> --remote-tbl-dir=<server_dir>
-```
-`--remote-tbl-dir` is **required** — specifies where TPC-H table files are stored on the server.
-
-### TPC-C (Benchmark)
-```bash
-obd test tpcc <deploy_name> --tenant=<tenant> --warehouses=<n> --run-mins=<minutes>
-```
-Use `--run-mins` (not `--running-minutes`) to cap duration. Java may need to be installed separately.
-
-See [references/test-commands.md](references/test-commands.md) for detailed parameters and examples.
-
----
-
-## Usage Examples
-
-### Sysbench Quick Test
-```bash
-obd test sysbench test-cluster --tenant=mysql --script-name=oltp_read_write.lua
-```
-
-### TPC-H Benchmark
-```bash
-obd test tpch test-cluster --tenant=mysql --remote-tbl-dir=/tmp/tpch
-```
-
-### TPC-C Benchmark
-```bash
-obd test tpcc test-cluster --tenant=mysql --warehouses=10 --run-mins=5
-```
-
----
-
-## Skill Functional Test
-
-To run a full skill validation covering cluster/tenant/backup and all test types:
-
-```text
-Run all OBD functional tests covered by this skill and output a test report.
-```
-
-When testing OCP-related functionality, default to `ocp-ce`. If a test mentions `ocp-express`, note that it has been replaced by `obshell dashboard`.
-
----
-
-## Related Skills
-
-- [cluster-management](../cluster-management/SKILL.md) — Deploy and manage clusters
-- [tenant-management](../tenant-management/SKILL.md) — Create test tenants
-- [seekdb](../seekdb/SKILL.md) — seekdb operations
+For tenant creation or backup, use [tenant-management](../tenant-management/SKILL.md). For deployment, component, or cluster lifecycle work, use [cluster-management](../cluster-management/SKILL.md).

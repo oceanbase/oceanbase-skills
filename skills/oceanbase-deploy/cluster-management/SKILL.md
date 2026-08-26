@@ -1,180 +1,88 @@
 ---
 name: cluster-management
-description: Manage OceanBase cluster lifecycle using obd. Deploy, start, stop, restart, destroy, redeploy, upgrade, scale out, and configure clusters. Includes OCP CE takeover and monitoring setup. Use when creating, operating, or maintaining OceanBase CE clusters via obd, or when users mention obd, OceanBase deployment, cluster management, OCP, or monitoring.
-compatibility: Requires obd CLI installed on the control machine.
+description: Deploy and operate community or commercial OceanBase clusters with obd, including distributed and commercial standalone or centralized forms, lifecycle changes, upgrades, monitoring, OCP, network access, Config Server, Binlog/CDC services, OMS, oceanbase.ai, oblogservice, and shared-storage topologies. Use for OceanBase cluster control-plane work; route tenant, benchmark, diagnostic, controller-administration, and unrelated product workflows elsewhere.
 metadata:
   author: oceanbase
-  version: "1.0"
+  version: "3.0"
 ---
 
-# OceanBase Cluster Management (obd)
+<!-- Compatibility anchors retained for published 2.x deep links. -->
+<a id="oceanbase-cluster-management-obd"></a>
+<a id="when-to-use-this-skill"></a>
+<a id="ocp-terminology-convention"></a>
+<a id="critical-safety-rules"></a>
+<a id="installation"></a>
+<a id="quick-start"></a>
+<a id="cluster-lifecycle-commands"></a>
+<a id="os-environment-requirements"></a>
+<a id="os--environment-requirements"></a>
+<a id="monitoring"></a>
+<a id="mirror-repository-management"></a>
+<a id="mirror--repository-management"></a>
+<a id="ocp-ce-takeover"></a>
+<a id="usage-examples"></a>
+<a id="quick-demo"></a>
+<a id="deploy-with-config-file"></a>
+<a id="interactive-deploy"></a>
+<a id="explicitly-requesting-ocp-express"></a>
+<a id="destroying-a-cluster-requires-confirmation"></a>
+<a id="related-skills"></a>
 
-Manage OceanBase CE cluster lifecycle using the `obd` command-line tool.
+# OceanBase Cluster Management with obd
 
-Official quick-start guide: [https://www.oceanbase.com/docs/common-obd-cn-1000000005246289](https://www.oceanbase.com/docs/common-obd-cn-1000000005246289)
+This skill supports both community and commercial OceanBase. Never select a component key, package, YAML field, or lifecycle command from the product label alone.
 
-## When to Use This Skill
+When OBD or the version-matched plugin is unavailable, you may still prepare a clearly labeled, non-executable decision blueprint containing placeholders and unresolved evidence. Do not claim schema validation, artifact compatibility, precheck success, or runtime support until those inputs exist.
 
-- Deploying a new OceanBase CE cluster (demo, config file, or interactive)
-- Starting, stopping, restarting, or destroying clusters
-- Upgrading cluster components or scaling out
-- Preparing clusters for OCP CE takeover
-- Setting up monitoring (Prometheus + Grafana)
-- Managing mirrors and repositories
+## Shared Gates
 
-**For tenant operations (create, drop, backup, restore):** Use [tenant-management](../tenant-management/SKILL.md).
-**For seekdb:** Use [seekdb](../seekdb/SKILL.md).
-**For benchmarks and testing:** Use [testing-and-benchmark](../testing-and-benchmark/SKILL.md).
-**Overview & routing:** See [oceanbase-deploy](../SKILL.md).
+Read these references at the indicated point:
 
----
+- Before selecting a product form, command, plugin, artifact, or YAML key, read [product and capability resolution](../references/product-and-capability-resolution.md).
+- Before any live controller/host/deployment query, SSH/SQL/API/network access, download, external action, or mutation, read the [operation contract](../references/operation-contract.md).
+- Define acceptance before execution with the [completion criteria](../references/completion-criteria.md).
+- After a failure, timeout, interruption, or mixed result, read [failure recovery and evidence](../references/failure-recovery-and-evidence.md) before retrying or cleaning.
+- Before cleanup, removal, destroy, redeploy, prune, or deletion, read [cleanup and ownership boundaries](../references/cleanup-boundaries.md).
 
-## OCP Terminology Convention
+Treat `oceanbase-ce`, `oceanbase`, `oceanbase-standalone`, and `oceanbase.ai` as version-dependent candidate component keys. Confirm the installed plugin and repository entry. Do not turn a community configuration into a commercial configuration by renaming one key.
 
-- When users say "deploy OCP", "OCP", or similar without further qualification, always use **OCP CE** (`ocp-ce` component in obd config).
-- **`ocp-express`** is a legacy lightweight web console. When users explicitly ask for "OCP Express" / "ocp-express" / "lightweight OCP", do NOT deploy it. Explain: **`ocp-express` has been replaced by `obshell dashboard` — deploy OceanBase CE directly and access the dashboard on port `2886`.**
-- Never default "deploy OCP" to `ocp-express`.
-- `obd cluster check4ocp` / `export-to-ocp` target a running **OCP CE** (or enterprise OCP) control plane, not `ocp-express`.
+## Route by Operation
 
-See [references/ocp-ce.md](references/ocp-ce.md) for OCP CE deployment and takeover details.
+Read only the references needed for the request.
 
----
+| Request | Reference |
+|---|---|
+| Any new community, commercial distributed, or commercial standalone/centralized config-file, interactive, or autodeploy request | [config-deployment.md](references/config-deployment.md), which performs common preflight and then selects exactly one product blueprint |
+| `edit-config`, `reload`, parameter classification, or `chst` | [configuration-changes.md](references/configuration-changes.md) |
+| Start, stop, restart, display, destroy, redeploy, prune, `demo`, or `perf` | [lifecycle.md](references/lifecycle.md) |
+| Scale out/in or add/delete a component | [scale-and-components.md](references/scale-and-components.md) |
+| Component or cluster upgrade | [upgrade.md](references/upgrade.md) |
+| Change a deployed component artifact with `cluster reinstall` | [component-reinstall.md](references/component-reinstall.md) |
+| Persistent host initialization with `cluster init4env` | [environment-initialization.md](references/environment-initialization.md) |
+| Supported standalone management-IP change | [change-ip.md](references/change-ip.md) |
+| Adopt an already running cluster into OBD | [cluster-takeover.md](references/cluster-takeover.md) |
+| OBAgent, Prometheus, Grafana, or Alertmanager | [monitoring.md](references/monitoring.md) |
+| OCP CE, commercial OCP, OCP Express, takeover, or OCP-aware redeploy | [ocp.md](references/ocp.md) |
+| SQL/RPC/obshell access, OBProxy, `local_ip`, `devname`, VIP, or external load balancer boundaries | [network-access.md](references/network-access.md) |
+| OceanBase Config Server | [config-server.md](references/config-server.md) |
+| The commercial `oceanbase.ai` component | [oceanbase-ai.md](references/oceanbase-ai.md) |
+| The commercial `oblogservice` component | [oblogservice.md](references/oblogservice.md) |
+| Deploy an `obbinlog-ce`/`obbinlog` service or manage tenant Binlog instances with `obd binlog` | [binlog.md](references/binlog.md) |
+| Deploy or operate the legacy `oblogproxy` CDC/log-proxy component | [oblogproxy.md](references/oblogproxy.md) |
+| Deploy, operate, or upgrade OMS through an installed OBD OMS workflow | [oms.md](references/oms.md) |
+| Commercial shared-storage deployment topology | [shared-storage.md](references/shared-storage.md) |
+| Load or inspect a license for an OBD-managed commercial standalone/centralized deployment | [commercial standalone license gate](references/deployment-templates/commercial-standalone.md#license-management) |
 
-## Critical Safety Rules
+## Essential Boundaries
 
-**WARNING**: These commands are destructive and require explicit user confirmation:
+- Prefer a uniquely named, reviewed configuration-file deployment. `obd demo` and `obd perf` are mutating convenience workflows with fixed `demo` and `perf` namespaces; inspect their installed behavior and existing state before use.
+- Add optional components only when the user requested them or accepted their explained purpose and impact. Monitoring, OCP, Config Server, OBProxy, `oceanbase.ai`, and `oblogservice` are never implicit.
+- Never use `redeploy` as a default repair, configuration apply, or component-add mechanism. It destroys and rebuilds deployment-owned state.
+- Destroy, redeploy, prune, component deletion, scale-in, forced operations, restart-causing changes, and persistent host changes require authorization bound to the exact observed target and impact.
+- A successful command, registered deployment, or running process is not sufficient. Verify the applicable control-plane, runtime, and data-plane outcomes.
 
-1. `obd cluster destroy` — Destroys a cluster and deletes data.
-2. `obd cluster redeploy` — Destroys and redeploys a cluster, deleting data.
-3. `obd cluster prune-config` — Deletes configuration files of destroyed clusters.
+## Out of Scope
 
-**Always ask the user for confirmation before running these commands.**
+Route tenant CRUD, backup/restore, and tenant replication to [tenant-management](../tenant-management/SKILL.md), and benchmarks or mysqltest to [testing-and-benchmark](../testing-and-benchmark/SKILL.md). Return ambiguous requests to the [oceanbase-deploy overview](../SKILL.md).
 
----
-
-## Installation
-
-If `obd` is not installed, download the RPM from the OceanBase mirror:
-[https://mirrors.oceanbase.com/community/stable/el/](https://mirrors.oceanbase.com/community/stable/el/)
-
----
-
-## Quick Start
-
-```bash
-obd demo
-```
-
-- Use `-c` to specify components (e.g., `oceanbase-ce`, `obproxy-ce`, `obagent`). For OCP use `ocp-ce` by default.
-- Example: `obd demo -c oceanbase-ce,obproxy-ce`
-- Default ports: 2881 (MySQL), 2882 (RPC), 2886 (obshell). If ports are in use, deploy with a config file using alternate ports.
-
----
-
-## Cluster Lifecycle Commands
-
-| Command | Description |
-|---------|-------------|
-| `obd cluster deploy <name> -c <config>` | Register config and deploy cluster |
-| `obd cluster deploy <name> -i` | Interactive deploy (guided config) |
-| `obd cluster start <name>` | Start a deployed cluster |
-| `obd cluster stop <name>` | Stop a running cluster |
-| `obd cluster restart <name>` | Restart a running cluster |
-| `obd cluster list` | List all registered clusters |
-| `obd cluster display <name>` | Show cluster status |
-| `obd cluster edit-config <name>` | Edit cluster configuration |
-| `obd cluster reload <name>` | Reload config on running cluster |
-| `obd cluster upgrade <name> -c <component> -V <version>` | Upgrade a component |
-| `obd cluster scale_out <name> -c <config>` | Scale out a component |
-| `obd cluster component add <name> -c <config>` | Add a new component |
-| `obd cluster component del <name> <component>` | Delete a component |
-
-See [references/config-deployment.md](references/config-deployment.md) for detailed deployment steps and config file examples.
-
----
-
-## OS & Environment Requirements
-
-- **GLIBC**: OceanBase CE 4.3+ el8 packages require GLIBC 2.27+ (RHEL/CentOS 8+). AliOS 7 / CentOS 7 ship GLIBC 2.17 — use the **el7 package of OceanBase CE ≤4.3.x** (e.g., `4.3.5.5`).
-- OBD only needs to run on the control machine; it SSHes to remote nodes.
-- **OCP CE packages**: `ocp-ce` is not in the public mirror by default. Use `obd mirror list` to verify availability.
-- **Port isolation on same host**: When co-deploying multiple OB stacks, ensure distinct ports for MySQL (2881), RPC (2882), and obshell (2886). Pass `obshell_port` in config to override.
-
----
-
-## Monitoring
-
-Add GUI-based monitoring with OBAgent, Prometheus, and Grafana.
-
-- **Without OBAgent**: Add `obagent`, `prometheus`, and `grafana` to config and redeploy/start.
-- **With OBAgent already deployed**: Add `prometheus` and `grafana`, configure Prometheus to scrape OBAgent.
-- OBD enables HTTP basic auth for Prometheus. Credentials are shown in `obd cluster display <name>`.
-- **Deletion order**: Delete `grafana` and `prometheus` before `obagent` (dependency order).
-
-See [references/monitoring.md](references/monitoring.md) for setup details.
-
----
-
-## Mirror & Repository Management
-
-| Command | Description |
-|---------|-------------|
-| `obd mirror list [repo]` | List mirrors |
-| `obd mirror update` | Update mirrors |
-| `obd mirror clone <rpm> [-f]` | Clone RPM to local |
-| `obd mirror create -n <name> -p <path> -V <version>` | Create mirror |
-| `obd mirror enable <repo>` / `disable <repo>` | Enable/disable mirror |
-| `obd mirror clean` | Clean mirrors |
-
-See [references/mirror-management.md](references/mirror-management.md) for details.
-
----
-
-## OCP CE Takeover
-
-Prepare an OBD-deployed cluster to be managed by OCP CE (or enterprise OCP).
-
-1. **Check**: `obd cluster check4ocp <name> -V <ocp_version>`
-2. **Export**: `obd cluster export-to-ocp <name> -a <ocp_address> -u <user> -p <password>`
-
-See [references/ocp-ce.md](references/ocp-ce.md) for complete OCP CE deployment and takeover procedures.
-
----
-
-## Usage Examples
-
-### Quick Demo
-```bash
-obd demo
-```
-
-### Deploy with Config File
-```bash
-obd cluster deploy my-cluster -c config.yaml
-obd cluster start my-cluster
-```
-
-### Interactive Deploy
-```bash
-obd cluster deploy demo-cluster -i
-```
-
-### Explicitly Requesting OCP Express
-User: "Help me deploy ocp-express."
-Agent: "`ocp-express` has been replaced by `obshell dashboard`. Deploy OceanBase CE directly and access the dashboard on port `2886`."
-
-### Destroying a Cluster (Requires Confirmation)
-User: "Destroy my-cluster."
-Agent: "This will destroy 'my-cluster' and all its data. Are you sure?"
-User: "Yes."
-```bash
-obd cluster destroy my-cluster
-```
-
----
-
-## Related Skills
-
-- [tenant-management](../tenant-management/SKILL.md) — Tenant CRUD, backup, restore
-- [seekdb](../seekdb/SKILL.md) — seekdb lifecycle and HA
-- [testing-and-benchmark](../testing-and-benchmark/SKILL.md) — Sysbench, TPC-H, TPC-C benchmarks; mysqltest functional tests
+SeekDB is a separate product skill. Other product-specific workflows outside the routing table are also out of scope; do not translate them into a similarly named Config Server, `oblogproxy`, `oblogservice`, `obbinlog`, OMS, or `oceanbase.ai` operation.

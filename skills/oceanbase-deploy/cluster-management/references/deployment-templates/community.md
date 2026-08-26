@@ -1,0 +1,121 @@
+# Community Distributed Deployment Blueprint
+
+Use this blueprint only after the installed OBD build proves the community distributed component, commonly `oceanbase-ce`, and its exact plugin/schema. It is a rendering contract, not copy-paste production YAML.
+
+## Required Inputs
+
+- approved OceanBase Community Edition version, release, architecture, artifact hash, repository source, and plugin identity;
+- one-node development or multi-node availability topology, zones and failure domains;
+- target host identities, SSH account, canonical paths, ports, and resource budget;
+- initial cluster/administrator credential source and any explicitly requested tenant behavior;
+- explicit persistent auto-start choice; keep the schema option false or unset unless requested and approved through the lifecycle systemd gate;
+- optional OBProxy/OBAgent/monitoring components, each separately justified.
+
+## Version Gate
+
+Inspect the selected community plugin's parameter definition and examples. Confirm:
+
+1. the component key and supported configuration style;
+2. server/global field placement and override precedence;
+3. required identity, path, port, zone, resource, and bootstrap parameters;
+4. which values the plugin generates and which must be supplied;
+5. whether the selected package supports the target OS/runtime and intended topology.
+
+Do not copy fields from a commercial `oceanbase`, `oceanbase-standalone`, SeekDB, or older community plugin.
+
+The V4.6.0 guide shows both `el7` and `el8` OceanBase packages for x86 and ARM. Select the package suffix, architecture, and dependency/runtime closure from the actual target platform and exact artifact; do not reuse the legacy blanket claim that newer Community Edition releases are necessarily `el8`-only or that all `el7` hosts share one compatible package ceiling. Inspect the RPM requirements and target runtime, including GLIBC, before selection.
+
+## Start from the Released Example
+
+For OBD V4.6.0, resolve the version-matched installed example root rather than reconstructing the schema from memory:
+
+- direct/RPM installation: `/usr/obd/example/`;
+- All-in-One installation: `~/.oceanbase-all-in-one/obd/usr/obd/example/` under that installation's resolved root.
+
+Select the complete example that matches the requested topology:
+
+- `mini-single-example.yaml` for a low-resource single Observer;
+- `mini-distributed-example.yaml` for a low-resource multi-Observer layout, or `distributed-example.yaml` for the ordinary distributed baseline;
+- `distributed-with-obproxy-example.yaml` when community OBProxy is explicitly required;
+- `obagent/distributed-with-obproxy-and-obagent-example.yaml` when both OBProxy and OBAgent are explicitly required;
+- `all-components-min.yaml` only for an explicitly requested disposable multi-component demonstration after removing no required dependency and rejecting every unrequested component.
+
+Copy the complete selected example to a new reviewed work path, record its checksum and source OBD build, retain every component-specific field until the installed schema/dependency review proves whether it is required, then change only values justified by the deployment manifest. Mini and `all-components-min` examples are low-resource/development baselines with non-production choices; they are not production sizing recommendations. Do not use an example shipped by a different OBD installation or product form.
+
+## V4.6.0 Concrete-Key Baseline
+
+The released V4.6.0 community distributed examples use the following real key structure. Values marked `CHANGE_ME` must be replaced, resource sizes must be recalculated, and every key must still be checked against the installed `oceanbase-ce` plugin before execution.
+
+```yaml
+# Configure this block only for remote login.
+user:
+  username: CHANGE_ME_SSH_USER
+  key_file: CHANGE_ME_PRIVATE_KEY_PATH
+  port: 22
+
+oceanbase-ce:
+  version: CHANGE_ME_VERSION
+  package_hash: CHANGE_ME_EXACT_PACKAGE_HASH
+  servers:
+    - name: server1
+      ip: CHANGE_ME_SERVER1_MANAGEMENT_IP
+    - name: server2
+      ip: CHANGE_ME_SERVER2_MANAGEMENT_IP
+    - name: server3
+      ip: CHANGE_ME_SERVER3_MANAGEMENT_IP
+  global:
+    cluster_id: CHANGE_ME_UNIQUE_CLUSTER_ID
+    appname: CHANGE_ME_CLUSTER_NAME
+    memory_limit: CHANGE_ME_MEMORY_LIMIT
+    system_memory: CHANGE_ME_SYSTEM_MEMORY
+    datafile_size: CHANGE_ME_INITIAL_DATAFILE_SIZE
+    datafile_next: CHANGE_ME_DATAFILE_GROWTH_STEP
+    datafile_maxsize: CHANGE_ME_DATAFILE_MAX_SIZE
+    log_disk_size: CHANGE_ME_LOG_DISK_SIZE
+    cpu_count: CHANGE_ME_CPU_COUNT
+    production_mode: CHANGE_ME_BOOLEAN
+    enable_syslog_wf: false
+    max_syslog_file_count: CHANGE_ME_RETENTION_COUNT
+    # If the installed schema requires a bootstrap secret, render it only from the
+    # approved protected local procedure into a permission-controlled config.
+    # root_password: CHANGE_ME_PROTECTED_LOCAL_VALUE
+  server1:
+    mysql_port: CHANGE_ME_SQL_PORT
+    rpc_port: CHANGE_ME_RPC_PORT
+    obshell_port: CHANGE_ME_OBSHELL_PORT
+    home_path: CHANGE_ME_CANONICAL_HOME_PATH
+    data_dir: CHANGE_ME_CANONICAL_DATA_PATH
+    redo_dir: CHANGE_ME_CANONICAL_REDO_PATH
+    zone: zone1
+  server2:
+    mysql_port: CHANGE_ME_SQL_PORT
+    rpc_port: CHANGE_ME_RPC_PORT
+    obshell_port: CHANGE_ME_OBSHELL_PORT
+    home_path: CHANGE_ME_CANONICAL_HOME_PATH
+    data_dir: CHANGE_ME_CANONICAL_DATA_PATH
+    redo_dir: CHANGE_ME_CANONICAL_REDO_PATH
+    zone: zone2
+  server3:
+    mysql_port: CHANGE_ME_SQL_PORT
+    rpc_port: CHANGE_ME_RPC_PORT
+    obshell_port: CHANGE_ME_OBSHELL_PORT
+    home_path: CHANGE_ME_CANONICAL_HOME_PATH
+    data_dir: CHANGE_ME_CANONICAL_DATA_PATH
+    redo_dir: CHANGE_ME_CANONICAL_REDO_PATH
+    zone: zone3
+```
+
+`package_hash` is documented for exact package selection in V4.6.0 examples/FAQ; use it only when the installed plugin schema accepts it. Confirm `obshell_port` support for the selected OceanBase version. On a multi-homed host, resolve the installed `local_ip`/`devname` rules instead of relying on automatic selection. If a key is unsupported, return to the installed example/schema; do not rename it by analogy.
+
+The V4.6.0 community schema documents `2881` as the default SQL port, `2882` as the default RPC port, and `2886` as the default obshell operation port. Preserve those familiar defaults when they fit the reviewed topology, but still treat them as explicit per-host manifest values and prove they are free. The guide warns not to change SQL or RPC ports after the cluster has started; route an existing identity change through the version-supported network/lifecycle workflow instead of editing the YAML in place.
+
+Keep the artifact hash in the execution manifest even when the selected schema cannot express `package_hash`. Before execution, prove repository resolution selects that exact hash without refreshing to an unreviewed candidate set.
+
+## Topology Variants
+
+- A one-node topology is suitable only when the user accepts its failure-domain and availability limits.
+- A multi-node topology must use deliberate zone/failure-domain placement and per-host paths/ports; do not clone one server's network identity into all entries.
+- Add community OBProxy only when the client routing design requires it. Direct SQL access is valid when it satisfies the request.
+- Add OBAgent or the monitoring chain only through the monitoring workflow; they are not database prerequisites.
+
+Accept the deployment only after artifact, process, listener, SQL identity, server topology, and unrequested-component checks pass.

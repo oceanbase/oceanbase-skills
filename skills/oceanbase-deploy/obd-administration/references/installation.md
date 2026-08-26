@@ -1,0 +1,69 @@
+# Install OBD on a Controller
+
+Use this workflow for a new OBD installation. Use [controller-maintenance.md](controller-maintenance.md) when an executable or package already owns the intended controller state.
+
+## Resolve the Installation
+
+Controller bootstrap precedes the installed-build capability gate. If inventory proves there is no OBD executable, no existing OBD metadata owner, and no installation to take over, route directly through this installation workflow; do not require help output from a nonexistent CLI. Establish the OBD/plugin/schema capability record only after installation acceptance. Before then, deployment material is planning-only and commercial artifacts/repositories remain unresolved.
+
+1. Confirm the intended controller host and user. Inventory every existing `obd` executable on `PATH`, package-manager record, profile entry, installation prefix, `OBD_HOME`, registered deployment, active OBD process, and shared automation that invokes OBD.
+2. Select an installation method supported for the target operating system and artifact: a released package, an approved all-in-one distribution, or a source/development build. Do not mix methods without an explicit ownership and rollback plan.
+3. Resolve the exact OBD version/build, operating system, architecture, runtime requirements, source, checksum/signature, installation prefix, executable path, and expected plugin/repository content. Do not use an unpinned “latest” command when reproducibility matters.
+4. Separate authorization to download or copy an artifact from authorization to install it or modify shell profiles. Review network source, destination path, privilege escalation, package dependencies, and files the installer can create or replace.
+5. If existing OBD metadata is present, stop and classify the request as maintenance. A new binary with a fresh `OBD_HOME` can hide registered deployments; a new binary pointed at old metadata can migrate it.
+
+Source builds are development artifacts unless an approved release process says otherwise. Record the revision and build inputs; do not present source `HEAD` as a released version.
+
+Build the installation decision from target evidence rather than a remembered platform label:
+
+| Decision | Required evidence | Stop condition |
+|---|---|---|
+| Operating platform | Distribution and version, kernel, architecture, package manager, container boundary, and installation artifact's declared support | Artifact does not declare support for the observed platform or the evidence is ambiguous |
+| Runtime compatibility | Dynamic loader, GLIBC and other required libraries/symbols, executable format, and disk/inode capacity for the exact OBD artifact | A required loader/library/symbol is absent; do not transfer an OBServer component requirement to the OBD controller package or vice versa |
+| Ownership and privilege | Intended controller user, package/prefix/profile owners, required package-manager or installer privilege, umask, and shared automation | The method requires broader privilege or overwrites another owner without an approved plan; do not assume root is always required or always acceptable |
+| Connectivity | Online/offline boundary, approved repositories, proxy/TLS trust, artifact transfer route, and checksum/signature verification | The only available path requires an unreviewed network source, credential exposure, or unpinned package |
+| Existing state | Every executable, `OBD_HOME`, registration, active task, package record, profile entry, and rollback artifact | Existing state has no proved owner or safe maintenance/migration path |
+
+Do not hard-code a distribution, GLIBC threshold, or package suffix as universal. Select the release artifact whose own metadata and version-matched documentation match the observed controller, then verify the installed executable on that controller.
+
+For the V4.6.0 official baseline, distinguish the supported methods rather than mixing their ownership:
+
+- **All-in-One:** preferred when a tested compatible component set or offline installation is required; inspect its installer, bundled RPM closure, profile changes, mirror import, and remote-mirror state.
+- **Released RPM/repository:** use an approved repository or exact downloaded `ob-deploy` RPM and record package-manager/profile ownership; do not use an unpinned latest package when the required version is fixed.
+- **Source:** development-only unless the user's release process explicitly approves it; validate the built revision and generated plugin/example content separately.
+
+These are the three installation methods. An offline All-in-One archive does not create a fourth standalone TAR method: extraction only stages the All-in-One distribution whose reviewed `bin/install.sh` owns installation.
+
+## Version-Matched Command Skeletons
+
+Use these only after substituting reviewed absolute paths and confirming them against the selected V4.6.0 artifact/instructions:
+
+- **Offline All-in-One:** verify the exact `oceanbase-all-in-one-*.tar.gz` checksum, extract it into a new empty staging directory, inspect the extracted `bin/install.sh`, then execute that script from the All-in-One tree. Do not call this a standalone TAR installation and do not execute an unrelated `install_obd.sh` or guessed installer name.
+- **Local RPM:** install the exact reviewed `ob-deploy` RPM through the target OS package manager, for example `sudo yum install <absolute_reviewed_ob_deploy_rpm>` on a verified compatible YUM-based system. Do not use a glob or remote repository candidate when an exact version was requested.
+- **Source:** check out the approved release revision, verify the V4.6.0 build prerequisites and scripts, then run the release's documented `rpm/build.sh` target. Record the resulting executable and generated content as a development/source-owned installation.
+
+The V4.6.0 guide also documents a remote All-in-One bootstrap script, but do not pipe it from the network into a shell without separately reviewing and pinning its content. Prefer a downloaded, checksummed artifact when reproducibility or supply-chain control matters.
+
+## Install
+
+Use the selected method's version-matched instructions and the reviewed absolute artifact path. Install only on the controller. Do not copy the OBD package to every managed host merely because OBD will later connect to them.
+
+Keep privilege scope narrow. Do not pipe an unreviewed remote installer into a shell, overwrite another package owner's files, or create a second implicit `OBD_HOME`. Preserve existing shell and service configuration unless the chosen method requires a reviewed change.
+
+## Accept
+
+Verify independently:
+
+- the executable path, owner, package/build identity, version, runtime, and installation prefix;
+- the intended user resolves that executable in a fresh shell;
+- `OBD_HOME` and its permissions are the intended ones;
+- shipped plugins and repository definitions can be read without an unintended network update;
+- any pre-existing registered deployments remain visible and parseable through logical list/display inventory after the OBD CLI startup-side-effect gate is accepted;
+- no managed component process, listener, configuration, or target-host path changed during controller installation.
+
+On failure, preserve installer output and the before/after executable and metadata inventory. Do not delete `OBD_HOME`, reinstall through a second method, or remove profile/package files until ownership and the completed installation stage are known.
+
+## Sources
+
+- Official OBD V4.6.0 Quick Start section 1: All-in-One, RPM, and source installation.
+- Exact package metadata, installer content, or source revision selected for the target controller.
