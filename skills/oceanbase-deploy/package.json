@@ -1,6 +1,6 @@
 {
   "name": "oceanbase-deploy",
-  "version": "3.0.0",
+  "version": "2.0.1",
   "description": "OceanBase OBD deployment and operations skills for community and commercial product forms, including multi-node maximum-utilization sizing, administration, diagnostics, and OBD-managed SeekDB lifecycle, HA, and monitoring",
   "keywords": [
     "oceanbase",
