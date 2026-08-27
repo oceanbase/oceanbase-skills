@@ -1,6 +1,6 @@
 ---
 name: oceanbase-deploy
-description: Route OceanBase deployment and operations through obd across community, commercial distributed, and commercial standalone or centralized product forms. Use for general or multi-domain OceanBase/obd requests, product-form discovery, or when the correct specialized skill is unclear. Route concrete work to cluster management, OBD administration, tenant management, testing, or diagnostics. Preserve the bundled SeekDB route only for operations performed through obd seekdb.
+description: Route OceanBase deployment and operations through obd across community, commercial distributed, and commercial standalone or centralized product forms. Use for general or multi-domain OceanBase/obd requests, product-form discovery, or when the correct specialized skill is unclear. Route concrete work to cluster management, OBD administration, tenant management, testing, or diagnostics. Preserve the bundled SeekDB route for OBD-managed SeekDB lifecycle, HA, and monitoring work.
 compatibility: Requires the complete oceanbase-deploy bundle and an installed OBD build whose exact commands, plugins, workflows, artifacts, and telemetry subprocess path pass the shared capability and safety gates.
 metadata:
   author: oceanbase
@@ -25,13 +25,13 @@ Use this entry point to identify the product form, execution mode, and owning sk
 | Skill | Use when |
 |---|---|
 | [cluster-management](cluster-management/SKILL.md) | Deploy or operate OceanBase clusters and OBD-managed components; manage configuration, upgrades, scaling, monitoring, OCP, Config Server, Binlog/CDC services, OMS, networking, or shared-storage deployments. |
-| [obd-administration](obd-administration/SKILL.md) | Install or update the OBD controller; manage mirrors/repositories, stored credentials, dynamic tools, OBD Web/API, top-level host commands, runtime environment, or telemetry. |
+| [obd-administration](obd-administration/SKILL.md) | Install or update the OBD controller; manage mirrors/repositories, stored credentials, dynamic tools, OBD Web/API, top-level host commands, trace evidence, runtime environment, or telemetry. |
 | [tenant-management](tenant-management/SKILL.md) | Create, inspect, optimize, back up, restore, drop, or manage physical primary/standby tenants. |
 | [testing-and-benchmark](testing-and-benchmark/SKILL.md) | Run Sysbench, TPC-H, TPC-C, or mysqltest through `obd test`. |
 | [obdiag-diagnostics](obdiag-diagnostics/SKILL.md) | Install-gated diagnostic collection, analysis, checks, scenes, or RCA through `obd obdiag`. |
-| [obd-seekdb](seekdb/SKILL.md) | Install/deploy, lifecycle, takeover, switchover, failover, or decouple requested through `obd seekdb`. |
+| [obd-seekdb](seekdb/SKILL.md) | Install/deploy, lifecycle, takeover, HA, or OBD-managed monitoring for a SeekDB deployment. |
 
-SeekDB is a separate product family. Route an action to the bundled skill above only when the requested mechanism is `obd seekdb` or the action is OBD controller lifecycle/HA management of a registered SeekDB deployment. Route product installation that does not use OBD, builds, documentation, CLI/SQL, import, and query/export work to the top-level `seekdb` skill when installed—even when OBD originally deployed the target instance. Keep those routes distinct; do not translate `obd seekdb` into OceanBase cluster or tenant commands.
+SeekDB is a separate product family. Route an action to the bundled skill above only when the requested mechanism is `obd seekdb`, the action is OBD controller lifecycle/HA management of a registered SeekDB deployment, or OBD is managing that deployment's monitoring components. Route product installation that does not use OBD, builds, documentation, CLI/SQL, import, and query/export work to the top-level `seekdb` skill when installed—even when OBD originally deployed the target instance. Keep those routes distinct; do not translate `obd seekdb` into OceanBase cluster or tenant commands.
 
 ## Resolve Product and Capability First
 

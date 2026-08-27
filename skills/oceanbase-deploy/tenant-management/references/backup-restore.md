@@ -57,6 +57,31 @@ obd cluster tenant backup-show <deploy_name> <tenant_name>
 
 Some versions expose a combined data-and-log option such as `--plus_archive`; use it only after confirming its exact coverage and recovery semantics.
 
+## Cancel a Backup or Restore Task
+
+Cancellation is a separate mutation, not an error-handling default and not implied by permission to start the task. Before either command, identify the exact deployment, tenant, task type and ID when exposed, current task status, storage or target-tenant effects, and the state that will prove cancellation complete. Re-read the installed help and workflow because accepted states and post-cancel visibility can differ by version.
+
+For a backup whose observed status is cancelable, the V4.6.0 command shape is:
+
+```bash
+obd cluster tenant backup-cancel <deploy_name> <tenant_name>
+obd cluster tenant backup-show <deploy_name> <tenant_name>
+```
+
+The V4.6.0 documented boundary permits cancellation only before `COMPLETED` and requires a later `backup-show` result of `CANCELED`. Treat the cancel command's return as request submission only. Poll `backup-show` within a defined deadline and report `unknown` or `not canceled` if the task does not reach the required state; do not delete backup objects or retry the backup while its state is unresolved.
+
+For a restore whose observed status is cancelable, the V4.6.0 command shape is:
+
+```bash
+obd cluster tenant restore-cancel <deploy_name> <target_tenant_name>
+obd cluster tenant show <deploy_name>
+obd cluster tenant restore-show <deploy_name> <target_tenant_name>
+```
+
+The V4.6.0 documented boundary permits cancellation only before `SUCCESS`; its acceptance check is that the target tenant is absent and the restore query has no corresponding task. Reconfirm those semantics in the installed version. If the target tenant or task remains, or either query is ambiguous, cancellation is not complete. Do not drop a remaining tenant as an implicit continuation of `restore-cancel`.
+
+The inspected 4.7 cancellation plugin submits its OBShell patch/delete and returns without polling the final state. Its exception text also says `restore` for both task types, so a backup-cancel failure can be mislabeled. Classify the operation from the invoked command, recorded task type, and post-command state—not from that error noun—and never redirect recovery to a restore task solely because of the message.
+
 ## Restore Plan and Authorization
 
 Prove that the selected data backup and archive logs form a continuous recovery chain through the requested target. Choose exactly one recovery target form accepted by the installed command, such as `--timestamp` or `--scn`; do not pass both or silently use the latest point.
@@ -98,7 +123,7 @@ For restore, require a successful terminal task, a healthy target tenant with th
 
 ## Failure, Retry, and Retention
 
-On failure or timeout, preserve the OBD trace, task/DAG rows and automatic `ROLLBACK`/`PASS` outcome, archive state, backup/restore views, manifests, storage object listing, target-tenant state, every `restore_unit_config*`/pool created by the attempt, and the completed stage. Determine whether the task is still running, cancelable, resumable, or requires a documented recovery action before retrying. A later cancel command is itself a mutation; verify its semantics and obtain authorization when cancellation can invalidate work.
+On failure or timeout, preserve the OBD trace, task/DAG rows and automatic `ROLLBACK`/`PASS` outcome, archive state, backup/restore views, manifests, storage object listing, target-tenant state, every `restore_unit_config*`/pool created by the attempt, and the completed stage. Determine whether the task is still running, cancelable, resumable, or requires a documented recovery action before retrying. Route an authorized cancellation through the explicit state and acceptance workflow above; do not infer completion from the cancel command's exit status.
 
 Do not delete a failed backup prefix, archive pieces, partial restore tenant, or prior valid backup as generic cleanup. Decide before execution which manifests, backup sets, archive logs, generated configuration, and temporary files must be retained. Apply storage retention or deletion only as a separate, precisely scoped operation after proving that the recovery window and dependent restores remain valid.
 
@@ -106,4 +131,4 @@ Do not delete a failed backup prefix, archive pieces, partial restore tenant, or
 
 - Official OBD V4.6.0 Command Guide tenant backup/restore command sections.
 - Official OBD V4.6.0 User Guide section 29.
-- [Official public OBD V4.6.0 source baseline](../../references/source-baselines.md#official-obd-v460-baseline): `plugins/oceanbase/4.2.1.4/backup.py`, `restore.py`, and backup/restore task query/cancel plugins.
+- [Source-evidence boundary](../../references/source-baselines.md#source-evidence-boundary): `plugins/oceanbase/4.2.1.4/backup.py`, `restore.py`, and backup/restore task query/cancel plugins in the exact inspected checkout.

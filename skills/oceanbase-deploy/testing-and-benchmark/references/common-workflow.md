@@ -29,6 +29,21 @@ Before execution, record:
 
 Normalize every path and inspect pre-existing content and ownership. Do not let a generated-data or cleanup path overlap deployment data, logs, another run, or unrelated user files.
 
+## End-to-End Deadline Gate
+
+A workload option such as Sysbench `--time`, TPC-C `--run-mins`, or mysqltest `--case-timeout` limits only the stage implemented by that option. It is not an end-to-end deadline for connection retries, preparation, data generation or transfer, major freeze/merge, child processes, reporting, parameter restoration, or the complete OBD invocation.
+
+Before execution, inspect the selected workflow and record:
+
+- one absolute wall-clock deadline for the expected complete invocation, plus a separate bounded stop/recovery window if that deadline expires;
+- separate bounds for connection/preflight, prepare/load, every freeze or merge wait, every external child process or query, the workload, reporting, and parameter restoration or other finalization;
+- which bounds are enforced natively and which require the caller/orchestration layer;
+- the exact parent and child process ownership, graceful-stop method, grace period, and database-side state checks if a deadline expires.
+
+Prefer a proved native timeout for the stage it controls. When a stage has no native deadline, use a caller-side watchdog only if it can identify the exact OBD process and its child process group and the stop/recovery behavior has been reviewed. A generic parent-process timeout does not prove Java, OBClient, Sysbench, a remote command, or a database task stopped, and killing the parent can bypass a plugin `finally` path that restores benchmark parameters. If no bounded and observable termination plan can be established, do not start an unattended run.
+
+At a deadline, stop scheduling new work and preserve the trace, process tree/group, child commands with secrets redacted, database objects/tasks, freeze/merge state, generated files, and saved parameter baseline. Run only the pre-authorized graceful-stop and recovery plan. If that plan separately authorizes process termination, terminate only the exact proved process group through the reviewed method; otherwise leave it intact and report the timeout for a new decision. Within the recovery bound, verify every child exited and every temporary parameter was restored. Classify remaining server-side work as `unknown` or `still running`; do not retry or clean until the shared failure-recovery workflow resolves that state.
+
 ## Control Benchmark Optimization
 
 For Sysbench, TPC-H, and TPC-C, pass the installed long option explicitly. In verified OBD 4.7-era commands, `--optimization` accepts `0`, `1`, and `2`, defaults to `1`, and has these meanings:
@@ -51,7 +66,7 @@ Treat the applicable stages as separate even when a plugin combines them into on
 
 1. **Preflight:** identity, health, authentication, toolchain, resources, paths, and baseline evidence.
 2. **Prepare/load:** generate or locate data, create schema/tables, transfer files, and load data. Record exact objects and counts.
-3. **Run:** execute the bounded requested workload while observing errors, latency, throughput, cluster health, and resource saturation.
+3. **Run:** execute the bounded requested workload under the separate end-to-end deadline while observing errors, latency, throughput, cluster health, and resource saturation.
 4. **Report:** preserve raw output and produce a summary tied to exact inputs and versions.
 5. **Cleanup/retain:** remove only approved run-owned objects, or preserve the reviewed reusable dataset and artifacts.
 

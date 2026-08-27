@@ -93,4 +93,4 @@ Command exit, an updated graph, and one successful SQL connection are not interc
 
 - Official OBD V4.6.0 User Guide, “角色切换与解耦.”
 - Official OBD V4.6.0 Command Guide, `obd seekdb switchover/failover/decouple/destroy`.
-- [Official public OBD V4.6.0 source baseline](../../references/source-baselines.md#official-obd-v460-baseline): SeekDB relation, connection, switchover, failover/decouple, and metadata-update workflows.
+- [Source-evidence boundary](../../references/source-baselines.md#source-evidence-boundary): SeekDB relation, connection, switchover, failover/decouple, and metadata-update workflows in the exact inspected checkout.

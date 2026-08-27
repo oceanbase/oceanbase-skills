@@ -30,4 +30,4 @@ On any partial result, inspect inventory and files before retrying. Tool install
 ## Sources
 
 - Official OBD V4.6.0 Command Guide tool command group.
-- [Official public OBD V4.6.0 source baseline](../../references/source-baselines.md#official-obd-v460-baseline): `core.py` tool install/update/uninstall functions and dynamic alias dispatch.
+- [Source-evidence boundary](../../references/source-baselines.md#source-evidence-boundary): `core.py` tool install/update/uninstall functions and dynamic alias dispatch in the exact inspected checkout.

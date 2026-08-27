@@ -8,7 +8,7 @@ Resolve the component and test server, SQL endpoint, tenant, database, user, Sys
 
 Inspect the selected script. Names such as read-only or point-select are not sufficient proof that setup and cleanup are read-only. Verified OBD plugins can run Sysbench cleanup and prepare before the workload, replacing benchmark tables. Use a dedicated schema or separately authorized object set.
 
-Choose either a positive bounded `--time` or a bounded event count supported by installed help. Do not accept an unlimited duration for an unattended run.
+Choose either a positive bounded `--time` or a bounded event count supported by installed help. This limits the Sysbench workload only; preparation, cleanup, connection, child-process, restoration, and total invocation deadlines still follow the common end-to-end gate. Do not accept an unlimited duration for an unattended run.
 
 Resolve `--mysql-ignore-errors` from the installed command help and selected plugin before execution. In the reviewed V4.6.0 path, omitting it applies the default `1062` and forwards that policy to cleanup, prepare, and run. Treat every non-empty ignored-error list, including a default, as an explicit test exception: show the exact codes and obtain authorization. If the baseline requires no ignored errors, use only a version-proved no-ignore spelling; stop when the installed path cannot express or prove that policy. Do not infer a zero unexpected-error count from command success alone.
 

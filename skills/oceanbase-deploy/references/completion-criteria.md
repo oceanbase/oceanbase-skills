@@ -5,7 +5,7 @@ Declare success only after the layers relevant to the requested outcome have pas
 ## Acceptance Layers
 
 1. **Invocation:** the intended command or request was submitted with the reviewed target and inputs.
-2. **Task:** the OBD trace or asynchronous task reached a successful terminal state.
+2. **Task:** the OBD task or asynchronous product task reached a successful terminal state. A trace is log evidence about execution, not a state machine and not proof of success by itself.
 3. **Control plane:** registered configuration, deployment/component/tenant state, and actual artifact identity match the plan.
 4. **Runtime:** intended processes, listeners, paths, service manager units, or containers exist; objects that should be stopped or removed do not.
 5. **Data plane:** an authenticated SQL, HTTP/API, metrics, backup-catalog, replication, or test-result check proves the requested capability.

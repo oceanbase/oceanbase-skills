@@ -1,6 +1,6 @@
 ---
 name: obd-administration
-description: Install, update, and administer the OBD controller, including mirrors and repositories, offline artifacts, stored-credential encryption, dynamic tools, top-level host utilities, OBD Web/API, runtime environment, developer mode, and telemetry. Use for controller-scoped OBD work; use the specialized cluster, tenant, testing, or obdiag skill for those domains.
+description: Install, update, and administer the OBD controller, including mirrors and repositories, offline artifacts, stored-credential encryption, dynamic tools, top-level host utilities, trace evidence, OBD Web/API, runtime environment, developer mode, and telemetry. Use for controller-scoped OBD work; use the specialized cluster, tenant, testing, or obdiag skill for those domains.
 compatibility: Requires the complete oceanbase-deploy bundle and an existing OBD controller or an approved supported host and artifact source for OBD installation.
 metadata:
   author: oceanbase
@@ -36,6 +36,7 @@ Read only the references relevant to the request:
 | List, install, update, or uninstall a dynamic OBD tool | [tool-lifecycle.md](references/tool-lifecycle.md) |
 | Use `obd tool command`, `obd tool db_connect`, `obd tool dooba`, or another deployment-bound helper | [deployment-tools.md](references/deployment-tools.md) |
 | Use top-level `obd host` precheck, initialization, or user operations | [host-tools.md](references/host-tools.md) |
+| Retrieve or interpret an OBD trace ID with `obd display-trace` | [trace-evidence.md](references/trace-evidence.md) |
 | Start OBD Web or invoke its version-specific API | [web-api.md](references/web-api.md) |
 | Change `obd env`, developer mode, lock behavior, automatic confirmation, transfer behavior, or telemetry | [runtime-environment.md](references/runtime-environment.md) |
 

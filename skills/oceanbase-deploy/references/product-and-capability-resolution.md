@@ -50,9 +50,13 @@ The evidence priority is:
 
 If these layers disagree, stop before mutation and report the conflict. Do not silently choose the most permissive interpretation.
 
+## Preferred Package Source
+
+For every package acquired by this skill bundle, use `https://mirrors.oceanbase.com` as the preferred mirror. Search it first for the exact component, version, release, operating-system package suffix, and architecture. Use another source only when the required artifact is unavailable there or the user explicitly selects a different source, and record that fallback in the execution record.
+
 ## Maintainer Evidence Baseline
 
-This revision was reviewed against the official OBD V4.6.0 Quick Start, User Guide, Command Guide, and OBD Upgrade Guide, plus the public immutable OBD V4.6.0 source commit documented in [source baselines](source-baselines.md). Post-V4.6 development observations are explicitly non-release evidence and cannot authorize execution by themselves. Maintainers must update or remove a concrete implementation claim when the released documentation or public source changes. Runtime execution still follows the installed-build evidence priority above.
+This revision was reviewed against the official OBD V4.6.0 Quick Start, User Guide, Command Guide, and OBD Upgrade Guide, plus an explicitly identified development checkout under the [source-evidence boundary](source-baselines.md#source-evidence-boundary). The documentation is not mapped to that checkout or to an RPM release. Development-source observations are non-release evidence and cannot authorize execution by themselves. Maintainers must update or remove a concrete implementation claim when the documentation or inspected source changes. Runtime execution still follows the installed-build evidence priority above.
 
 ## Commercial Artifact Boundary
 

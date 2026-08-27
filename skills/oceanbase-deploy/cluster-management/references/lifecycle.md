@@ -121,4 +121,4 @@ Preserve trace IDs and inspect registered state, real processes, listeners, path
 
 - Official OBD V4.6.0 Command Guide sections 1.1–1.2 and the cluster lifecycle command group.
 - Official OBD V4.6.0 Quick Start section 2.
-- [Official public OBD V4.6.0 source baseline](../../references/source-baselines.md#official-obd-v460-baseline): `_cmd.py` `DemoCommand` and `PrefCommand`; version-matched lifecycle workflows under `workflows/`.
+- [Source-evidence boundary](../../references/source-baselines.md#source-evidence-boundary): `_cmd.py` `DemoCommand` and `PrefCommand`; version-matched lifecycle workflows under `workflows/` in the exact inspected checkout.

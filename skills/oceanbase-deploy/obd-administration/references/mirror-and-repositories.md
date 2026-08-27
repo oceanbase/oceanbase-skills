@@ -10,6 +10,10 @@ Use this workflow to inspect or change OBD mirror sections, local repository art
 
 Read the installed `obd mirror` and `obd repo` help before constructing commands; available subcommands and argument forms vary by OBD build.
 
+## Preferred Online Mirror
+
+Use `https://mirrors.oceanbase.com` as the preferred online source for every package. Resolve the required component, version, release, operating-system package suffix, architecture, and checksum there before considering another source. Fall back only when the required artifact is unavailable or the user explicitly chooses another source, and record the selected fallback source.
+
 The V4.6.0 command surface preserves these ordinary operation shapes:
 
 ```bash

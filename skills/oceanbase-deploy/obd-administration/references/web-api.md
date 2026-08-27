@@ -38,4 +38,4 @@ Before every request, verify that its URL, query, body, headers, client trace, p
 ## Sources
 
 - Official OBD V4.6.0 User Guide sections describing the graphical interface and asynchronous tasks.
-- [Official public OBD V4.6.0 source baseline](../../references/source-baselines.md#official-obd-v460-baseline): `_cmd.py` `WebCommand`; `service/` listener, middleware, and task implementations.
+- [Source-evidence boundary](../../references/source-baselines.md#source-evidence-boundary): `_cmd.py` `WebCommand`; `service/` listener, middleware, and task implementations in the exact inspected checkout.

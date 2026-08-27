@@ -1,8 +1,8 @@
 ---
 name: obd-seekdb
 description: >-
-  Operate SeekDB through OBD using obd seekdb commands: install or deploy, start, stop, restart, destroy, takeover, and primary-standby switchover, failover, or decouple. Use only when the requested mechanism is obd seekdb or the task is an OBD controller lifecycle or HA operation on an OBD-managed SeekDB deployment. Do not use for a generic SeekDB mention or for product documentation, non-OBD installation/build, SQL/CLI work, data import, or querying; route those to the top-level SeekDB product skill.
-compatibility: Requires the complete oceanbase-deploy bundle, an OBD build with a target-version-matched SeekDB plugin and workflow, and approved access to the scoped hosts or instances.
+  Operate SeekDB through OBD: install or deploy, lifecycle, takeover, primary-standby HA, and OBD-managed OBAgent/Prometheus/Grafana monitoring for a SeekDB deployment. Use only when the requested mechanism is obd seekdb or the task is an OBD controller lifecycle, HA, or monitoring operation on an OBD-managed SeekDB deployment. Do not use for a generic SeekDB mention or for product documentation, non-OBD installation/build, SQL/CLI work, data import, or querying; route those to the top-level SeekDB product skill.
+compatibility: Requires the complete oceanbase-deploy bundle, an OBD build with target-version-matched SeekDB and requested monitoring plugins/workflows, and approved access to the scoped hosts or instances.
 metadata:
   author: oceanbase
   version: "1.0"
@@ -10,13 +10,13 @@ metadata:
 
 # obd-seekdb: SeekDB Operations Through OBD
 
-This skill covers only operations performed through `obd seekdb`. It is not the product-level SeekDB skill. A generic mention of SeekDB does not activate this route.
+This skill covers operations performed through `obd seekdb` and OBD-managed monitoring components attached to the same SeekDB deployment. It is not the product-level SeekDB skill. A generic mention of SeekDB does not activate this route.
 
 Compatibility requires an installed OBD build, target SeekDB version, and selected plugin/workflow that all support the requested operation. Command presence in `--help` is not sufficient: inspected OBD builds register HA commands even when the target version has no matching workflow, and that path can return success without changing a role. Before selecting syntax, read [product and capability resolution](../references/product-and-capability-resolution.md) and prove the target-specific workflow exists.
 
 Route product documentation, installation or build work that does not use OBD, `seekdb-cli`, SQL, import, and query/export tasks to the top-level [SeekDB product skill](../../seekdb/SKILL.md). Keep the product task there even when the target instance was originally deployed by OBD, unless the requested action itself is an OBD controller operation.
 
-Before any live `obd seekdb` query or mutation, read the shared [operation contract](../references/operation-contract.md). Use the shared [completion criteria](../references/completion-criteria.md), [failure recovery](../references/failure-recovery-and-evidence.md), and [cleanup boundaries](../references/cleanup-boundaries.md); listing a command below is not authorization to run it.
+Before any live `obd seekdb` or monitoring query or mutation, read the shared [operation contract](../references/operation-contract.md). Use the shared [completion criteria](../references/completion-criteria.md), [failure recovery](../references/failure-recovery-and-evidence.md), and [cleanup boundaries](../references/cleanup-boundaries.md); listing a command below is not authorization to run it.
 
 ## When to Use This Skill
 
@@ -25,6 +25,7 @@ Before any live `obd seekdb` query or mutation, read the shared [operation contr
 - Setting up primary-standby replication through OBD
 - Performing OBD switchover, failover, or decouple operations
 - Taking over an existing SeekDB instance into OBD management
+- Deploying or operating OBAgent, Prometheus, or Grafana monitoring that OBD associates with a SeekDB deployment
 
 **For OceanBase cluster management:** Use [cluster-management](../cluster-management/SKILL.md).
 **For tenant operations:** Use [tenant-management](../tenant-management/SKILL.md).
@@ -50,6 +51,7 @@ Before any live `obd seekdb` query or mutation, read the shared [operation contr
 | `obd seekdb switchover <standby_deploy_name>` | Planned role/topology transition |
 | `obd seekdb failover <standby_deploy_name>` | Emergency promotion after independent old-primary fencing |
 | `obd seekdb decouple <standby_deploy_name>` | Planned split of a standby into an independent primary |
+| OBD-managed SeekDB monitoring | Use the version-gated [monitoring workflow](references/monitoring.md); new and existing deployments have different command paths |
 
 ---
 
@@ -79,6 +81,10 @@ Primary and standby **must be on different IPs**. If deployed on the same IP, OB
 ## Install Modes
 
 See [references/install-modes.md](references/install-modes.md) for the compound install transaction, host/primary mutation gates, TTY requirements, non-interactive limitations, and takeover boundary. Do not enter the wizard until every possible branch has been classified and either authorized or explicitly rejected.
+
+## Monitoring
+
+See [references/monitoring.md](references/monitoring.md) when OBD must deploy or operate OBAgent, Prometheus, or Grafana for SeekDB. Do not route this through the OceanBase monitoring template or assume a separate monitoring deployment receives the current implementation's SeekDB-specific account, scrape paths, rules, or dashboard.
 
 ## HA Operations
 

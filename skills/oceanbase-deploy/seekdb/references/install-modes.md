@@ -93,4 +93,4 @@ On failure, preserve the trace, before/after deployment-name state, generated me
 
 - Official OBD V4.6.0 User Guide: SeekDB interactive deployment, role operations, and takeover prerequisites.
 - Official OBD V4.6.0 Command Guide: `obd seekdb` command group.
-- [Official public OBD V4.6.0 source baseline](../../references/source-baselines.md#official-obd-v460-baseline): `core.py` SeekDB install/takeover methods; interactive, host-tool, SeekDB HA, auto-start, and takeover plugins.
+- [Source-evidence boundary](../../references/source-baselines.md#source-evidence-boundary): `core.py` SeekDB install/takeover methods; interactive, host-tool, SeekDB HA, auto-start, and takeover plugins in the exact inspected checkout.

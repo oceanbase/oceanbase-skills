@@ -23,4 +23,4 @@ On failure, preserve the trace, registered configuration, dependency/account sta
 ## Sources
 
 - Official OBD V4.6.0 User Guide section 20 and its released configuration examples.
-- [Official public OBD V4.6.0 source baseline](../../references/source-baselines.md#official-obd-v460-baseline): `plugins/oblogproxy/2.0.0/` and matching workflows.
+- [Source-evidence boundary](../../references/source-baselines.md#source-evidence-boundary): `plugins/oblogproxy/2.0.0/` and matching workflows in the exact inspected checkout.

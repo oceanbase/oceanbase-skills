@@ -10,13 +10,13 @@ OceanBase 的 OBD 部署与运维 Skill 集合。它使用同一套安全工作�
 |---|---|
 | [`oceanbase-deploy`](./) | 总入口：识别产品形态、能力和执行模式，并路由到具体 skill |
 | [`cluster-management`](./cluster-management/) | 集群部署、多节点最大化资源规格、配置、启停、升级、扩缩容、组件、监控、OCP 和网络接入 |
-| [`obd-administration`](./obd-administration/) | OBD 安装升级、镜像仓库、凭据、动态工具、Web/API 和运行环境 |
+| [`obd-administration`](./obd-administration/) | OBD 安装升级、镜像仓库、凭据、动态工具、主机工具、Trace 证据、Web/API 和运行环境 |
 | [`tenant-management`](./tenant-management/) | 租户创建、删除、优化、备份恢复和物理主备 |
 | [`testing-and-benchmark`](./testing-and-benchmark/) | Sysbench、TPC-H、TPC-C 和 mysqltest |
 | [`obdiag-diagnostics`](./obdiag-diagnostics/) | 按实际安装能力使用 obdiag 做采集、分析、巡检和根因定位 |
-| [`obd-seekdb`（目录路径保留为 `seekdb/`）](./seekdb/) | 显式 `obd seekdb` 部署、接管、生命周期和主备高可用能力，并接入共享安全与恢复规则；与顶层产品 Skill `seekdb` 名称区分 |
+| [`obd-seekdb`（目录路径保留为 `seekdb/`）](./seekdb/) | OBD 管理的 SeekDB 部署、接管、生命周期、主备高可用和监控组件，并接入共享安全与恢复规则；与顶层产品 Skill `seekdb` 名称区分 |
 
-SeekDB 是独立产品：只有明确通过 `obd seekdb` 执行，或要求 OBD 控制器管理已注册实例生命周期/高可用时，才进入嵌套 skill。非 OBD 安装、构建、文档、CLI/SQL、导入和查询进入仓库中的顶层 [`seekdb`](../seekdb/) skill；即使目标最初由 OBD 部署，产品与数据面任务也仍走顶层 skill。
+SeekDB 是独立产品：只有明确通过 `obd seekdb` 执行，要求 OBD 控制器管理已注册实例生命周期/高可用，或要求 OBD 管理该部署的监控组件时，才进入嵌套 skill。非 OBD 安装、构建、文档、CLI/SQL、导入和查询进入仓库中的顶层 [`seekdb`](../seekdb/) skill；即使目标最初由 OBD 部署，产品与数据面任务也仍走顶层 skill。
 
 > 更多 skill 持续开发中，计划覆盖：内核调优、SQL 诊断、数据迁移等。
 
@@ -129,6 +129,10 @@ npx skills add oceanbase/oceanbase-skills --skill oceanbase-deploy
 
 ```text
 用 obd seekdb 查看 seekdb-test 的拓扑；如果主库挂了，该用 switchover 还是 failover
+```
+
+```text
+通过 OBD 为 seekdb-test 增加监控；先核验当前版本支持的 OBAgent、Prometheus 和可视化组件及变更影响
 ```
 
 ### 压测

@@ -1,20 +1,22 @@
-# Reproducible Source Baselines
+# Evidence Baselines
 
-Use this reference to distinguish released, publicly reproducible implementation evidence from post-release development observations. Installed command, plugin, workflow, schema, registered state, and selected artifacts remain the runtime authority.
+Use this reference to keep documentation, inspected source, and installed runtime evidence separate. Do not bind an OBD product version or RPM release to a source commit or implementation behavior without immutable provenance for that exact artifact. Installed command, plugin, workflow, schema, registered state, and selected artifacts remain the runtime authority.
 
-## Official OBD V4.6.0 Baseline
+## Documentation Baseline
 
-- Release: [OBD V4.6.0](https://github.com/oceanbase/obdeploy/releases/tag/v4.6.0), published with RPM `ob-deploy-4.6.0-3`.
-- Immutable public source: [`oceanbase/obdeploy` commit `344fa3be9fd154303d878876531321c188c2870e`](https://github.com/oceanbase/obdeploy/tree/344fa3be9fd154303d878876531321c188c2870e).
-- Telemetry call path: [`_cmd.py` constructs the background command](https://github.com/oceanbase/obdeploy/blob/344fa3be9fd154303d878876531321c188c2870e/_cmd.py#L766-L770), and [`ssh.py` executes command strings with `shell=True`](https://github.com/oceanbase/obdeploy/blob/344fa3be9fd154303d878876531321c188c2870e/ssh.py#L186-L208).
+Official OBD documentation can establish the commands, options, schemas, and behavior documented by that publication. It does not prove the implementation of an installed package, map an RPM release to a source commit, or classify a whole product version as affected or fixed. Reconcile every execution-sensitive claim with the installed artifact.
 
-Source citations in this bundle that name V4.6.0 refer to that commit unless they link a more specific public revision. A file path or symbol names the inspected implementation location, not a guarantee that every packaged build or plugin exposes the behavior. Verify the installed artifact before execution.
+<a id="source-evidence-boundary"></a>
 
-The public V4.6.0 source constructs background telemetry as a shell command containing the deployment name and JSON error payload. It therefore fails this bundle's arbitrary-error-text safety gate. V4.6.0 documentation remains usable as a command/schema baseline, but V4.6.0 is not an executable compatibility claim for commands that can dispatch that telemetry path.
+## Source Evidence Boundary
 
-## Post-V4.6 Development Observations
+A source path, symbol, or behavior in this revision refers only to the inspected `ob-deploy` checkout at commit `4ef23088b04cbba82793dbc718d3b844bcd0fdb5`. That hash identifies review evidence only; it is not mapped to an OBD product version or RPM release. Do not relabel the observation as released-version evidence or infer that another package, RPM revision, branch, or product version contains the same implementation. For shell construction, credential handling, destructive behavior, or completion semantics, inspect the installed implementation before execution and fail closed when it cannot be proved.
 
-Some reviewed development code is not present in the public V4.6.0 commit, including the standalone management-IP command and its persisted loopback Observer-identity model. Such observations may guide capability discovery but are not released-version evidence.
+<a id="post-v460-development-observations"></a>
+
+## Development Source Observations
+
+Some reviewed development code, including the standalone management-IP command and its persisted loopback Observer-identity model, is development-source evidence rather than released-version evidence. Such observations may guide capability discovery but cannot establish package availability.
 
 The reviewed development behavior uses these linked conditions:
 
@@ -26,4 +28,4 @@ Do not infer an OBD release floor from those observations. Before emitting or ex
 
 ## Evidence Maintenance Rule
 
-Do not cite an internal-only hash as reproducible evidence. For a released behavior, link an immutable public commit or tag. For an unreleased behavior, label it as non-release evidence, include the exact runtime checks needed to prove it, and keep execution fail-closed until the installed build supplies that proof.
+Record the exact inspected checkout for a source observation, but do not infer a package mapping from its branch, tag, or version-like name. For a released behavior, require immutable provenance that connects the exact artifact to the cited source. Otherwise label the behavior as source-only evidence, include the runtime checks needed to prove it, and keep execution fail-closed until the installed build supplies that proof.

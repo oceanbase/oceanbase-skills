@@ -56,7 +56,7 @@ Inspect how the selected plugin constructs and logs its mysqltest/OBClient comma
 
 ## Command Shape
 
-For a bounded built-in or custom selection:
+For a bounded built-in or custom selection, treat `--case-timeout` as a per-case bound only. Define a separate suite deadline and bounds for initialization, result comparison, log collection, and any installed recovery/finalization path through the common end-to-end gate:
 
 ```bash
 obd test mysqltest <deploy_name> \

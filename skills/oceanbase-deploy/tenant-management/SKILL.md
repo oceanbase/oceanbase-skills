@@ -46,12 +46,12 @@ Read the shared references required by the current stage:
 | Create or inspect a tenant; plan resources, topology, credentials, or network allowlists | [tenant-creation.md](references/tenant-creation.md) |
 | Drop a tenant | [tenant-deletion.md](references/tenant-deletion.md) |
 | Optimize an existing tenant for a workload | [workload-optimization.md](references/workload-optimization.md) |
-| Configure archive/backup storage, run or inspect a backup, or restore a tenant | [backup-restore.md](references/backup-restore.md) |
+| Configure archive/backup storage, run, inspect, or cancel a backup, or restore, inspect, or cancel a tenant restore | [backup-restore.md](references/backup-restore.md) |
 | Create or operate a physical primary/standby tenant, including switchover, failover, decouple, recovery target, log source, or protection mode | [physical-standby.md](references/physical-standby.md) |
 
 ## Hard Boundaries
 
-- Treat tenant drop, tenant restore, restore-task cancellation, failover, and decouple as separate high-impact operations. Authorization for inspection, ordinary tenant creation, backup, or switchover does not authorize them. The V4.6.0/current reviewed restore path creates a new target tenant and refuses an existing target; do not invent overwrite semantics or turn restore authorization into permission to drop an existing tenant.
+- Treat tenant drop, tenant restore, backup-task cancellation, restore-task cancellation, failover, and decouple as separate high-impact operations. Authorization for inspection, ordinary tenant creation, backup, restore, or switchover does not authorize cancellation. The V4.6.0/current reviewed restore path creates a new target tenant and refuses an existing target; do not invent overwrite semantics or turn restore authorization into permission to drop an existing tenant.
 - Do not place tenant, `standbyro`, storage, decryption, KMS, or other credentials in reusable commands or reports.
 - A tenant row or successful OBD exit is not completion. Apply the domain checks in the selected reference and verify an authenticated data-plane outcome when applicable.
 - Do not translate physical standby requests into SeekDB HA commands or infer a tenant relationship from deployment names alone.
