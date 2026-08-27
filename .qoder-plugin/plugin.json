@@ -1,6 +1,6 @@
 {
   "name": "oceanbase-skills",
-  "version": "3.0.0",
+  "version": "2.0.1",
   "displayName": "OceanBase Skills",
   "description": "OceanBase AI Agent Skills — cluster management, tenant management, SeekDB, testing and benchmarks via obd",
   "author": {
