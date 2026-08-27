@@ -49,4 +49,4 @@ Do not repeatedly alternate controller versions. Preserve the failed state and c
 ## Sources
 
 - Official OBD V4.6.0 OBD Upgrade Guide and Quick Start All-in-One upgrade sections.
-- `ob-deploy` snapshot `4ef23088...`: `core.py` `update_obd`.
+- [Official public OBD V4.6.0 source baseline](../../references/source-baselines.md#official-obd-v460-baseline): `core.py` `update_obd`.

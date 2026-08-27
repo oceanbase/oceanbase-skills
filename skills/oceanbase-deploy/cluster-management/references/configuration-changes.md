@@ -83,4 +83,4 @@ On edit, reload, or conversion failure, preserve both configurations, trace, gen
 ## Sources
 
 - Official OBD V4.6.0 Command Guide cluster configuration command group.
-- `ob-deploy` snapshot `4ef23088...`: `_cmd.py` `ClusterEditConfigCommand`; `core.py` `edit_deploy_config`.
+- [Official public OBD V4.6.0 source baseline](../../references/source-baselines.md#official-obd-v460-baseline): `_cmd.py` `ClusterEditConfigCommand`; `core.py` `edit_deploy_config`.

@@ -106,4 +106,4 @@ Do not delete a failed backup prefix, archive pieces, partial restore tenant, or
 
 - Official OBD V4.6.0 Command Guide tenant backup/restore command sections.
 - Official OBD V4.6.0 User Guide section 29.
-- `ob-deploy` snapshot `4ef23088...`: `plugins/oceanbase/4.2.1.4/backup.py`, `restore.py`, and backup/restore task query/cancel plugins.
+- [Official public OBD V4.6.0 source baseline](../../references/source-baselines.md#official-obd-v460-baseline): `plugins/oceanbase/4.2.1.4/backup.py`, `restore.py`, and backup/restore task query/cancel plugins.

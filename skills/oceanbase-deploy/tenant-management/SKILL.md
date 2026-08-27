@@ -1,6 +1,7 @@
 ---
 name: tenant-management
 description: Manage OceanBase tenant lifecycle, workload optimization, backup and restore, and physical primary/standby relationships through obd. Use for tenant creation, deletion, inspection, optimization, backup, restore, switchover, failover, or related disaster-recovery requests. Do not use for SeekDB HA or cluster deployment lifecycle.
+compatibility: Requires the complete oceanbase-deploy bundle, a compatible OBD controller, and a running version-matched OceanBase deployment for live tenant operations.
 metadata:
   author: oceanbase
   version: "3.0"

@@ -10,7 +10,7 @@ Use this blueprint only when the installed OBD build and supplied commercial art
 - controller management address, Observer service identity, SQL/RPC/obshell addresses, and client routing;
 - canonical home/data/log paths, storage mode, resources, credentials, and lifecycle expectations;
 - explicit persistent auto-start choice; keep the schema option false or unset unless requested and approved through the lifecycle systemd gate;
-- version-specific evidence for takeover, management-IP change, upgrade, backup, monitoring, OCP, and other requested integrations.
+- version-specific evidence for takeover, management-IP change, upgrade, backup, monitoring, OCP, and other requested integrations; for the maintainer-observed normal `change-ip` path, the standalone component floor is `4.4.2.3`, subject to the exact installed-build and identity gates in [change-ip](../change-ip.md).
 
 ## Identity Gate
 

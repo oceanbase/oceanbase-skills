@@ -1,6 +1,7 @@
 ---
 name: obdiag-diagnostics
 description: Collect and analyze OceanBase diagnostic evidence through `obd obdiag`, including bounded gathers, checks, analysis, scenes, ASH, and RCA when supported by the installed tool. Use for incident diagnosis and obdiag requests; do not use for ordinary lifecycle status checks.
+compatibility: Requires the complete oceanbase-deploy bundle, a compatible OBD controller, and an installed or separately approved obdiag capability with access to the scoped diagnostic targets.
 metadata:
   author: oceanbase
   version: "3.0"

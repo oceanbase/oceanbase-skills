@@ -1,6 +1,7 @@
 ---
 name: cluster-management
 description: Deploy and operate community or commercial OceanBase clusters with obd, including distributed and commercial standalone or centralized forms, lifecycle changes, upgrades, monitoring, OCP, network access, Config Server, Binlog/CDC services, OMS, oceanbase.ai, oblogservice, and shared-storage topologies. Use for OceanBase cluster control-plane work; route tenant, benchmark, diagnostic, controller-administration, and unrelated product workflows elsewhere.
+compatibility: Requires the complete oceanbase-deploy bundle, a compatible OBD controller, version-matched component artifacts and plugins, and approved host access for live operations.
 metadata:
   author: oceanbase
   version: "3.0"

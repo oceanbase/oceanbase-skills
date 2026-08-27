@@ -31,4 +31,4 @@ On interruption during an encryption migration or on decryption failure, freeze 
 ## Sources
 
 - Official OBD V4.6.0 Command Guide `obd pwd` command group.
-- `ob-deploy` snapshot `4ef23088...`: `core.py` `encrypt_manager`, `check_encryption_passkey`, and `set_encryption_passkey`; `_deploy.py` `change_deploy_config_password`.
+- [Official public OBD V4.6.0 source baseline](../../references/source-baselines.md#official-obd-v460-baseline): `core.py` `encrypt_manager`, `check_encryption_passkey`, and `set_encryption_passkey`; `_deploy.py` `change_deploy_config_password`.

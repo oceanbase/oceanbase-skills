@@ -1,13 +1,14 @@
 ---
-name: seekdb
+name: obd-seekdb
 description: >-
   Operate SeekDB through OBD using obd seekdb commands: install or deploy, start, stop, restart, destroy, takeover, and primary-standby switchover, failover, or decouple. Use only when the requested mechanism is obd seekdb or the task is an OBD controller lifecycle or HA operation on an OBD-managed SeekDB deployment. Do not use for a generic SeekDB mention or for product documentation, non-OBD installation/build, SQL/CLI work, data import, or querying; route those to the top-level SeekDB product skill.
+compatibility: Requires the complete oceanbase-deploy bundle, an OBD build with a target-version-matched SeekDB plugin and workflow, and approved access to the scoped hosts or instances.
 metadata:
   author: oceanbase
   version: "1.0"
 ---
 
-# SeekDB Operations Through OBD
+# obd-seekdb: SeekDB Operations Through OBD
 
 This skill covers only operations performed through `obd seekdb`. It is not the product-level SeekDB skill. A generic mention of SeekDB does not activate this route.
 

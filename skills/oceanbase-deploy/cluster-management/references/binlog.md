@@ -47,4 +47,4 @@ On timeout or failure, preserve the OBD trace, Binlog deployment/configuration, 
 
 - Official OBD V4.6.0 Command Guide section 8.
 - Official OBD V4.6.0 User Guide section 19.
-- `ob-deploy` snapshot `4ef23088...`: `_cmd.py` `BinlogCommand` family; `core.py` Binlog instance methods; `plugins/obbinlog-ce/4.0.1/`.
+- [Official public OBD V4.6.0 source baseline](../../references/source-baselines.md#official-obd-v460-baseline): `_cmd.py` `BinlogCommand` family; `core.py` Binlog instance methods; `plugins/obbinlog-ce/4.0.1/`.

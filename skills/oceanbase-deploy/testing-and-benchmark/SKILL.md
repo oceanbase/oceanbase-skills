@@ -1,6 +1,7 @@
 ---
 name: testing-and-benchmark
 description: Run OceanBase functional tests and performance benchmarks through obd test, including mysqltest, Sysbench, TPC-H, and TPC-C. Use for correctness testing, benchmark preparation, load execution, result analysis, or cleanup. Do not use for ordinary tenant or cluster lifecycle work.
+compatibility: Requires the complete oceanbase-deploy bundle, a compatible OBD controller, a running supported OceanBase test deployment and tenant, and separately approved test-tool installation when needed.
 metadata:
   author: oceanbase
   version: "3.0"

@@ -52,7 +52,7 @@ If these layers disagree, stop before mutation and report the conflict. Do not s
 
 ## Maintainer Evidence Baseline
 
-This revision was reviewed against the official OBD V4.6.0 Quick Start, User Guide, Command Guide, and OBD Upgrade Guide, plus the native `ob-deploy` source snapshot at commit `4ef23088b04cbba82793dbc718d3b844bcd0fdb5`. That snapshot explains statements labeled “inspected current source”; it is not a runtime version lock. Maintainers must update or remove a concrete implementation claim when the released documentation or inspected source changes. Runtime execution still follows the installed-build evidence priority above.
+This revision was reviewed against the official OBD V4.6.0 Quick Start, User Guide, Command Guide, and OBD Upgrade Guide, plus the public immutable OBD V4.6.0 source commit documented in [source baselines](source-baselines.md). Post-V4.6 development observations are explicitly non-release evidence and cannot authorize execution by themselves. Maintainers must update or remove a concrete implementation claim when the released documentation or public source changes. Runtime execution still follows the installed-build evidence priority above.
 
 ## Commercial Artifact Boundary
 

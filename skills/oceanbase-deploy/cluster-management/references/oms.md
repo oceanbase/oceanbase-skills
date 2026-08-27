@@ -232,4 +232,4 @@ Do not use the Web “redeploy” recovery button, rerun deploy/upgrade, delete 
 - Official OBD V4.6.0 User Guide: sections 6, 10, 11.4, 16, and 35.
 - Official OBD V4.6.0 Command Guide: `cluster upgrade` and OMS-specific options.
 - Official OBD V4.6.0 error guide: `OBD-4701` through `OBD-4704`.
-- `ob-deploy` snapshot `4ef23088...`: `const.py`, `_cmd.py`, `core.py`, `plugins/oms/1.0.0/`, `workflows/oms/1.0.0/`, and the OBD Web OMS handler.
+- [Official public OBD V4.6.0 source baseline](../../references/source-baselines.md#official-obd-v460-baseline): `const.py`, `_cmd.py`, `core.py`, `plugins/oms/1.0.0/`, `workflows/oms/1.0.0/`, and the OBD Web OMS handler.

@@ -1,6 +1,10 @@
 # Standalone Management-IP Change
 
-Use `obd cluster change-ip` only when installed help/workflow proves support for the exact deployment. In one verified OBD 4.7.x implementation it is limited to a running `oceanbase-standalone` deployment and exposes old/new IP, dry-run, and confirmation options; treat those details as version-specific.
+`change-ip` is not present in the [public OBD V4.6.0 source baseline](../../references/source-baselines.md#official-obd-v460-baseline). No minimum released OBD version is established here. Use `obd cluster change-ip` only when the installed command help and implementation prove support for the exact deployment; do not infer availability from a development branch name or a nearby release.
+
+In the maintainer-observed development implementation, the normal fresh-deployment path requires the OceanBase component to be `oceanbase-standalone` version `4.4.2.3` or later. That component-version floor enables the loopback Observer identity required by management-IP replacement; it is separate from the OBD version that provides the command. A pre-`4.4.2.3` standalone deployment is not supported by version inference. It may qualify only when the installed implementation explicitly recognizes a legacy configuration with `local_ip=127.0.0.1` and has persisted and live-verified the same loopback identity. See the [post-V4.6 development evidence boundary](../../references/source-baselines.md#post-v460-development-observations).
+
+The reviewed implementation additionally requires a running deployment, unchanged registered configuration with no pending temporary config, exactly one `oceanbase-standalone` OceanBase component, exactly one configured server whose management address is the old IP, and a verified loopback Observer-identity marker. Treat every condition as version-specific and re-prove it from the installed build.
 
 This operation changes OBD's management address for the supported deployment. It is not a host replacement, distributed Observer migration, scale operation, VIP move, or generic change to `local_ip`/`devname`.
 
