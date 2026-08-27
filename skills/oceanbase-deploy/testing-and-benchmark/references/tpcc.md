@@ -33,7 +33,7 @@ obd test tpcc <deploy_name> \
   [version-supported credential option; value supplied only through the approved local procedure]
 ```
 
-Use `--run-mins` only when installed help confirms it; do not substitute a remembered option name. It bounds the BenchmarkSQL/TPC-C workload, not the complete OBD workflow. Inspected current paths can wait without a native bound for tenant connectivity and major compaction, and some versions launch Java without a subprocess timeout. Apply the common end-to-end gate with separate connection, freeze/merge, Java-process, workload, and total deadlines; do not infer any of them from `run-mins`.
+Use `--run-mins` only when installed help confirms it; do not substitute a remembered option name. It bounds the BenchmarkSQL/TPC-C workload, not tenant connectivity, major compaction, or every Java subprocess. Apply the common timeout handling to the complete invocation.
 
 ## Stage and Accept
 

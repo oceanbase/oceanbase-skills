@@ -12,11 +12,9 @@ Treat OBD Web as a controller-side management service that can expose deployment
 
 After start, verify the real command line, process owner, listener addresses, access controls, logs, and an authenticated read-only request from an approved client. Where feasible, verify rejection from an unapproved source. Web availability is not deployment health.
 
-## Credential-Bearing Request Gate
+## Credential-Bearing Requests
 
-Inspect the running version's server middleware before sending any password, private key, access secret, token, credential-bearing URI, or encrypted credential payload. Verified 4.7-era source enables middleware that logs the full URL, query parameters, and raw request body. Client-side output redaction does not prevent that server-side write.
-
-If the exact version cannot prove server-side field redaction or a supported way to disable sensitive request logging, do not send a credential-bearing API request. Stop and use a reviewed protected CLI or other supported workflow, or require an approved server-side logging remediation and independent verification before the request. Tight file permissions and later log deletion do not make intentional secret logging acceptable; never delete broad logs as a substitute for preventing exposure.
+Verified 4.7-era source can log the full URL, query parameters, and raw request body. Before a credential-bearing request, prefer a supported secret reference or protected CLI path; otherwise minimize the payload, protect server and proxy logs, use scoped credentials, and rotate them when the logging boundary requires it. Never copy credential-bearing request bodies into reports or delete broad logs as cleanup.
 
 ## API Operation Model
 
@@ -33,7 +31,7 @@ For each mutation:
 
 An HTTP success or “accepted” response is not completion. Do not issue a conflicting CLI command while a Web/API task for the same resource is active, and do not replay a non-idempotent request after a timeout until server-side task state is known.
 
-Before every request, verify that its URL, query, body, headers, client trace, proxy, and server logs satisfy the credential gate. Treat encrypted credential blobs as sensitive unless the protocol and logging design explicitly make their retention safe. Keep passwords, keys, image/repository credentials, API tokens, and credential-bearing payload fields out of logs and reports. When the scoped task ends, stop only the identified Web process unless the user explicitly requested persistence; service-manager creation or removal is a separate host mutation.
+Treat encrypted credential blobs as sensitive unless the protocol and logging design explicitly make their retention safe. Keep passwords, keys, image/repository credentials, API tokens, and credential-bearing payload fields out of reports and avoid logging them when the selected interface permits. When the scoped task ends, stop only the identified Web process unless the user explicitly requested persistence; service-manager creation or removal is a separate host mutation.
 
 ## Sources
 

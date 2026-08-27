@@ -20,7 +20,7 @@ Use only the installed syntax, such as the supported forms of `obd pwd encrypt` 
 - **Disable:** explain the loss of at-rest protection and verify resulting file permissions and documented migration artifacts.
 - **Change EPK:** require a recoverably escrowed new verification passphrase and the supported proof of the current passphrase. Verify the new EPK gate and representative stored credentials separately; success of one does not prove the other was migrated.
 
-Never add a force option automatically. A forced EPK replacement is a manual incident-recovery action, not credential re-encryption. Inspected code asks for an operating-system privileged account and password, then interpolates that password into a shell command; ordinary trace masking does not eliminate shell parsing, process, history, or logging exposure. Do not ask the user to send the EPK or operating-system password in chat and do not execute the force path on their behalf unless a version-proved protected procedure exists. Otherwise provide only a redacted command shape for the user to run in an approved private local terminal.
+Never add a force option automatically. A forced EPK replacement is a manual incident-recovery action, not credential re-encryption. If the installed command requests an operating-system credential, obtain it through a protected local input path, keep it out of chat and reusable command text, disclose any process/history/trace exposure, and execute only after the user authorizes the exact recovery action.
 
 ## Acceptance and Recovery
 

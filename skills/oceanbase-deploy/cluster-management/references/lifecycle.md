@@ -17,13 +17,11 @@ obd cluster list
 obd cluster display <deploy_name>
 ```
 
-Confirm these forms with the installed help. They can still initialize or reconcile controller-local `OBD_HOME` state and write a trace, so apply the OBD CLI startup-side-effect gate in the shared operation contract; they are not strict zero-write probes. Treat their output as controller registration and reported status, not proof that every process, listener, dependency, or data plane is healthy. For a status-only request, stop after the requested inventory unless the user separately asks for diagnosis or a state change.
+Confirm these forms with the installed help. They can initialize or reconcile controller-local `OBD_HOME` state and write a trace; treat that as ordinary CLI bookkeeping unless the user explicitly requires strict zero-write inspection. Their output describes controller registration and reported status, not proof that every process, listener, dependency, or data plane is healthy. For a status-only request, stop after the requested inventory unless the user separately asks for diagnosis or a state change.
 
 ## Start, Stop, and Restart
 
 Before start, establish whether the deployment is fully installed or partially initialized, whether ports and paths remain owned by it, and whether dependencies are ready. Before stop/restart, identify application routing, active workload, replication/management relationships, and the acceptable outage.
-
-Apply the shared telemetry gate immediately before start or stop; OBD V4.6.0 documents both as telemetry triggers. Inspect the installed implementation for restart rather than assuming it has identical behavior. A telemetry-setting change is a separate controller-wide mutation, not part of lifecycle authorization.
 
 Inspect the version-matched stop and restart workflows for a pre-stop compaction stage. In the inspected `ob-deploy` tree, the OceanBase 4.2.1.4 workflows add `connect` and `compaction` before stop or restart unless an internal `skip_compaction` input is set. The matched compaction plugin issues minor freezes for `sys`, `all_user`, and `all_meta`; a connection failure or an individual SQL failure is warned and the workflow can continue. Disclose the freeze and possible I/O/compaction impact before execution, preserve each warning, and verify the freeze/compaction outcome independently instead of inferring it from the later stop or restart exit.
 

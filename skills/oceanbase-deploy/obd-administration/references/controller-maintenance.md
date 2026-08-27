@@ -32,7 +32,7 @@ Afterward, verify:
 - executable path, owner, version/build, runtime, plugin set, and metadata format;
 - repository definitions and enabled state without changing package candidates;
 - every registered configuration can be parsed and retains its identity;
-- logical list/display inventory reports the expected deployments after applying the OBD CLI startup-side-effect gate;
+- logical list/display inventory reports the expected deployments, allowing for ordinary controller-local CLI bookkeeping;
 - the required command help exposes the options on which the planned workflow depends.
 - each replaced workflow/plugin/parser/optimizer tree is present, owned by the expected package/build, and loadable; no mixture of old and new trees remains.
 

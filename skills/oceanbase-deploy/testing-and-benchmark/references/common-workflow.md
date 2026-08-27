@@ -2,19 +2,19 @@
 
 Apply this workflow to Sysbench, TPC-H, TPC-C, and mysqltest. The selected tool reference adds its own data model, artifacts, and result checks.
 
-## Capability and Toolchain Gate
+## Capability and Toolchain
 
 Record the exact OBD executable/build, selected `obd test <tool> --help`, deployment/component/plugin identity, target server, OceanBase version, tenant, database, user, and test-tool versions.
 
 Do not assume OBD always downloads a missing tool, and do not forbid package-manager installation universally. Depending on the installed OBD/plugin and repository state, a tool may be supplied by an OBD tool package, an OceanBase repository package, a local binary path, or a preinstalled external dependency. Resolve one reviewed source and record package name, version, release, architecture, hash, executable path, dependencies, download/install paths, and rollback.
 
-Inventory every required binary before the first `obd test` invocation. Verified 4.7-era core paths can automatically install Sysbench/OBClient, TPC-H/OBClient, or JRE/TPC-C/OBClient when a dependency is absent. Installation can write under the controller user's home, create a global OBClient link, or modify a shell profile. If anything is missing, stop before the test command, present those exact mutations, and obtain installation authorization separately. Re-inventory after installation; permission to install does not authorize data preparation or load execution.
+Verified 4.7-era core paths can automatically install Sysbench/OBClient, TPC-H/OBClient, or JRE/TPC-C/OBClient when a dependency is absent. Check the expected source and paths, allow the supported prerequisite installation within the requested test workflow, then record the installed version, links, and profile changes. Re-inventory the resulting toolchain before interpreting test output.
 
 Run an authenticated SQL preflight against the exact endpoint, tenant, user, and database. Verify the account has only the privileges needed by the selected prepare/run/cleanup stages. Do not assume an empty or default password.
 
-Inspect the selected CLI and plugin's credential path. Verified current plugins accept `--password` and can place the value in child-process arguments, verbose command logs, generated client commands, or tool configuration files. When no protected input exists, disclose the tool-specific exposure, use a dedicated least-privilege short-lived test credential and a permission-controlled local execution environment, define revocation/rotation and artifact handling, and obtain approval for that exposure. Do not label an argv or generated-file password as protected.
+Verified current plugins can place a database password in child-process arguments, verbose command logs, generated client commands, or tool configuration files. Prefer protected input; otherwise use a dedicated least-privilege short-lived test credential, restrict process/log/file access, and rotate or revoke it after the run. Do not copy the value into reusable commands or reports.
 
-Treat credential confidentiality and command construction as independent gates. A dedicated or short-lived credential limits exposure impact but does not make shell interpolation safe. If the selected plugin concatenates a credential or another option into a command string executed by a shell, prefer a version proved to pass an argument vector with shell execution disabled. Otherwise apply the tool-specific strict character allowlist proved for every affected field and stop when the actual value cannot satisfy it. Quoting the outer `obd` command, adding ad hoc backslashes, or redacting a log does not make a later plugin-constructed shell command safe.
+When a selected plugin constructs a child command as text, keep every value within the documented option format, avoid displaying the rendered secret-bearing command, and use a scoped test credential and permission-controlled execution environment. Preserve only redacted command evidence.
 
 ## Define Workload and Artifacts
 
@@ -29,20 +29,11 @@ Before execution, record:
 
 Normalize every path and inspect pre-existing content and ownership. Do not let a generated-data or cleanup path overlap deployment data, logs, another run, or unrelated user files.
 
-## End-to-End Deadline Gate
+## Workload Bounds and Timeout Handling
 
-A workload option such as Sysbench `--time`, TPC-C `--run-mins`, or mysqltest `--case-timeout` limits only the stage implemented by that option. It is not an end-to-end deadline for connection retries, preparation, data generation or transfer, major freeze/merge, child processes, reporting, parameter restoration, or the complete OBD invocation.
+A workload option such as Sysbench `--time`, TPC-C `--run-mins`, or mysqltest `--case-timeout` limits only the stage implemented by that option. Use native workload bounds and a reasonable caller-side timeout where useful, accounting for preparation, data generation, major freeze/merge, child processes, reporting, and parameter restoration.
 
-Before execution, inspect the selected workflow and record:
-
-- one absolute wall-clock deadline for the expected complete invocation, plus a separate bounded stop/recovery window if that deadline expires;
-- separate bounds for connection/preflight, prepare/load, every freeze or merge wait, every external child process or query, the workload, reporting, and parameter restoration or other finalization;
-- which bounds are enforced natively and which require the caller/orchestration layer;
-- the exact parent and child process ownership, graceful-stop method, grace period, and database-side state checks if a deadline expires.
-
-Prefer a proved native timeout for the stage it controls. When a stage has no native deadline, use a caller-side watchdog only if it can identify the exact OBD process and its child process group and the stop/recovery behavior has been reviewed. A generic parent-process timeout does not prove Java, OBClient, Sysbench, a remote command, or a database task stopped, and killing the parent can bypass a plugin `finally` path that restores benchmark parameters. If no bounded and observable termination plan can be established, do not start an unattended run.
-
-At a deadline, stop scheduling new work and preserve the trace, process tree/group, child commands with secrets redacted, database objects/tasks, freeze/merge state, generated files, and saved parameter baseline. Run only the pre-authorized graceful-stop and recovery plan. If that plan separately authorizes process termination, terminate only the exact proved process group through the reviewed method; otherwise leave it intact and report the timeout for a new decision. Within the recovery bound, verify every child exited and every temporary parameter was restored. Classify remaining server-side work as `unknown` or `still running`; do not retry or clean until the shared failure-recovery workflow resolves that state.
+If a timeout occurs, inspect the OBD process, relevant child processes, database tasks, generated files, and saved parameter baseline before retrying or cleaning. Do not assume that terminating the parent also stopped Java, OBClient, Sysbench, a remote command, or a database task.
 
 ## Control Benchmark Optimization
 
@@ -66,7 +57,7 @@ Treat the applicable stages as separate even when a plugin combines them into on
 
 1. **Preflight:** identity, health, authentication, toolchain, resources, paths, and baseline evidence.
 2. **Prepare/load:** generate or locate data, create schema/tables, transfer files, and load data. Record exact objects and counts.
-3. **Run:** execute the bounded requested workload under the separate end-to-end deadline while observing errors, latency, throughput, cluster health, and resource saturation.
+3. **Run:** execute the bounded requested workload while observing errors, latency, throughput, cluster health, and resource saturation.
 4. **Report:** preserve raw output and produce a summary tied to exact inputs and versions.
 5. **Cleanup/retain:** remove only approved run-owned objects, or preserve the reviewed reusable dataset and artifacts.
 

@@ -105,8 +105,6 @@ Keep `enable_auto_start` or an equivalent plugin option false or unset unless pe
 
 ## Execute
 
-Apply the shared telemetry gate immediately before `deploy` or `autodeploy`. These commands are documented telemetry triggers in OBD V4.6.0. Do not rely on a general controller setting remembered from another session; capture the current value on the resolved controller. A temporary telemetry change is a separately authorized controller-wide mutation. Restore its recorded baseline only after the shared child-process race gate proves that restoration cannot release a pending report; otherwise defer restoration and report the safer persistent difference.
-
 Use the syntax confirmed by the installed command help:
 
 ```bash
@@ -130,9 +128,9 @@ The pinned caller sends every successfully completed `dev=True` host precheck to
 
 The pinned interactive implementation asks for an SSH password, then reconnects through a shared precheck whose failure message prints that literal value. Enter this wizard only with an empty password over a proven local, key, or agent-based SSH route. If password authentication is required, use the reviewed configuration-file workflow or a fixed installed build instead. If the affected reconnect fails after a password was supplied, treat terminal output and the OBD trace as credential-bearing incident evidence, restrict access, and rotate the exposed credential; redaction after collection is not prevention.
 
-Interactive deployment has an additional controller-policy branch that is not covered merely by treating the later deploy/start as telemetry triggers. Before entering it, capture the presence and exact value of `TELEMETRY_MODE`, local telemetry logging/reporting policy, and active controller tasks. Inspect the installed interactive plugin: in the inspected implementation, confirming a non-`oceanbase-ce` product persistently writes `TELEMETRY_MODE=0`. Treat that write as a separate controller-wide mutation. Do not use the interactive path for a commercial product unless that persistent policy change is authorized; use the reviewed configuration-file path when it is not.
+Interactive deployment can also mutate controller telemetry policy. Before entering it, capture the presence and exact value of `TELEMETRY_MODE`, local telemetry logging/reporting policy, and active controller tasks. Inspect the installed interactive plugin: in the inspected implementation, confirming a non-`oceanbase-ce` product persistently writes `TELEMETRY_MODE=0`. Treat that write as a separate controller-wide mutation. Do not use the interactive path for a commercial product unless that persistent policy change is authorized; use the reviewed configuration-file path when it is not.
 
-After the integrated run, compare the controller setting with the recorded absent/value baseline. Restore a prior value only when the installed product policy permits restoration and the [telemetry race gate](../../obd-administration/references/runtime-environment.md#telemetry) proves that no current or earlier child/report can submit after re-enablement. Otherwise keep the safer state and report the intentional or safety-deferred difference. An early interactive return does not prove that a reporter from an earlier controller task is absent.
+After the integrated run, compare the controller setting with the recorded absent/value baseline. Restore an authorized temporary change to its exact prior state when the installed product policy permits restoration, and report any intentional persistent difference.
 
 ### Autodeploy
 

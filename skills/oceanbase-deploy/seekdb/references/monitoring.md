@@ -22,7 +22,7 @@ Re-prove that chain from the installed build. A separately registered monitoring
 
 When OBAgent depends on SeekDB, the inspected generator can create `seekdb_monitor_user` and a random `seekdb_monitor_password` in generated configuration. During bootstrap on a non-standby instance, the SeekDB plugin can create that SQL user and grant `SELECT` on `oceanbase.*`. Surface the exact account, privilege, secret-storage path, and creation stage before authorization; a request for charts is not permission to reuse root credentials or expose an auto-generated password.
 
-The same inspected generator sends generated global key/value pairs through a verbose message before persisting them. Its generic masking patterns do not prove complete redaction of every value shaped as `seekdb_monitor_password to ...`. Treat that implementation as failing the credential-output gate: do not start a monitoring deploy or component add until the installed path is proved to suppress or fully redact the value. Supplying a user-chosen password does not remove this gate. If an affected attempt has already run, restrict its terminal, OBD log, and trace evidence and rotate the monitor credential; do not delete or rewrite the evidence as cleanup.
+The same inspected generator can include generated global key/value pairs in verbose output. Use a dedicated monitor credential, restrict terminal, OBD log, and trace access, redact the value from reports, and rotate it if the selected build exposes it. Do not delete or rewrite diagnostic evidence as cleanup.
 
 Use a protected local secret path and keep the value out of chat, reusable YAML, process listings when avoidable, display output, and reports. On a standby or an existing deployment, verify the actual account source and role behavior rather than assuming bootstrap created or replicated it. Authenticate the monitor account directly and prove its effective privileges are no broader than the installed workflow requires.
 
@@ -30,7 +30,7 @@ The inspected OBAgent path disables ordinary OceanBase collection and enables Se
 
 ## New Deployment
 
-For a new deployment, render one complete, reviewed configuration containing SeekDB and exactly the requested monitoring dependency chain. Validate every field with the installed component schemas; include no placeholder or unrequested component. After applying the shared telemetry and authorization gates, the command shape is:
+For a new deployment, render one complete, reviewed configuration containing SeekDB and exactly the requested monitoring dependency chain. Validate every field with the installed component schemas; include no placeholder or unrequested component. After applying the shared authorization rules, the command shape is:
 
 ```bash
 obd seekdb deploy <deploy_name> -c <reviewed_config.yaml>
@@ -75,4 +75,4 @@ On failure, preserve the OBD trace, before/after configuration, account and priv
 
 ## Maintainer Evidence
 
-The inspected 4.7 behavior is implemented in `plugins/seekdb/1.0.0/generate_config_pre.py`, `plugins/seekdb/1.2.0.0/bootstrap.py`, `plugins/obagent/1.3.0/obagent_const.py`, `plugins/prometheus/2.37.1/start_pre.py`, and `plugins/grafana/7.5.17/init.py`. Runtime execution must still verify the installed copies and versions.
+The inspected 4.7 behavior is implemented in `plugins/seekdb/1.0.0/generate_config_pre.py`, `plugins/seekdb/1.2.0.0/bootstrap.py`, `plugins/obagent/1.3.0/obagent_const.py`, `plugins/prometheus/2.37.1/start_pre.py`, and `plugins/grafana/7.5.17/init.py`. Use the installed plugin versions when applying these version-specific details.

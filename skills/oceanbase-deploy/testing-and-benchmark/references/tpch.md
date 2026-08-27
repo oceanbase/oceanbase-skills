@@ -40,7 +40,7 @@ obd test tpch <deploy_name> \
   [version-supported credential option; value supplied only through the approved local procedure]
 ```
 
-Use long options even when installed help also exposes short aliases. TPC-H has no universal workload-duration option: inspected current paths can wait without a native bound for major compaction and for an individual OBClient query. Apply separate generation, transfer/load, freeze/merge, warmup, per-query, and total deadlines from the common workflow. If an individual query cannot be stopped and attributed safely, do not run the query set unattended.
+Use long options even when installed help also exposes short aliases. TPC-H has no universal workload-duration option: inspected current paths can wait for major compaction or an individual OBClient query. Apply the common timeout handling to generation, transfer/load, freeze/merge, warmup, queries, and the complete invocation; after a caller timeout, verify database-side query state before retrying.
 
 ## Stage and Accept
 

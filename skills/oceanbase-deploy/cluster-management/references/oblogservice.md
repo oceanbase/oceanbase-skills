@@ -20,9 +20,7 @@ Before execution, show selected servers/instances, bootstrap identity, resource 
 
 ## Object-Storage Secret Boundary
 
-Do not assume that a protected input reference remains protected after OBD renders the plugin configuration. In an inspected `oblogservice` plugin, an object-storage URL containing an access key is an ordinary string; OBD's configuration encryption recognizes password-like field names but not that URL, and bootstrap builds a remote shell command containing the full value and writes it to verbose trace. This can expose the secret in registered YAML, command strings, process/log capture, and OBD trace.
-
-Before using object storage, prove that the exact installed plugin supports a non-plaintext credential channel and redacts every rendered command and trace. If it does not, stop rather than supply a real reusable or long-lived key. Short-lived credentials, log permissions, or later log deletion do not repair an implementation that serializes the secret; any exceptional use requires an explicitly approved credential lifetime, exposure boundary, immediate rotation/revocation, and artifact disposition.
+An inspected `oblogservice` plugin treats an object-storage URL containing an access key as an ordinary string and can include it in rendered configuration and verbose trace. Prefer a plugin-supported secret reference. When the selected version requires a credential-bearing URL, use a dedicated least-privilege short-lived credential, protect the configuration and trace files, keep the value out of chat and reports, and rotate or revoke it after the scoped operation.
 
 ## Lifecycle and Upgrade Boundary
 

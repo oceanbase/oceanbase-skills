@@ -47,8 +47,6 @@ Do not invent a `--set` option, leave a persistent global editor override, or ed
 
 ## Apply and Verify
 
-Apply the shared telemetry gate immediately before `reload`; OBD V4.6.0 documents reload as a telemetry trigger. Treat any temporary telemetry-setting change separately from the configuration change. Restore its controller-wide baseline only after the shared child-process race gate proves that restoration cannot release a pending report; otherwise defer restoration and report the safer persistent difference.
-
 Use only the installed syntax, commonly:
 
 ```bash

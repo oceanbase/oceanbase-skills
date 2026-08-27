@@ -2,30 +2,23 @@
 
 Use this workflow for the installed OBD build's supported obdiag collection, analysis, check, scene, ASH, and RCA operations.
 
-## 1. Inventory Before Invoking the Alias
+## 1. Identify the Installed Tool
 
-Do not begin with `obd obdiag --help`. In some OBD builds, resolving the dynamic alias can inspect remote candidates and install or update the diagnostic-tool package before useful help is shown. Automatic confirmation can turn discovery into tool replacement even when obdiag is already installed.
+Use the installed OBD build's normal inventory, `obd obdiag --help`, or version path to identify the available diagnostic command families. Some builds may install or update the dynamic obdiag tool while resolving the alias; record any resulting package change and verify the final tool identity before collection.
 
 First record:
 
 - controller host/user, exact OBD executable/build, `OBD_HOME`, and active tasks;
 - OBD automatic-confirm, developer-mode, telemetry/network, and mirror enabled state relevant to discovery;
 - `obd tool list` output or the installed build's equivalent core inventory;
-- local and already known remote repository candidates for the diagnostic tool, with version, release, architecture, hash, source, size, and install prefix;
-- existing tool executable and installation/configuration directories, without executing it.
+- the selected repository candidate when an install or update is needed, including version, architecture, source, and install prefix;
+- the resulting obdiag executable path and version.
 
-Use only core inventory commands whose installed behavior has been checked. If obdiag is absent, stop discovery and present the exact package, network/download/cache/install paths, privileges, conflicts, and rollback. Obtain tool-install authorization and follow [the tool lifecycle](../../obd-administration/references/tool-lifecycle.md).
+If obdiag is absent, follow [the tool lifecycle](../../obd-administration/references/tool-lifecycle.md) through the supported install path, then verify the resulting package and executable before diagnostic use.
 
-After installation, verify inventory, executable path/version, and package identity without invoking an update-capable alias. Then return to the diagnostic scope gate. Tool-install authorization does not authorize collection, inspection of a deployment, or access to diagnostic data.
+Tool installation or update does not authorize collection, inspection of a deployment, or access to diagnostic data. Establish that scope separately.
 
-If the tool is already installed, inspect the version-matched OBD dispatch implementation or authoritative release evidence before invoking the alias. Verified 4.7-era implementation evidence shows that obdiag dispatch can resolve a repository candidate and call the tool-update path before running the requested command, including a help request. Therefore:
-
-1. resolve the candidate version/hash/source and whether repository metadata can refresh;
-2. determine whether update checking and replacement can be disabled or pinned for this invocation;
-3. if they cannot, present the possible download, package replacement, paths, compatibility impact, rollback artifact, and automatic-confirm behavior, then obtain explicit tool-update authorization—or stop without invoking the alias;
-4. after any authorized install/update, re-inventory the exact tool identity before diagnostic use.
-
-Use a direct installed-tool help/version check only when the installed layout documents that entry point and the check cannot mutate tool or repository state. Do not invent a bypass around OBD's supported integration. The available command families and options are determined by the exact OBD/tool combination, not by examples from another release.
+The available command families and options are determined by the resulting OBD/tool combination, not by examples from another release. Use its help to select the exact syntax and record the version used for the diagnostic result.
 
 ## 2. Define the Diagnostic Scope
 

@@ -58,7 +58,7 @@ Verify independently:
 - the intended user resolves that executable in a fresh shell;
 - `OBD_HOME` and its permissions are the intended ones;
 - shipped plugins and repository definitions can be read without an unintended network update;
-- any pre-existing registered deployments remain visible and parseable through logical list/display inventory after the OBD CLI startup-side-effect gate is accepted;
+- any pre-existing registered deployments remain visible and parseable through logical list/display inventory, allowing for ordinary controller-local CLI bookkeeping;
 - no managed component process, listener, configuration, or target-host path changed during controller installation.
 
 On failure, preserve installer output and the before/after executable and metadata inventory. Do not delete `OBD_HOME`, reinstall through a second method, or remove profile/package files until ownership and the completed installation stage are known.

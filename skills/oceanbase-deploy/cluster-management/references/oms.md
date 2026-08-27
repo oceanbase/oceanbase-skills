@@ -7,7 +7,7 @@ Use this workflow for deploying, operating, configuring, upgrading, or troublesh
 Before producing an executable command or configuration:
 
 - Read [product and capability resolution](../../references/product-and-capability-resolution.md) and preserve the exact installed OMS component key, plugin, schema, workflows, image, edition, and license boundary.
-- Read the shared [operation contract](../../references/operation-contract.md), including controller identity, credentials, telemetry, and mutation authorization.
+- Read the shared [operation contract](../../references/operation-contract.md), including controller identity, credentials, and mutation authorization.
 - Use the shared [configuration deployment](config-deployment.md), [lifecycle](lifecycle.md), and [completion criteria](../../references/completion-criteria.md) unless this reference adds a stricter OMS rule.
 - After failure, timeout, interruption, or a mixed result, read [failure recovery and evidence](../../references/failure-recovery-and-evidence.md). Before destroy, redeploy, cleanup, or removal, also read [cleanup and ownership boundaries](../../references/cleanup-boundaries.md).
 
@@ -117,7 +117,7 @@ The official baseline uses one `mount_path`. Inspected current source can also e
 
 ## Deploy and Start
 
-Review the full configuration and image identity, apply the shared telemetry gate, and use the installed public syntax:
+Review the full configuration and image identity, then use the installed public syntax:
 
 ```bash
 obd cluster deploy <deploy_name> --config=<reviewed_oms.yaml>

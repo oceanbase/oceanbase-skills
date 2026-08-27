@@ -18,8 +18,6 @@ Commercial and community paths must be resolved independently. Do not infer comm
 
 Refresh product-side topology, tenant and replication health, active workloads/tasks, disk/log capacity, package integrity, network/SSH, and dependency health. Define stop thresholds for each unit/hop.
 
-Apply the shared telemetry gate immediately before upgrade; OBD V4.6.0 documents upgrade as a telemetry trigger. Review whether errors, script results, deployment identity, or command parameters can enter the telemetry path in the installed build. A temporary telemetry change requires separate controller-wide authorization and exact baseline restoration.
-
 Show the exact source and target identities, upgrade sequence, rolling/outage behavior, client impact, backup evidence, irreversible boundary, and recovery plan. Obtain availability/configuration authorization after this final health gate.
 
 ## Execute

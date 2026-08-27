@@ -12,7 +12,7 @@ Classify the request before taking action:
 
 Here, read-only means no change to the supplied artifact, installed/controller state, deployment, target host, database, repository, network, or another external object. When a format cannot be inspected in place, a domain workflow may create only a new isolated local scratch directory under the approved workspace or temporary area, copy/extract into it without executing content, and remove only that scratch directory afterward—unless the user required strict zero-write analysis. Record this exception and its cleanup; it does not authorize a download, package installation, repository import, target-host write, or edit to the source artifact.
 
-Do not classify an OBD CLI invocation as strict zero-write merely because the selected operation is inventory. In inspected implementations, ordinary commands initialize `OBD_HOME`, can reconcile version/plugin/workflow/schema state, and create controller trace logs before dispatch. Before `list`, `display`, or another logically read-only OBD query, resolve the exact executable, user, `OBD_HOME`, installed-version relationship, and expected controller-local writes. Disclose and authorize those bookkeeping writes. If the user requires strict zero-write analysis, do not invoke OBD; inspect already available files or output only, or report that live inventory is unresolved.
+An OBD inventory command can initialize `OBD_HOME` and write controller-local traces. Treat those as ordinary CLI bookkeeping for a requested live inventory. If the user explicitly requires strict zero-write analysis, inspect already available files or output instead of invoking OBD.
 
 Authorization for one mode or object does not authorize another. Ask again when new evidence requires a materially broader mutation.
 
@@ -30,9 +30,7 @@ Build an identity map appropriate to the task:
 | Runtime target | server, zone, service/process, paths, ports, unit or container identity |
 | Data target | tenant, backup set, SCN/time, repository object, storage prefix, or credential set |
 
-Validate every proposed or already registered deployment name before passing it to OBD. For the inspected source behavior, use the non-interactive safe subset `^[A-Za-z0-9_](?:[A-Za-z0-9_-]*[A-Za-z0-9_])?$`: it permits an interior hyphen, as used by official examples, while rejecting an empty name and a leading or trailing hyphen. Also reject non-ASCII text, whitespace or control characters, shell metacharacters, path separators, dot segments, and absolute paths. Canonicalize the controller metadata root at `OBD_HOME/cluster`, derive the prospective metadata path, and prove it is an immediate child of that root with no symlink traversal before any name-bearing OBD invocation. Stop on an unsafe legacy name rather than inspecting or mutating it through OBD.
-
-Initial shell quoting and `TELEMETRY_MODE=0` do not replace this gate. The reviewed implementation can interpolate the name again into a background shell command before the nested telemetry process reads its mode, and it joins the name directly to controller metadata paths. Permit a broader name syntax only when the selected installed implementation is proved to validate metadata containment and use shell-free argument passing for every downstream invocation.
+Use the exact registered name for an existing deployment and follow the installed command's documented naming rules for a new one. Do not rewrite a legacy name or construct controller metadata paths manually.
 
 Deduplicate physical hosts by observed host identity, not only by IP. Normalize paths and detect symbolic links, mount boundaries, overlaps, and non-empty targets before a file-affecting operation. Re-resolve the map whenever the shell, SSH hop, current user, executable, `OBD_HOME`, deployment, target list, or artifact path changes; authorization bound to the former identity does not carry over.
 
@@ -51,7 +49,7 @@ Treat these as separate risk classes:
 - deployment configuration, repository, or artifact replacement;
 - persistent host, account, systemd, kernel, limit, or runtime-environment change;
 - credential encryption, passkey rotation, secret migration, or exposure change;
-- network listener, firewall, whitelist, telemetry, download, or other external side effect.
+- network listener, firewall, whitelist, download, or other external side effect.
 
 Immediately before a high-impact mutation, state the exact target, observed current state, intended change, impact, rollback or recovery boundary, and validation plan. Bind authorization to those facts. Do not reuse confirmation for a different object or risk class.
 
@@ -61,23 +59,9 @@ Prefer protected interactive input, permission-controlled files, or a version-su
 
 Never “fix” exposure by deleting an entire shell history or unrelated logs. Redact field values in command displays, traces, YAML, URIs, and reports while preserving non-secret identity and error evidence.
 
-## Review Side Effects Before Discovery
+## Account for Discovery Side Effects
 
-Some apparent discovery commands can update repository metadata, download packages, prompt for installation, or persist controller settings. Establish the installed inventory and environment before invoking a dynamic alias. Separate authorization to install a tool from authorization to use it.
-
-## Gate Telemetry and Local Telemetry Logs
-
-Before an OBD command that can submit telemetry, record the installed version, package release and source revision when available, current telemetry submission and telemetry-log settings, applicable organizational policy, expected event categories, network destination when established, local log path, and whether command errors or parameters can enter the report or a child-process argument. The V4.6.0 command guide documents telemetry as enabled by default for `cluster autodeploy`, `deploy`, `start`, `stop`, `reload`, and `upgrade`; inspect the installed dispatch sites rather than assuming this list is exhaustive or unchanged.
-
-Treat telemetry command construction as a fail-closed compatibility gate, separate from telemetry policy. In an inspected development implementation, the parent process JSON-encodes an error buffer, interpolates that JSON inside a single-quoted command string, and launches it through a shell. JSON encoding is not shell quoting; an apostrophe or other shell syntax in ordinary plugin, remote-host, path, SQL, or command error text can escape the intended argument. Do not execute any installed path that can dispatch this construction, and do not classify a build as affected or fixed from its product version, RPM release, source branch, or tag alone.
-
-First prove the exact installed call path. If it contains the affected construction, require a vendor-released fixed OBD artifact before such a command. The selected artifact qualifies only when its immutable provenance or exact installed implementation proves that both deployment name and telemetry data are passed as an argument vector with no shell (`shell=False` or equivalent), or are transported in-process with arbitrary error text never parsed as command syntax. Record the artifact identity, provenance, and inspected call path. If either the fixed artifact or proof is unavailable, stop and offer only non-executable guidance or analysis of already supplied evidence.
-
-`TELEMETRY_MODE=0`, `TELEMETRY_LOG_MODE=0`, sanitizing only the deployment name, or adding outer shell quotes is not a workaround: the affected parent shell parses the constructed command before the nested telemetry process can enforce its mode. Do not patch or replace OBD implicitly; controller update and verification are separate authorized operations.
-
-Only after that command-construction gate passes, preserve the existing telemetry policy by default. If the environment requires no egress or the command can expose unapproved sensitive material and effective redaction cannot be proved, stop before the command. Changing `TELEMETRY_MODE`, `TELEMETRY_LOG_MODE`, or an equivalent value is a separate persistent controller-wide mutation: record the prior presence/value and active tasks, obtain authorization, change only the required key, and restore the exact prior state after the scoped operation unless a persistent policy change was requested. Disabling submission does not prove local logging is disabled, and disabling local logging does not prove submission is disabled.
-
-After the safe-construction gate passes, inspect whether the selected fixed build still launches telemetry posting in a background OBD process and places an error buffer in its payload or child-process arguments. If telemetry was temporarily disabled for policy reasons, do not restore the prior enabled value merely because the parent command returned. First prove that every telemetry child for that command has terminated and that no pending report can submit after restoration; otherwise keep the safer state and report the unresolved controller-wide difference.
+Some discovery commands can update repository metadata, download packages, prompt for installation, or persist controller settings. Use the installed command's normal inventory/help path, record any resulting setup or package change, and surface a material side effect before proceeding when it falls outside the requested task. Tool setup does not by itself broaden the authorized diagnostic or operational target.
 
 ## Produce an Execution Record
 
@@ -93,5 +77,5 @@ After execution, record observed state rather than merely repeating command outp
 
 ## Sources
 
-- Official OBD V4.6.0 Command Guide: environment and telemetry command groups, plus deployment-name examples with interior hyphens.
-- [Source-evidence boundary](source-baselines.md#source-evidence-boundary): `_cmd.py` `ObdCommand.init_home`, `_init_log`, `do_command`, and `ClusterMirrorCommand.background_telemetry_task`; `ssh.py` `LocalClient.execute_command_background` in the exact inspected checkout.
+- Official OBD V4.6.0 Command Guide: environment commands and deployment-name examples with interior hyphens.
+- [Source-evidence boundary](source-baselines.md#source-evidence-boundary): `_cmd.py` `ObdCommand.init_home` and `_init_log` in the exact inspected checkout.

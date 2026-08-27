@@ -32,14 +32,14 @@ Do not copy a community template and replace only the component name. Product fo
 
 ## Build a Capability Record
 
-Before every executable plan or mutation:
+Use the evidence needed for the requested operation:
 
 1. Read the exact target subcommand's `--help`; prefer unambiguous long options.
-2. Inspect the selected component plugin, parameter schema, and public workflow shipped with this OBD build.
+2. Inspect the selected component schema or workflow when the documented command leaves a version-specific field or behavior unresolved.
 3. Inspect registered deployment state and effective configuration when the target already exists.
 4. List repository candidates by component, version, release, architecture, hash, and source.
-5. Resolve required dependencies and compatibility edges among OBD, plugins, OceanBase, OBProxy, OBAgent, OCP, monitoring, the operating system, and the architecture.
-6. Select one reviewed artifact per component. Do not use “latest” or version-only selection when several releases match.
+5. Resolve dependencies and compatibility edges that apply to the selected components, operating system, and architecture.
+6. Select a compatible artifact per component; use an exact reviewed artifact when reproducibility or an existing deployment requires it.
 
 The evidence priority is:
 
@@ -48,7 +48,7 @@ The evidence priority is:
 3. version-matched official documentation or released examples;
 4. implementation source for unresolved behavior, clearly identified as implementation evidence.
 
-If these layers disagree, stop before mutation and report the conflict. Do not silently choose the most permissive interpretation.
+If these layers disagree on a material behavior, report the conflict and resolve it from the installed command or version-matched documentation before relying on that behavior.
 
 ## Preferred Package Source
 
@@ -56,7 +56,7 @@ For every package acquired by this skill bundle, use `https://mirrors.oceanbase.
 
 ## Maintainer Evidence Baseline
 
-This revision was reviewed against the official OBD V4.6.0 Quick Start, User Guide, Command Guide, and OBD Upgrade Guide, plus an explicitly identified development checkout under the [source-evidence boundary](source-baselines.md#source-evidence-boundary). The documentation is not mapped to that checkout or to an RPM release. Development-source observations are non-release evidence and cannot authorize execution by themselves. Maintainers must update or remove a concrete implementation claim when the documentation or inspected source changes. Runtime execution still follows the installed-build evidence priority above.
+This revision was reviewed against the official OBD V4.6.0 Quick Start, User Guide, Command Guide, and OBD Upgrade Guide, plus an explicitly identified development checkout under the [source-evidence boundary](source-baselines.md#source-evidence-boundary). The documentation is not mapped to that checkout or to an RPM release. Use development-source observations to explain implementation details, not to impose release-wide restrictions without matching runtime evidence.
 
 ## Commercial Artifact Boundary
 

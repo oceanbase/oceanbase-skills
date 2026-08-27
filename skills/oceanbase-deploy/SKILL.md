@@ -1,7 +1,6 @@
 ---
 name: oceanbase-deploy
 description: Route OceanBase deployment and operations through obd across community, commercial distributed, and commercial standalone or centralized product forms. Use for general or multi-domain OceanBase/obd requests, product-form discovery, or when the correct specialized skill is unclear. Route concrete work to cluster management, OBD administration, tenant management, testing, or diagnostics. Preserve the bundled SeekDB route for OBD-managed SeekDB lifecycle, HA, and monitoring work.
-compatibility: Requires the complete oceanbase-deploy bundle and an installed OBD build whose exact commands, plugins, workflows, artifacts, and telemetry subprocess path pass the shared capability and safety gates.
 metadata:
   author: oceanbase
   version: "3.0"
@@ -51,8 +50,6 @@ Do not:
 - **Implement:** display the resolved targets, mutations, impact, and acceptance plan before execution. Obtain authorization at the point required by the risk class.
 
 Read the shared [operation contract](references/operation-contract.md) before any live controller/host/deployment query, SSH/SQL/API/network access, download, write, or other externally visible action. A child skill can be selected directly, so every child in the routing table must also link this contract and retain its essential safety boundary.
-
-If any required child skill or reference is unavailable, fail closed: do not generate executable commands or perform a mutation. Explain that the complete `skills/oceanbase-deploy/` bundle is required; only non-executable orientation is allowed from the root file alone.
 
 ## Define Completion and Failure Handling
 

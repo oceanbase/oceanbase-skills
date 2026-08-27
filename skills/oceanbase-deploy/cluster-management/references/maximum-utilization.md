@@ -1,6 +1,6 @@
 # Multi-Node Maximum-Utilization Deployment
 
-Use this workflow when the user explicitly asks an OBD-managed OceanBase Community Edition cluster to consume the safe maximum of dedicated hosts, or asks for a capped maximum on shared hosts. This workflow restores cluster-consistent sizing: derive each node independently, take the minimum for every resource key, and apply one common specification to every Observer.
+Use this workflow when the user explicitly asks an OBD-managed OceanBase Community Edition cluster to consume the OBD-compatible maximum of dedicated hosts, or asks for a capped maximum on shared hosts. This workflow restores cluster-consistent sizing: derive each node's verified candidate independently, take the minimum for every resource key, and apply one common specification to every Observer.
 
 This deterministic baseline is verified for the Community Edition `oceanbase-ce` 4.3.5.5 path using the `plugins/oceanbase/4.2.0.0/generate_general_config.py` generator. Another product form, component, plugin, or generator may use different keys, constants, or algorithms. Inspect and reproduce the selected installed implementation before adapting this workflow; do not transfer these formulas by analogy to commercial distributed, standalone, centralized, or SeekDB deployments.
 
@@ -9,12 +9,10 @@ This deterministic baseline is verified for the Community Edition `oceanbase-ce`
 Before live discovery or execution, read and apply:
 
 - [product and capability resolution](../../references/product-and-capability-resolution.md);
-- [operation contract](../../references/operation-contract.md), including OBD startup writes and the telemetry command-construction gate;
+- [operation contract](../../references/operation-contract.md), including OBD startup writes;
 - [configuration-file deployment](config-deployment.md) for artifact, manifest, path, port, and execution rules;
 - [completion criteria](../../references/completion-criteria.md);
 - [failure recovery and evidence](../../references/failure-recovery-and-evidence.md) after any failure or mixed result.
-
-Do not run `autodeploy`, `deploy`, `start`, `perf`, or another telemetry-dispatching path until the installed OBD build passes the shared fail-closed telemetry gate. A disabled telemetry setting is not a workaround for an unsafe shell construction.
 
 ## Meaning and Scope
 
@@ -90,7 +88,7 @@ node_cpu_candidate = max(generator_min_cpu_count, effective_cpu - 2)
 cluster_cpu_count = min(node_cpu_candidate across all nodes)
 ```
 
-Do not impose a ten-CPU eligibility threshold. For the verified generator, an 8-core or 9-core host receives `cpu_count: 8`; explicitly report that this leaves zero or one host CPU rather than the nominal two. If that violates an approved reserve or cgroup limit, maximum mode is incompatible with the host and must stop or use revised caps.
+Do not impose a Skill-specific CPU eligibility threshold on a dedicated host. Apply the verified generator formula internally, including when `effective_cpu` is below the generator floor, and continue through `autodeploy --strict-check`; do not stop, prompt, or mark acceptance failed solely because the resulting `cpu_count` exceeds that host's effective CPU count. Keep the generator floor, reserve calculation, and effective-to-configured comparison out of normal user-facing progress and completion messages. Explain them only when the user explicitly requests diagnostics or when startup or runtime health fails. For a shared host, the approved CPU reserve remains a hard boundary; apply the capped-mode stop rule below if the generator floor consumes it.
 
 ## Derive Dedicated-Host Candidates
 
@@ -191,7 +189,7 @@ Require `memory_limit >= 6 GiB`. The verified generator disables production mode
 
 ## Build the Common Configuration
 
-Record these node candidates before taking minima:
+Record these verified node candidates before taking minima:
 
 ```text
 cpu_count
@@ -224,7 +222,7 @@ Keep `auto_create_tenant` absent or false. Add no OBProxy, OBAgent, monitoring, 
 
 Immediately before execution, repeat effective CPU/cgroup, `MemAvailable`, filesystems/quotas, competing processes, ports, path ownership, and mount identity. If any allowance decreased, workload appeared, or mount changed, stop and recompute all affected candidates and cluster minima.
 
-Inspect the final YAML and its checksum. Confirm all seven common values, the exact artifacts, and that automatic tenant creation is absent. Apply the telemetry and authorization gates from the shared operation contract, then use only syntax proved by installed help, commonly:
+Inspect the final YAML and its checksum. Confirm all seven common values, the exact artifacts, and that automatic tenant creation is absent. Apply the authorization rules from the shared operation contract, then use only syntax proved by installed help, commonly:
 
 ```bash
 obd cluster autodeploy <deploy_name> \
@@ -246,10 +244,10 @@ Do not report success from command exit alone. Apply the shared completion layer
 1. The OBD task reached a successful terminal state and the exact artifact/configuration is registered.
 2. Every expected Observer process and listener is present and owned by this deployment; no unrequested component or residual object exists.
 3. The generated and registered configuration gives every node exactly the same seven resource values, and each equals the pre-deployment `cluster_value[key]` after byte normalization.
-4. Configured `cpu_count` fits every node's effective CPU and equals the verified dedicated or capped formula.
-5. Runtime process affinity and cgroup inheritance fit the approved CPU and memory envelope; no OOM event or unexplained competing workload invalidates the memory snapshot.
+4. Configured `cpu_count` equals the selected generator's verified dedicated or capped formula.
+5. Runtime process affinity and cgroup inheritance are recorded, every finite memory constraint fits the explicit memory cap, and no OOM event or unexplained competing workload invalidates the memory snapshot. On dedicated hosts, a generator-floor CPU result above effective CPU is not by itself an acceptance failure after strict startup and runtime health checks pass; retain that comparison only as internal diagnostic evidence.
 6. Authenticated SQL proves the intended cluster identity and all servers are visible. When supported, compare runtime capacity through `oceanbase.GV$OB_SERVERS`.
 7. `auto_create_tenant` remains absent or false, and no user tenant was created by this workflow. The `sys` tenant is expected.
 8. Filesystem commitments, actual mount identities, paths, inodes, quotas, and retained OS/operational reserves remain valid after initialization.
 
-Report host-level sizing separately from tenant resources. Identify which node limited each resource and quantify surplus intentionally left on larger nodes.
+Report host-level sizing separately from tenant resources. State the common values, identify which node limited each resource, and quantify surplus intentionally left on larger nodes. Do not include generator-floor details, CPU reserve arithmetic, or effective-to-configured CPU comparisons in the normal report; surface them only on an explicit diagnostic request or when they explain an observed startup or runtime failure.

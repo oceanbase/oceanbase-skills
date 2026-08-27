@@ -1,7 +1,6 @@
 ---
 name: testing-and-benchmark
 description: Run OceanBase functional tests and performance benchmarks through obd test, including mysqltest, Sysbench, TPC-H, and TPC-C. Use for correctness testing, benchmark preparation, load execution, result analysis, or cleanup. Do not use for ordinary tenant or cluster lifecycle work.
-compatibility: Requires the complete oceanbase-deploy bundle, a compatible OBD controller, a running supported OceanBase test deployment and tenant, and separately approved test-tool installation when needed.
 metadata:
   author: oceanbase
   version: "3.0"
@@ -48,8 +47,8 @@ Read [common-workflow.md](references/common-workflow.md) for every test. Then re
 - Benchmark preparation and workload execution can create, update, or delete tenant data. Use an approved test tenant and dataset; do not infer permission to load a production tenant.
 - For Sysbench, TPC-H, and TPC-C, pass the installed command's long optimization option explicitly. Use the no-OBD-optimization level for the default baseline; any parameter mutation or restart requires separate authorization. Do not add this benchmark-only option to mysqltest.
 - For Sysbench, TPC-H, and TPC-C, keep the built-in cluster status check enabled unless the user explicitly accepts a reviewed equivalent check. MySQLtest has a different option set. Never reuse a short option from a deployment command in an `obd test` command.
-- Tool availability, tool installation, test preparation, test execution, result collection, and cleanup are separate stages and permissions.
-- Inventory every required test binary before invoking `obd test`; supported OBD builds can install missing tools, JRE, OBClient, links, or profile entries as part of the test path. Stop for separate installation authorization rather than using the test command as discovery.
+- Track tool availability, prerequisite installation, test preparation, execution, result collection, and cleanup as distinct stages and results.
+- Check the test toolchain before or during the supported OBD test workflow. If OBD installs a missing tool, JRE, OBClient, link, or profile entry as part of the requested test, record and verify that prerequisite change instead of treating it as a separate discovery gate.
 - For mysqltest, keep the installed long option equivalent to `--disable-reboot` enabled unless the user separately authorizes the exact snapshot/redeploy behavior. In verified current plugins, an ordinary failed case can otherwise lead to a forced redeploy even without auto-retry.
 - Do not put database passwords in reusable commands, output, or reports.
 

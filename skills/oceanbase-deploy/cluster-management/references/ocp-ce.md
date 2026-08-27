@@ -101,7 +101,7 @@ obd cluster deploy <deploy_name> --config=<reviewed_ocp_config.yaml>
 obd cluster start <deploy_name> --strict-check
 ```
 
-Apply the telemetry gate to both commands and use `--strict-check` only if installed start help supports it. Verify exact OCP artifact/process/listener/path ownership, authenticated administrator login, MetaDB connectivity and expected objects, OCP background tasks, and the requested management function. For same-deployment MetaDB, also verify OceanBase/OBProxy health and that exactly one intended OCP management relationship exists.
+Use `--strict-check` only if installed start help supports it. Verify exact OCP artifact/process/listener/path ownership, authenticated administrator login, MetaDB connectivity and expected objects, OCP background tasks, and the requested management function. For same-deployment MetaDB, also verify OceanBase/OBProxy health and that exactly one intended OCP management relationship exists.
 
 On partial failure, preserve the OBD trace, OCP task/logs, rendered configuration, MetaDB objects, account/grant state, processes/listeners, and current OCP records. Do not recreate tenants, switch MetaDB topology, load another package, delete an OCP record, or redeploy as generic recovery.
 

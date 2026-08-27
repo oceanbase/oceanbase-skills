@@ -1,7 +1,6 @@
 ---
 name: obd-administration
 description: Install, update, and administer the OBD controller, including mirrors and repositories, offline artifacts, stored-credential encryption, dynamic tools, top-level host utilities, trace evidence, OBD Web/API, runtime environment, developer mode, and telemetry. Use for controller-scoped OBD work; use the specialized cluster, tenant, testing, or obdiag skill for those domains.
-compatibility: Requires the complete oceanbase-deploy bundle and an existing OBD controller or an approved supported host and artifact source for OBD installation.
 metadata:
   author: oceanbase
   version: "3.0"

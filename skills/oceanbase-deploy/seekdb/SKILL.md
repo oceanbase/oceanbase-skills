@@ -2,7 +2,6 @@
 name: obd-seekdb
 description: >-
   Operate SeekDB through OBD: install or deploy, lifecycle, takeover, primary-standby HA, and OBD-managed OBAgent/Prometheus/Grafana monitoring for a SeekDB deployment. Use only when the requested mechanism is obd seekdb or the task is an OBD controller lifecycle, HA, or monitoring operation on an OBD-managed SeekDB deployment. Do not use for a generic SeekDB mention or for product documentation, non-OBD installation/build, SQL/CLI work, data import, or querying; route those to the top-level SeekDB product skill.
-compatibility: Requires the complete oceanbase-deploy bundle, an OBD build with target-version-matched SeekDB and requested monitoring plugins/workflows, and approved access to the scoped hosts or instances.
 metadata:
   author: oceanbase
   version: "1.0"
@@ -12,7 +11,7 @@ metadata:
 
 This skill covers operations performed through `obd seekdb` and OBD-managed monitoring components attached to the same SeekDB deployment. It is not the product-level SeekDB skill. A generic mention of SeekDB does not activate this route.
 
-Compatibility requires an installed OBD build, target SeekDB version, and selected plugin/workflow that all support the requested operation. Command presence in `--help` is not sufficient: inspected OBD builds register HA commands even when the target version has no matching workflow, and that path can return success without changing a role. Before selecting syntax, read [product and capability resolution](../references/product-and-capability-resolution.md) and prove the target-specific workflow exists.
+Use the installed OBD help and version-matched SeekDB guidance to select the command. Inspected builds can expose an HA command that performs no role-change stage for an unsupported target, so verify the resulting database roles and topology rather than treating command exit as proof of the transition.
 
 Route product documentation, installation or build work that does not use OBD, `seekdb-cli`, SQL, import, and query/export tasks to the top-level [SeekDB product skill](../../seekdb/SKILL.md). Keep the product task there even when the target instance was originally deployed by OBD, unless the requested action itself is an OBD controller operation.
 
@@ -36,7 +35,7 @@ Before any live `obd seekdb` or monitoring query or mutation, read the shared [o
 
 | Command | Description |
 |---------|-------------|
-| `obd seekdb install` | Integrated interactive host precheck/init, deploy, and start (requires TTY and the install gate below) |
+| `obd seekdb install` | Integrated interactive host precheck/init, deploy, and start (requires TTY; see the install workflow below) |
 | `obd seekdb install --primary` | Integrated primary install with RPC enabled for standby sync |
 | `obd seekdb install --standby` | Integrated standby install that can also reconfigure/reload/restart the selected primary |
 | `obd seekdb deploy <name> -c <config>` | Deploy with config file |
@@ -80,7 +79,7 @@ Primary and standby **must be on different IPs**. If deployed on the same IP, OB
 
 ## Install Modes
 
-See [references/install-modes.md](references/install-modes.md) for the compound install transaction, host/primary mutation gates, TTY requirements, non-interactive limitations, and takeover boundary. Do not enter the wizard until every possible branch has been classified and either authorized or explicitly rejected.
+See [references/install-modes.md](references/install-modes.md) for the compound install transaction, host/primary mutation checks, TTY requirements, non-interactive limitations, and takeover boundary. Review the branches that apply to the requested installation before entering the wizard.
 
 ## Monitoring
 
