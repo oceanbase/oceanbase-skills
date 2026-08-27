@@ -101,6 +101,8 @@ Before execution, read installed help/workflow; inspect the matching registered 
 
 `perf` is the official maximum-specification local quick-deploy command, not an alias for `autodeploy`. It defaults to a build-defined component set and a fixed `perf` namespace. Do not silently substitute `autodeploy`, use it as a general production or commercial deployment path, or assume “maximum” consumes every byte safely. Reserve OS and operational headroom and review the generated topology and resources before execution.
 
+For multi-node maximum utilization, do not repeat `perf` per host. Follow the cluster-consistent workflow in [maximum-utilization.md](maximum-utilization.md).
+
 For the previously supported database-only demo scope, prefer the explicit long form when installed help confirms it:
 
 ```bash

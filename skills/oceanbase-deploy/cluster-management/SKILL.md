@@ -1,6 +1,6 @@
 ---
 name: cluster-management
-description: Deploy and operate community or commercial OceanBase clusters with obd, including distributed and commercial standalone or centralized forms, lifecycle changes, upgrades, monitoring, OCP, network access, Config Server, Binlog/CDC services, OMS, oceanbase.ai, oblogservice, and shared-storage topologies. Use for OceanBase cluster control-plane work; route tenant, benchmark, diagnostic, controller-administration, and unrelated product workflows elsewhere.
+description: Deploy and operate community or commercial OceanBase clusters with obd, including distributed and commercial standalone or centralized forms, multi-node maximum-utilization sizing, lifecycle changes, upgrades, monitoring, OCP, network access, Config Server, Binlog/CDC services, OMS, oceanbase.ai, oblogservice, and shared-storage topologies. Use for OceanBase cluster control-plane work; route tenant, benchmark, diagnostic, controller-administration, and unrelated product workflows elsewhere.
 compatibility: Requires the complete oceanbase-deploy bundle, a compatible OBD controller, version-matched component artifacts and plugins, and approved host access for live operations.
 metadata:
   author: oceanbase
@@ -53,6 +53,7 @@ Read only the references needed for the request.
 
 | Request | Reference |
 |---|---|
+| Dedicated-host or capped multi-node maximum-utilization deployment and deterministic resource sizing | [maximum-utilization.md](references/maximum-utilization.md) |
 | Any new community, commercial distributed, or commercial standalone/centralized config-file, interactive, or autodeploy request | [config-deployment.md](references/config-deployment.md), which performs common preflight and then selects exactly one product blueprint |
 | `edit-config`, `reload`, parameter classification, or `chst` | [configuration-changes.md](references/configuration-changes.md) |
 | Start, stop, restart, display, destroy, redeploy, prune, `demo`, or `perf` | [lifecycle.md](references/lifecycle.md) |

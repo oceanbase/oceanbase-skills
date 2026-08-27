@@ -148,7 +148,7 @@ Display the canonical paths, existing registration, processes/listeners, tenant/
 
 ### Maximum-Utilization Requests
 
-Use a maximum-utilization or auto-generated workflow only when explicitly requested. If the request names `obd perf`, route that exact shortcut through [lifecycle.md](lifecycle.md#quick-deploy-shortcuts); do not replace it with `autodeploy`. Otherwise read the installed `autodeploy`/generation help and plugin implementation, reserve OS and operational headroom, show the generated topology and resource allocation, and run the same identity, path, port, artifact, and acceptance gates. “Use all resources” never means zero safety reserve or permission to initialize the host automatically.
+Use a maximum-utilization or auto-generated workflow only when explicitly requested. If the request names `obd perf`, route that exact single-node shortcut through [lifecycle.md](lifecycle.md#quick-deploy-shortcuts); do not replace it with `autodeploy`. For dedicated-host or capped multi-node maximum sizing, read and follow [maximum-utilization.md](maximum-utilization.md). It restores the deterministic per-node candidate calculation, weakest-node resource minima, 8-core behavior, disk commitment checks, explicit common resource keys, and post-deployment equality checks. “Use all resources” never means zero safety reserve or permission to initialize the host automatically.
 
 ## Accept or Recover
 

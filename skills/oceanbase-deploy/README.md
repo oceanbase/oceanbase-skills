@@ -9,7 +9,7 @@ OceanBase 的 OBD 部署与运维 Skill 集合。它使用同一套安全工作�
 | Skill | 功能 |
 |---|---|
 | [`oceanbase-deploy`](./) | 总入口：识别产品形态、能力和执行模式，并路由到具体 skill |
-| [`cluster-management`](./cluster-management/) | 集群部署、配置、启停、升级、扩缩容、组件、监控、OCP 和网络接入 |
+| [`cluster-management`](./cluster-management/) | 集群部署、多节点最大化资源规格、配置、启停、升级、扩缩容、组件、监控、OCP 和网络接入 |
 | [`obd-administration`](./obd-administration/) | OBD 安装升级、镜像仓库、凭据、动态工具、Web/API 和运行环境 |
 | [`tenant-management`](./tenant-management/) | 租户创建、删除、优化、备份恢复和物理主备 |
 | [`testing-and-benchmark`](./testing-and-benchmark/) | Sysbench、TPC-H、TPC-C 和 mysqltest |

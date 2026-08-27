@@ -1,0 +1,255 @@
+# Multi-Node Maximum-Utilization Deployment
+
+Use this workflow when the user explicitly asks an OBD-managed OceanBase Community Edition cluster to consume the safe maximum of dedicated hosts, or asks for a capped maximum on shared hosts. This workflow restores cluster-consistent sizing: derive each node independently, take the minimum for every resource key, and apply one common specification to every Observer.
+
+This deterministic baseline is verified for the Community Edition `oceanbase-ce` 4.3.5.5 path using the `plugins/oceanbase/4.2.0.0/generate_general_config.py` generator. Another product form, component, plugin, or generator may use different keys, constants, or algorithms. Inspect and reproduce the selected installed implementation before adapting this workflow; do not transfer these formulas by analogy to commercial distributed, standalone, centralized, or SeekDB deployments.
+
+## Required Shared Gates
+
+Before live discovery or execution, read and apply:
+
+- [product and capability resolution](../../references/product-and-capability-resolution.md);
+- [operation contract](../../references/operation-contract.md), including OBD startup writes and the telemetry command-construction gate;
+- [configuration-file deployment](config-deployment.md) for artifact, manifest, path, port, and execution rules;
+- [completion criteria](../../references/completion-criteria.md);
+- [failure recovery and evidence](../../references/failure-recovery-and-evidence.md) after any failure or mixed result.
+
+Do not run `autodeploy`, `deploy`, `start`, `perf`, or another telemetry-dispatching path until the installed OBD build passes the shared fail-closed telemetry gate. A disabled telemetry setting is not a workaround for an unsafe shell construction.
+
+## Meaning and Scope
+
+Maximum utilization configures capacity limits; it does not manufacture workload. An idle Observer will not continuously consume all configured CPU or memory. Data and clog files can reserve or consume substantial disk during initialization, while CPU and memory use grow with workload.
+
+For a multi-node cluster:
+
+```text
+cluster_value[key] = min(node_candidate[key] across every target node)
+```
+
+Calculate the minimum independently for each key. Different nodes may limit CPU, memory, data, and log disk. Do not average, sum, choose one nominally smallest host, or allow heterogeneous per-server maxima. Larger nodes intentionally retain surplus capacity.
+
+Host maximum utilization is separate from tenant allocation. Do not create a tenant, enable `auto_create_tenant`, or pass an automatic-tenant option unless the user separately requests a tenant after the Observer cluster is accepted.
+
+`obd perf` is a fixed-name single-node shortcut with implicit force/cleanup behavior. Route it through [quick-deploy shortcuts](lifecycle.md#quick-deploy-shortcuts). Multi-node maximum utilization uses a reviewed `autodeploy` configuration; never repeat `perf` on each node.
+
+## Eligibility and Stop Conditions
+
+Automatic whole-host maximum sizing is allowed only on hosts dedicated to this deployment. If a host is shared, already runs OceanBase or unrelated workloads, or must preserve an absolute reserve, stop unless the user supplies explicit CPU, memory, and disk reserves or caps and accepts a capped shared-host deployment.
+
+Before sizing, prove:
+
+- the exact OBD executable/build, `OBD_HOME`, installed `autodeploy` and strict-check options, selected component plugin, generator path, and generator checksum;
+- one exact compatible OceanBase artifact, release, architecture, hash, repository source, and dependency closure for every node;
+- every management address maps to a unique physical host;
+- the deployment name, app identity, ports, and canonical home/data/redo paths do not collide with registered or unmanaged state;
+- each selected path is new or empty, non-symlinked, owned by the deployment user, and located on the intended filesystem;
+- blocks, inodes, user/project quota, mount identity, and future commitments are known for every selected filesystem;
+- clocks, routes, SSH, firewall/security-group policy, OS, architecture, GLIBC, instruction set, and filesystem are compatible;
+- no unrequested colocated component or workload consumes the budget.
+
+Two nodes or multiple logical zones in one physical failure domain are a capacity/testing topology, not automatic production HA. Establish replica and failure-domain requirements before claiming high availability.
+
+Stop instead of calculating an executable maximum when the selected generator cannot be inspected, host state is stale, cgroup limits are unresolved, paths map to unknown storage, package compatibility is unproved, or the deployment would require an unapproved host/system mutation.
+
+## Capture One Sizing Snapshot
+
+Use the same SSH identity OBD will use. Capture every node in one bounded window and repeat the volatile checks immediately before execution:
+
+```bash
+hostname
+cat /etc/machine-id
+cat /etc/os-release
+getconf GNU_LIBC_VERSION
+nproc
+nproc --all
+grep -c '^processor' /proc/cpuinfo
+grep -E 'Cpus_allowed_list|Mems_allowed_list' /proc/self/status
+cat /proc/self/cgroup
+findmnt -t cgroup,cgroup2
+free -b
+df -B1 <home-parent> <data-parent> <redo-parent>
+df -i <home-parent> <data-parent> <redo-parent>
+findmnt -T <home-parent>
+findmnt -T <data-parent>
+findmnt -T <redo-parent>
+ss -lntp
+ps -eo user,pid,rss,%mem,%cpu,args --sort=-rss
+```
+
+Also inspect active containers and service managers when present. Existing deployments, processes, listeners, quotas, or future disk growth remain commitments even when instantaneous use is low.
+
+### Effective CPU
+
+Define `effective_cpu` as the floor of the smallest allowance imposed by online CPUs, process affinity, cpuset, and CPU quota. For cgroup v2, inspect `cpu.max`, `cpuset.cpus.effective`, `memory.max`, and `memory.current` at the process cgroup and every parent up to the cgroup2 mount. For cgroup v1, map and inspect the corresponding CPU, cpuset, and memory controller files at every applicable ancestor.
+
+The verified generator counts `processor` entries in `/proc/cpuinfo`, subtracts two, and clamps to eight. It does not account for every offline, affinity, cpuset, quota, or memory-cgroup constraint. Reproduce it against effective capacity:
+
+```text
+generator_min_cpu_count = 8
+node_cpu_candidate = max(generator_min_cpu_count, effective_cpu - 2)
+cluster_cpu_count = min(node_cpu_candidate across all nodes)
+```
+
+Do not impose a ten-CPU eligibility threshold. For the verified generator, an 8-core or 9-core host receives `cpu_count: 8`; explicitly report that this leaves zero or one host CPU rather than the nominal two. If that violates an approved reserve or cgroup limit, maximum mode is incompatible with the host and must stop or use revised caps.
+
+## Derive Dedicated-Host Candidates
+
+These formulas apply only when all seven absolute resource keys and their percentage alternatives are initially unset, only Observer is selected, `max_syslog_file_count` is known, and disk capacity is sufficient to avoid the generator's shortage-recovery branches. Use integer bytes throughout (`GiB = 2^30`, `MiB = 2^20`) and normalize every formatted value back to bytes before comparing it.
+
+For each node:
+
+```text
+cpu_count = max(8, effective_cpu - 2)
+memory_raw = max(6 GiB, floor(MemAvailable * 0.9))
+memory_limit = memory_raw
+
+system_memory =
+  1 GiB                    when memory_raw < 12 GiB
+  5 GiB                    when memory_raw < 20 GiB
+  6 GiB                    when memory_raw < 40 GiB
+  7 GiB                    when memory_raw < 60 GiB
+  8 GiB                    when memory_raw < 80 GiB
+  9 GiB                    when memory_raw < 100 GiB
+  10 GiB                   when memory_raw < 130 GiB
+  floor(memory_raw * 0.08) otherwise
+
+log_disk_size = (memory_raw - system_memory) * 3 + system_memory
+slog_reserve = 4 GiB
+```
+
+For the verified generator:
+
+```text
+syslog_reserve = 1 GiB
+  when max_syslog_file_count == 0
+
+syslog_reserve = 256 MiB
+  * max_syslog_file_count
+  * max_syslog_type_file_count
+  otherwise
+```
+
+Confirm `max_syslog_type_file_count` from the selected plugin context; the reviewed baseline used four. Do not hard-code it for another generator.
+
+### Data and Clog on One Filesystem
+
+Let `F` be available bytes on the shared data/clog filesystem. Let `H` equal `syslog_reserve` only when `home_path` is also on that filesystem; otherwise `H = 0`.
+
+Require:
+
+```text
+F >= H + slog_reserve + 2 GiB + log_disk_size
+```
+
+Then calculate:
+
+```text
+disk_data_budget = floor((F - H - slog_reserve - log_disk_size) * 0.95)
+require disk_data_budget >= 2 GiB
+
+datafile_size = min(disk_data_budget, log_disk_size)
+datafile_maxsize = max(disk_data_budget, log_disk_size)
+datafile_next = max(2 GiB, floor(datafile_maxsize * 0.10))
+```
+
+### Data and Clog on Different Filesystems
+
+Let `Fd` and `Fc` be available bytes on the data and clog filesystems. Let `Hd` or `Hc` equal `syslog_reserve` only on the filesystem containing `home_path`; otherwise use zero.
+
+```text
+datafile_size = 3 * memory_raw
+require Fd >= Hd + slog_reserve + datafile_size
+
+datafile_maxsize = floor((Fd - Hd - slog_reserve) * 0.95)
+datafile_next = floor(datafile_maxsize * 0.10)
+require datafile_maxsize > datafile_size
+
+require Fc >= Hc + log_disk_size
+```
+
+These formulas deliberately stop before automatic disk-shortage recovery. If a requirement fails, finite cgroup memory exists, percentage or explicit values are already present, components are colocated, quota applies, or the generator differs, inspect and reproduce the exact selected branch or use user-approved conservative caps. Never launch a disposable deployment merely to discover generated values.
+
+## Shared-Host Capped Candidates
+
+For an explicitly approved capped deployment, use the user's absolute reserves rather than calling current free resources a whole-host maximum:
+
+```text
+node_cpu_candidate = max(8, effective_cpu - approved_cpu_reserve)
+node_memory_candidate <= floor_GiB(
+  min(MemAvailable, cgroup_limit - cgroup_usage)
+  - approved_memory_reserve
+)
+
+for every filesystem:
+  existing future commitments
+  + this deployment's commitments
+  + approved_disk_reserve
+  <= available blocks or quota
+```
+
+Require `memory_limit >= 6 GiB`. The verified generator disables production mode below 16 GiB. If the eight-core CPU clamp consumes the approved reserve, stop and obtain revised caps or another host.
+
+## Build the Common Configuration
+
+Record these node candidates before taking minima:
+
+```text
+cpu_count
+memory_limit
+system_memory
+datafile_size
+datafile_maxsize
+datafile_next
+log_disk_size
+```
+
+For every key, calculate the cluster minimum independently. Enforce before and after capacity formatting:
+
+```text
+datafile_size <= datafile_maxsize
+0 < datafile_next <= datafile_maxsize
+```
+
+Put the seven explicit common values in `oceanbase-ce.global`; keep only server identity, paths, ports when server-specific, and zones in server stanzas. Do not combine absolute values with `memory_limit_percentage`, `datafile_disk_percentage`, or `log_disk_percentage`.
+
+Render the complete YAML from the version-matched [Community distributed deployment blueprint](deployment-templates/community.md), replacing its seven resource placeholders with the independently calculated common values. Retain artifact identity, host-specific paths, ports, and zones from the reviewed deployment manifest; do not reconstruct the surrounding schema from memory or reuse the volatile values from another cluster.
+
+`Capacity(value, 0)` can round a byte result. Use the exact selected formatter and revalidate the rounded commitment, or emit exact integer-byte literals with the `B` suffix. Never round upward past a verified budget.
+
+Build a filesystem commitment ledger. Charge `max(datafile_size, datafile_maxsize)` plus the 4 GiB slog reserve to the data filesystem, `log_disk_size` to the clog filesystem, and retained syslog to the home filesystem. Combine charges once when paths share a filesystem; never sum unrelated free-space figures or use one filesystem's surplus for another filesystem's deficit.
+
+Keep `auto_create_tenant` absent or false. Add no OBProxy, OBAgent, monitoring, OCP, or other component unless explicitly requested and budgeted separately; the verified generator's Observer memory calculation does not automatically reserve every colocated component.
+
+## Execute
+
+Immediately before execution, repeat effective CPU/cgroup, `MemAvailable`, filesystems/quotas, competing processes, ports, path ownership, and mount identity. If any allowance decreased, workload appeared, or mount changed, stop and recompute all affected candidates and cluster minima.
+
+Inspect the final YAML and its checksum. Confirm all seven common values, the exact artifacts, and that automatic tenant creation is absent. Apply the telemetry and authorization gates from the shared operation contract, then use only syntax proved by installed help, commonly:
+
+```bash
+obd cluster autodeploy <deploy_name> \
+  --config=<reviewed_config.yaml> \
+  --generate-consistent-config \
+  --strict-check
+```
+
+The explicit common values are authoritative. The consistency flag is only an additional guard: the verified generator minimizes generated `memory_limit`, `datafile_size`, `system_memory`, `log_disk_size`, `cpu_count`, and `production_mode`, but does not normalize explicit `datafile_maxsize` or `datafile_next`.
+
+Do not pass an automatic-tenant option. An explicit tenant request starts only after Observer acceptance and follows [tenant management](../../tenant-management/SKILL.md) as a separate operation.
+
+On failure, freeze retries and preserve the OBD trace, exact command, input checksum, registered/generated configuration, status, per-host processes/listeners/mounts/disk use, and ownership. Classify the reached state before changing anything. Do not use `init4env`, force, cleanup, redeploy, path deletion, or another deployment as generic recovery. Route an environment-check finding through [host environment initialization](environment-initialization.md), with an exact reviewed persistent diff and separate authorization.
+
+## Verify
+
+Do not report success from command exit alone. Apply the shared completion layers and verify:
+
+1. The OBD task reached a successful terminal state and the exact artifact/configuration is registered.
+2. Every expected Observer process and listener is present and owned by this deployment; no unrequested component or residual object exists.
+3. The generated and registered configuration gives every node exactly the same seven resource values, and each equals the pre-deployment `cluster_value[key]` after byte normalization.
+4. Configured `cpu_count` fits every node's effective CPU and equals the verified dedicated or capped formula.
+5. Runtime process affinity and cgroup inheritance fit the approved CPU and memory envelope; no OOM event or unexplained competing workload invalidates the memory snapshot.
+6. Authenticated SQL proves the intended cluster identity and all servers are visible. When supported, compare runtime capacity through `oceanbase.GV$OB_SERVERS`.
+7. `auto_create_tenant` remains absent or false, and no user tenant was created by this workflow. The `sys` tenant is expected.
+8. Filesystem commitments, actual mount identities, paths, inodes, quotas, and retained OS/operational reserves remain valid after initialization.
+
+Report host-level sizing separately from tenant resources. Identify which node limited each resource and quantify surplus intentionally left on larger nodes.

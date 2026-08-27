@@ -70,7 +70,7 @@ oceanbase-skills/
 | Directory | Skill Name | Domain |
 |-----------|------------|--------|
 | `skills/oceanbase-deploy` | `oceanbase-deploy` | Overview and routing to specialized skills |
-| `skills/oceanbase-deploy/cluster-management` | `cluster-management` | Cluster deploy, start, stop, upgrade, OCP CE, monitoring |
+| `skills/oceanbase-deploy/cluster-management` | `cluster-management` | Cluster deploy, multi-node maximum-utilization sizing, start, stop, upgrade, OCP CE, monitoring |
 | `skills/oceanbase-deploy/obd-administration` | `obd-administration` | OBD controller installation, update, repositories, tools, Web/API, and runtime |
 | `skills/oceanbase-deploy/obdiag-diagnostics` | `obdiag-diagnostics` | Diagnostic collection, checks, analysis, scenes, ASH, and RCA through OBD |
 | `skills/oceanbase-deploy/tenant-management` | `tenant-management` | Tenant CRUD, backup, restore |
