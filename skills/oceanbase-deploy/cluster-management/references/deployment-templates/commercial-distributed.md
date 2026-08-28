@@ -7,7 +7,7 @@ Use this blueprint for an authorized commercial distributed OceanBase artifact s
 - approved repository, all-in-one bundle, or local artifacts with provenance and access/license boundary;
 - exact OceanBase version, release, architecture, hash, plugin/workflow identity, and full dependency closure;
 - supported upgrade/deployment compatibility evidence for OBD, OS/runtime, OBProxy, OBAgent, OCP, Config Server, log service, and storage mode as selected;
-- cluster identity, multi-zone topology, host failure domains, paths, ports, resources, and credential sources;
+- cluster identity, multi-zone topology, host failure domains, paths, ports, resources, non-database credential sources, and any explicitly supplied database bootstrap-password override; do not request an override when none was supplied;
 - explicit persistent auto-start choice; keep the schema option false or unset unless requested and approved through the lifecycle systemd gate;
 - explicit choice between the plugin's supported local/shared-nothing layout and any supported shared-storage layout.
 
@@ -41,7 +41,8 @@ user:
     <verified-log-layout-keys>: <approved_values>
     <verified-service-address-and-port-keys>: <approved_values>
     <verified-resource-keys>: <approved_values>
-    <verified-bootstrap-credential-key>: <protected_secret_reference>
+    # Omit the verified database bootstrap-credential key by default so the
+    # proved OBD workflow generates it; add it only for an explicit protected override.
 ```
 
 Maintain a separate artifact lock manifest containing component, version, release, architecture, hash, source, and plugin identity. Prove the repository resolves to it before deployment and verify the installed binaries afterward.

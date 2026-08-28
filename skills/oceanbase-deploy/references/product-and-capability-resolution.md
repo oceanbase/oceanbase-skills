@@ -52,21 +52,28 @@ The evidence priority is:
 
 If these layers disagree on a material behavior, report the conflict and prefer the installed public surface and observed state. Do not decompile or disassemble binaries, modify OBD/plugins, execute extracted code, or inspect a development checkout as routine capability discovery.
 
-## Preferred Package Source and Platform Fallback
+## Fixed Package Sources and Platform Fallback
 
-For every package acquired by this skill bundle, use `https://mirrors.oceanbase.com` as the preferred mirror. For an RPM or another package family that publishes EL operating-system suffixes, preserve the exact product form, component, version, release, and architecture, then select the suffix in this order:
+For every package acquired online from the OceanBase public repositories, use this fixed mirror-source order:
+
+1. `https://mirrors.oceanbase.com`;
+2. the direct package directories under `https://mirrors.aliyun.com/oceanbase`.
+
+For an RPM or another package family that publishes EL operating-system suffixes, preserve the exact product form, component, version, release, and architecture, then select the suffix in this order:
 
 1. the suffix matching the observed target operating-system major version;
 2. EL8 when no exact-suffix artifact exists;
 3. EL7 when neither an exact-suffix nor EL8 artifact exists.
 
-This order applies to the OBD RPM and every OBD-managed component RPM; packages that do not publish EL suffixes retain their own format/platform compatibility rules. It is a candidate-selection policy, not proof of compatibility: for an EL8 or EL7 fallback, inspect the exact RPM requirements and verify the target package manager, executable format, dynamic loader, GLIBC and required libraries/symbols before use. Stop if the fallback changes product/component/version/release/architecture, crosses the community/commercial boundary, or cannot be proved runnable. Use another source only when the selected artifact is unavailable from the preferred mirror or the user explicitly chooses another source, and record that source.
+This suffix order applies to the OBD RPM and every OBD-managed component RPM; packages that do not publish EL suffixes retain their own format/platform compatibility rules. It is a candidate-selection policy, not proof of compatibility: for an EL8 or EL7 fallback, inspect the exact RPM requirements and verify the target package manager, executable format, dynamic loader, GLIBC and required libraries/symbols before use. Stop if the fallback changes product/component/version/release/architecture, crosses the community/commercial boundary, or cannot be proved runnable.
+
+For each candidate suffix, attempt the two mirror sources in the fixed order above. Keep the current source until the same exact package acquisition has failed three times, then move to the next source; after both sources fail three times, move to the next suffix. A generic Internet-connectivity test cannot precede or substitute for the first actual source request. Downloading an Aliyun-hosted `.repo` file does not count as source 2 if its effective package `baseurl` points to source 1. Follow the detailed [fixed online package-source workflow](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order), and ask the user before introducing a third source or another acquisition host.
 
 Choose the repository-resolution mode explicitly. Online mode may resolve the reviewed artifact from an enabled remote repository and does not require downloading it into the local repository first. Local-package mode requires the complete selected dependency closure in the local repository and follows the mirror workflow's remote-disable gate for the package-resolution window. Do not leave local and remote candidates to compete without proving the exact winner.
 
 For a remote workflow, `local` in these modes means local to the selected remote OBD controller. Do not move package acquisition or OBD execution to the automation runner after a failed route. Follow the operation contract's [remote execution identity](operation-contract.md#keep-remote-execution-identities-stable) and the mirror workflow's [same-controller acquisition](../obd-administration/references/mirror-and-repositories.md#keep-acquisition-on-the-selected-controller). A user-approved runner relay may transfer a checksummed artifact to the controller without becoming the controller.
 
-Before classifying an exact artifact or platform path as `UNSUPPORTED`, complete the standard [repository availability probe](../obd-administration/references/mirror-and-repositories.md#repository-availability-probe). A disabled remote section, stale or unreadable metadata, or an empty candidate list for only the current `$releasever` is not proof of absence. Resolve the target operating-system suffix and the EL8/EL7 compatibility candidates per component, inspect the preferred official mirror and every reachable approved backup source, and distinguish a conclusive negative result from an inaccessible source. Repository access that cannot be completed is `BLOCKED` or unresolved, not `UNSUPPORTED`.
+Before classifying an exact artifact or platform path as `UNSUPPORTED`, complete the standard [repository availability probe](../obd-administration/references/mirror-and-repositories.md#repository-availability-probe). A disabled remote section, stale or unreadable metadata, a generic connectivity failure, or an empty candidate list for only the current `$releasever` is not proof of absence. Resolve the target operating-system suffix and EL8/EL7 candidates per component, then complete all three attempts on each fixed mirror source in order. Repository access that remains inconclusive after the required attempts is `BLOCKED` or unresolved, not `UNSUPPORTED`.
 
 ## Maintainer Evidence Baseline
 

@@ -71,13 +71,13 @@ Before retrying:
 4. confirm inputs and repository resolution have not changed;
 5. define a stop condition that prevents repeated blind attempts.
 
-One unexplained repeated failure is enough to stop automated retries when another attempt can expand damage or ambiguity.
+One unexplained repeated failure is enough to stop automated retries when another attempt can expand damage or ambiguity. Online package acquisition from the fixed OceanBase public mirror sources is a narrower non-mutating exception: it follows the explicit three-attempt-per-source rule below.
 
 ### Network and Artifact-Acquisition Failures
 
-A DNS, connection, proxy, TLS, HTTP, metadata, or download failure establishes only the failed route and observation window; it does not by itself prove that the controller has no usable network path. Keep the selected controller and acquisition location stable while making bounded, meaningful attempts through distinct existing or user-approved routes. For OBD packages and components, follow the repository workflow's [same-controller acquisition](../obd-administration/references/mirror-and-repositories.md#keep-acquisition-on-the-selected-controller) and full availability probe.
+A DNS, connection, proxy, TLS, HTTP, metadata, or download failure establishes only one failed package-source attempt and observation window; it does not by itself prove that the controller has no usable network path. For OBD packages and components, keep the selected controller and acquisition location stable and follow the repository workflow's [fixed mirror-source order](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order): three failed actual acquisitions on source 1 before source 2, then three on source 2 before advancing to another compatible suffix or asking the user after the full matrix. A generic connectivity probe neither counts as an attempt nor permits a source to be skipped.
 
-Do not silently move a download to the automation runner, install or run OBD there, or select another controller as recovery. Once the applicable safe routes on the controller have been exhausted, present the attempt evidence and ask the user to choose the next route or location. A user-approved artifact relay changes only artifact transport unless the user separately authorizes a control-plane move.
+Do not silently move a download to the automation runner, install or run OBD there, introduce a third mirror source, or select another controller as recovery. Once every required source attempt and compatible suffix on the controller has been exhausted, present the attempt evidence and ask the user to choose the next source or location. A user-approved artifact relay changes only artifact transport unless the user separately authorizes a control-plane move.
 
 ## Report the Outcome
 

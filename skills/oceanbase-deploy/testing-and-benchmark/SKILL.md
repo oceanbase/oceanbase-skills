@@ -25,6 +25,8 @@ metadata:
 
 # OceanBase Testing and Benchmarking
 
+Before any package network request, apply the shared [fixed mirror-source order](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order): actual controller-side acquisition from `https://mirrors.oceanbase.com` first, then the direct package directories under `https://mirrors.aliyun.com/oceanbase`, switching only after three failed attempts on the current mirror source. A generic Internet-connectivity test cannot precede or replace those attempts.
+
 Read [common-workflow.md](references/common-workflow.md) for every test. Then read exactly the selected tool reference:
 
 | Test | Required reference |

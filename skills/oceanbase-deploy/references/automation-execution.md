@@ -35,12 +35,13 @@ For unattended or multi-stage work, write an append-only JSON Lines record in an
 
 ```text
 run_id, operation_id, phase, event, wall_time_utc, monotonic_time,
-runner, controller, artifact_acquisition_host, attempted_route, target,
+runner, controller, artifact_acquisition_host, mirror_source_priority,
+mirror_source, source_attempt, attempted_route, target,
 redacted_command, command_pid, target_pids,
 listeners, obd_state, data_plane_probe, trace_or_task_id, result
 ```
 
-Also record the input/configuration checksum, artifact source and checksum, relevant proxy/repository state, stdout/stderr artifact paths, exit code or caller timeout, selected and unselected objects, and the final removed/retained object sets when relevant. Use a stable run ID across the lifecycle and a distinct operation ID per command. Wall-clock timestamps support correlation; monotonic timestamps support duration calculation.
+Also record the input/configuration checksum, effective artifact base URL, component/version/release/suffix/architecture, artifact checksum, relevant proxy/repository state, stdout/stderr artifact paths, exit code or caller timeout, selected and unselected objects, and the final removed/retained object sets when relevant. For a package-source retry, keep the operation identity tied to the same exact acquisition and increment `source_attempt` from 1 through 3; changing a proxy route does not change `mirror_source`. Use a stable run ID across the lifecycle and a distinct operation ID per command. Wall-clock timestamps support correlation; monotonic timestamps support duration calculation.
 
 For measured stop, start, or restart availability, capture separate events for the last successful authenticated data-plane probe, listener loss, expected PID transition, listener recovery, and first successful authenticated probe. Command start/end time alone is not database downtime.
 

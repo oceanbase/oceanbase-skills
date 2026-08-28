@@ -8,7 +8,7 @@ Use this blueprint only when the installed OBD build and supplied commercial art
 - component key, version, release, architecture, artifact hash, plugin identity, and approved source;
 - supported host count and topology from the installed plugin;
 - controller management address, Observer service identity, SQL/RPC/obshell addresses, and client routing;
-- canonical home/data/log paths, storage mode, resources, credentials, and lifecycle expectations;
+- canonical home/data/log paths, storage mode, resources, non-database credentials, any explicitly supplied database bootstrap-password override, and lifecycle expectations; do not request an override when none was supplied;
 - explicit persistent auto-start choice; keep the schema option false or unset unless requested and approved through the lifecycle systemd gate;
 - version-specific evidence for takeover, management-IP change, upgrade, backup, monitoring, OCP, and other requested integrations; for the maintainer-observed normal `change-ip` path, the standalone component floor is `4.4.2.3`, subject to the exact installed-build and identity gates in [change-ip](../change-ip.md).
 
@@ -36,7 +36,8 @@ user:
     <verified-data-and-log-keys>: <canonical_paths_or_storage_values>
     <verified-sql-rpc-obshell-keys>: <approved_addresses_and_ports>
     <verified-resource-keys>: <approved_values>
-    <verified-bootstrap-credential-key>: <protected_secret_reference>
+    # Omit the verified database bootstrap-credential key by default so the
+    # proved OBD workflow generates it; add it only for an explicit protected override.
 ```
 
 Do not add distributed zones, OBProxy, monitoring, OCP, Config Server, or another component unless the installed standalone workflow supports it and the user requested the resulting capability.

@@ -19,6 +19,14 @@ metadata:
 
 Use this entry point to identify the product form, execution mode, and owning skill. Do not turn an explanation, configuration review, or diagnostic request into a deployment.
 
+## Online Package Source Priority
+
+For every package acquired online from OceanBase public repositories, make the actual controller-side resolution/download attempts in this fixed mirror-source order: first `https://mirrors.oceanbase.com`, then the direct package directories under `https://mirrors.aliyun.com/oceanbase`. Do not put a generic Internet-connectivity test ahead of the first mirror-source attempt. Keep using the current mirror source until the same exact package acquisition has failed three times; only then move to the next mirror source, and stop the search as soon as the package is acquired and verified. Read the detailed [fixed package-source workflow](obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order) before the first package network request.
+
+## Default Database Bootstrap Password
+
+For a new OceanBase cluster deployment, do not ask the user to choose the initial database `root`/`sys` password unless the user has already specified one. When no override was supplied, leave the bootstrap-password field absent and use the installed OBD workflow's proved random-password generation path; do not generate the value in the agent or substitute an empty value. Keep the generated value protected and verify authentication without printing it. Read the cluster workflow's [database bootstrap-password default](cluster-management/references/config-deployment.md#database-bootstrap-password-default) before rendering deployment YAML.
+
 ## Route the Request
 
 | Skill | Use when |

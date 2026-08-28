@@ -7,7 +7,7 @@ Use this blueprint only after the installed OBD build proves the community distr
 - approved OceanBase Community Edition version, release, architecture, artifact hash, repository source, and plugin identity;
 - one-node development or multi-node availability topology, zones and failure domains;
 - target host identities, SSH account, canonical paths, ports, and resource budget;
-- initial cluster/administrator credential source and any explicitly requested tenant behavior;
+- any user-specified initial cluster/administrator password override and any explicitly requested tenant behavior; do not request an override when none was supplied because OBD owns random generation by default;
 - explicit persistent auto-start choice; keep the schema option false or unset unless requested and approved through the lifecycle systemd gate;
 - optional OBProxy/OBAgent/monitoring components, each separately justified.
 
@@ -76,9 +76,8 @@ oceanbase-ce:
     production_mode: CHANGE_ME_BOOLEAN
     enable_syslog_wf: false
     max_syslog_file_count: CHANGE_ME_RETENTION_COUNT
-    # If the installed schema requires a bootstrap secret, render it only from the
-    # approved protected local procedure into a permission-controlled config.
-    # root_password: CHANGE_ME_PROTECTED_LOCAL_VALUE
+    # Omit root_password by default so the proved OBD workflow generates it.
+    # Add the schema-confirmed key only for an explicitly supplied protected override.
   server1:
     mysql_port: CHANGE_ME_SQL_PORT
     rpc_port: CHANGE_ME_RPC_PORT
