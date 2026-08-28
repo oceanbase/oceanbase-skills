@@ -32,6 +32,19 @@ Use observed evidence to classify the target, for example:
 
 Do not choose a recovery command until the state and completed stage are known.
 
+## Reconcile Caller Timeouts and Asynchronous Tasks
+
+A caller timeout, lost terminal, or interrupted SSH session does not cancel an OBD or server-side task. Before retrying, use the same controller identity and resolved `OBD_HOME` to identify the original local OBD process and children, correlate its trace/task ID and time window, and query the narrowest public control-plane and domain state available. Corroborate that state with runtime and data-plane evidence such as the exact deployment/component/tenant object, processes/listeners, authenticated SQL, task rows, or storage artifacts.
+
+Define a bounded observation deadline and classify the original invocation as exactly one of:
+
+- **succeeded:** the intended terminal control-plane state and every required acceptance layer are present;
+- **failed:** the task reached a proved failed terminal state, with partial objects inventoried;
+- **still running:** the original process or task is active and remains the only authorized invocation;
+- **unknown:** evidence is unavailable, contradictory, or cannot distinguish a live task from a partial result.
+
+When the caller timed out but the exact task and target subsequently satisfy acceptance, continue from that successful state; do not report failure or submit a duplicate. When it is still running, continue bounded observation rather than launching another invocation. For failed or unknown states, freeze retries until idempotence, residual ownership, and the narrowest next action are proved. Trace text alone never supplies the terminal classification.
+
 ## Choose the Narrowest Recovery
 
 For the classified state, decide whether the safe action is to continue the original task, repair one failed target, use a documented recover operation, restore a saved configuration/artifact, roll back, or stop for operator input.
@@ -59,6 +72,12 @@ Before retrying:
 5. define a stop condition that prevents repeated blind attempts.
 
 One unexplained repeated failure is enough to stop automated retries when another attempt can expand damage or ambiguity.
+
+### Network and Artifact-Acquisition Failures
+
+A DNS, connection, proxy, TLS, HTTP, metadata, or download failure establishes only the failed route and observation window; it does not by itself prove that the controller has no usable network path. Keep the selected controller and acquisition location stable while making bounded, meaningful attempts through distinct existing or user-approved routes. For OBD packages and components, follow the repository workflow's [same-controller acquisition](../obd-administration/references/mirror-and-repositories.md#keep-acquisition-on-the-selected-controller) and full availability probe.
+
+Do not silently move a download to the automation runner, install or run OBD there, or select another controller as recovery. Once the applicable safe routes on the controller have been exhausted, present the attempt evidence and ask the user to choose the next route or location. A user-approved artifact relay changes only artifact transport unless the user separately authorizes a control-plane move.
 
 ## Report the Outcome
 

@@ -9,7 +9,7 @@
 
 # Tenant Backup and Restore
 
-Use this workflow for archive/backup configuration, backup execution and inspection, or tenant restore. Read the installed help for every selected subcommand and inspect the version-matched component workflow before execution. The command shapes below preserve useful current OBD forms but are not a substitute for that capability check.
+Use this workflow for archive/backup configuration, backup execution and inspection, or tenant restore. Read the installed public help for every selected subcommand. Inspect the version-matched packaged component workflow only when the public interface, version-matched documentation, and observed state leave an execution-critical behavior unresolved. The command shapes below preserve useful current OBD forms but are not a substitute for that capability check.
 
 ## Fix the Identities
 
@@ -37,6 +37,8 @@ Treat archive configuration, archive readiness, backup execution, and archive re
 4. poll the OBD task and database-side backup views to a successful terminal state;
 5. record the backup-set identity and SCN/time coverage and validate the manifest;
 6. retain or stop archive logging according to the recovery policy through a separately reviewed operation.
+
+Before querying database-side backup or archive state, follow [version-adaptive SQL evidence](../../references/sql-evidence.md): confirm the OceanBase version and inspect the actual view/column surface before choosing a query. Do not assume one release's backup/archive fields exist in another, and do not classify a task as failed merely because a remembered query is unsupported.
 
 Do not invent an archive-enable/disable command when the installed OBD workflow does not expose one. Use the installed help and database-side state to determine what `set-backup-config` actually changes.
 
@@ -123,7 +125,7 @@ For restore, require a successful terminal task, a healthy target tenant with th
 
 ## Failure, Retry, and Retention
 
-On failure or timeout, preserve the OBD trace, task/DAG rows and automatic `ROLLBACK`/`PASS` outcome, archive state, backup/restore views, manifests, storage object listing, target-tenant state, every `restore_unit_config*`/pool created by the attempt, and the completed stage. Determine whether the task is still running, cancelable, resumable, or requires a documented recovery action before retrying. Route an authorized cancellation through the explicit state and acceptance workflow above; do not infer completion from the cancel command's exit status.
+On failure or timeout, preserve the OBD trace, task/DAG rows and automatic `ROLLBACK`/`PASS` outcome, archive state, version-proved backup/restore view results, manifests, storage object listing, target-tenant state, every `restore_unit_config*`/pool created by the attempt, and the completed stage. Reconcile a caller timeout through the shared succeeded/failed/still-running/unknown state workflow. Determine whether the task is cancelable, resumable, or requires a documented recovery action before retrying. Route an authorized cancellation through the explicit state and acceptance workflow above; do not infer completion from the cancel command's exit status.
 
 Do not delete a failed backup prefix, archive pieces, partial restore tenant, or prior valid backup as generic cleanup. Decide before execution which manifests, backup sets, archive logs, generated configuration, and temporary files must be retained. Apply storage retention or deletion only as a separate, precisely scoped operation after proving that the recovery window and dependent restores remain valid.
 

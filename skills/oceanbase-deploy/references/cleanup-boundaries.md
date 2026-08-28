@@ -24,6 +24,19 @@ Do not use a mutating command as discovery or treat a confirmation prompt as the
 
 ## Execute and Verify
 
-Use the narrowest installed public command that selects the authorized objects. Do not add force, recursive deletion, ignore-safety, automatic-confirm, broad glob, or unfiltered cleanup behavior. A partial result or timeout leaves server-side state unknown; preserve evidence and re-inventory before retrying.
+Use the narrowest installed public command that selects the authorized objects. A command-local public confirmation option may be used only after its installed semantics are proved to acknowledge the exact reviewed prompt without widening the target or changing execution behavior. Do not add force, recursive deletion, ignore-safety, controller-wide automatic confirmation, generic `yes` input, broad glob, or unfiltered cleanup behavior. A partial result or timeout leaves server-side state unknown; preserve evidence and re-inventory before retrying.
 
 After cleanup, verify every selected object is absent or in the documented retained state, every object promised to remain is still present and usable, and no active task can recreate or continue deleting state. Report intentional residue and unsupported cleanup separately from failure.
+
+For deployment destruction, report these result classes separately instead of collapsing them into “clean” or “not clean”:
+
+1. deployment runtime and owned data removed;
+2. empty deployment parent directories retained;
+3. OBD registration/configuration metadata retained;
+4. traces and audit evidence retained;
+5. mirror definitions, local packages, and repository records retained;
+6. unexpected residual processes, listeners, data, units, tasks, or references.
+
+The first class can be complete while classes 2–5 remain by design. Metadata pruning, repository cleanup, and removal of empty parent directories are separate operations and are not implied by destroy.
+
+Ordinary test cleanup preserves deployment registration and does not run `prune-config` by default. A later explicit request to completely remove this run's unique named deployment may authorize both the exact destroy set and that deployment's registration removal in one displayed staged plan. Still verify the post-destroy state is eligible before pruning and preserve every unrelated deployment. That authorization does not extend to repository packages, mirror definitions, the OBD installation, external paths, or objects of uncertain ownership.

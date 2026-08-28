@@ -5,9 +5,11 @@ Use this workflow for `obd tool command`, database connection helpers, interacti
 ## Resolve the Helper and Target
 
 1. Record the exact OBD build, deployment state, registered components and servers, and selected package repositories.
-2. Read the installed helper's help. For `obd tool command`, inspect the commands plugin/template shipped with that OBD build to determine available command names, supported components, wrappers, interaction mode, and side effects.
+2. Read the installed helper's public help and action inventory. For `obd tool command`, inspect the packaged commands template only when the public surface cannot establish a critical command name, supported component, wrapper, interaction mode, or side effect.
 3. Resolve component and server selectors explicitly. Defaults can select the first target for an interactive helper or a broader set for a non-interactive helper, and unsupported deployed components can fail before filtering.
 4. Verify the execution environment has a controllable TTY for every interactive command and define its exit sequence and session boundary.
+
+For unattended or multi-stage use, complete the [automation execution preflight](../../references/automation-execution.md) before invoking a helper. Validate every action name locally before remote execution, identify the exact SQL client or interpreter, and test required imports under that interpreter. Do not assume OBD's bundled Python provides `mysql.connector`, install a missing module as an implicit helper prerequisite, or modify the commands template to make a guessed action work.
 
 Commands such as PID lookup, a remote shell, log-directory access, a pager, or debugger attachment are build/plugin-dependent examples, not a universal command list. Treat a resulting shell as ordinary remote access: stay read-only unless a separate mutation is authorized. Treat debugger attachment as availability-impacting and bind it to the verified component PID immediately before use.
 

@@ -23,7 +23,7 @@ Inspect the selected community plugin's parameter definition and examples. Confi
 
 Do not copy fields from a commercial `oceanbase`, `oceanbase-standalone`, SeekDB, or older community plugin.
 
-The V4.6.0 guide shows both `el7` and `el8` OceanBase packages for x86 and ARM. Select the package suffix, architecture, and dependency/runtime closure from the actual target platform and exact artifact; do not reuse the legacy blanket claim that newer Community Edition releases are necessarily `el8`-only or that all `el7` hosts share one compatible package ceiling. Inspect the RPM requirements and target runtime, including GLIBC, before selection.
+The V4.6.0 guide shows both `el7` and `el8` OceanBase packages for x86 and ARM. Apply the shared package policy without changing component/version/release/architecture: prefer the suffix matching the target OS major version, then EL8 when that artifact is absent, then EL7 when both earlier candidates are absent. Inspect the exact RPM requirements and target runtime, including loader, GLIBC, and required libraries, before using either fallback; suffix order alone does not prove compatibility.
 
 ## Start from the Released Example
 

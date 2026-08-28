@@ -5,13 +5,24 @@ Declare success only after the layers relevant to the requested outcome have pas
 ## Acceptance Layers
 
 1. **Invocation:** the intended command or request was submitted with the reviewed target and inputs.
-2. **Task:** the OBD task or asynchronous product task reached a successful terminal state. A trace is log evidence about execution, not a state machine and not proof of success by itself.
+2. **Task:** the OBD task or asynchronous product task reached a successful terminal state. A caller exit or timeout is not the task state. A trace is correlated log evidence, not a state machine and not proof of success by itself; reconcile an interrupted caller through the shared failure workflow.
 3. **Control plane:** registered configuration, deployment/component/tenant state, and actual artifact identity match the plan.
 4. **Runtime:** intended processes, listeners, paths, service manager units, or containers exist; objects that should be stopped or removed do not.
-5. **Data plane:** an authenticated SQL, HTTP/API, metrics, backup-catalog, replication, or test-result check proves the requested capability.
+5. **Data plane:** an authenticated SQL, HTTP/API, metrics, backup-catalog, replication, or test-result check proves the requested capability. When SQL supplies the evidence, follow [version-adaptive SQL evidence](sql-evidence.md) rather than assuming a variable, view, or column exists.
 6. **Isolation:** unselected objects remain unchanged and no unexplained residual object or task remains.
 
 Use only the applicable layers, but explicitly mark a skipped layer and why it is not needed.
+
+## Report Verdict Vocabulary
+
+When a test, audit, or operation report uses uppercase verdicts, apply them consistently:
+
+- **`UNSUPPORTED`:** installed public help/schema and the version-matched plugin/workflow prove that the exact operation is absent, or the standard repository probe conclusively proves that no compatible artifact exists for the resolved product/version/platform. A disabled, stale, inaccessible, or incompletely probed repository is not unsupported.
+- **`BLOCKED`:** every safe, authorized, in-scope probe and compatible alternative has been completed, but an external condition such as network access, credentials, missing authorization, unavailable TTY, or conflicting live state prevents continuation. Name the blocking condition and completed probes.
+- **`FAIL`:** a supported path exists but the attempted behavior, required acceptance layer, or test procedure does not meet the expected result. Skipping a required safe probe and then stopping is an incomplete or failed test execution, not blocked.
+- **`PASS`:** every acceptance layer applicable to the exact case succeeds. If cleanup is part of the test case, its selected-object removal and retained-object checks must also succeed; command exit alone never passes a case.
+
+`partial` and `unknown` remain valid observed states while a mutation or asynchronous task is being reconciled, but neither can be promoted to `PASS`. The final report must preserve that uncertainty or resolve it to the vocabulary above without relabeling an omitted probe as a product limitation.
 
 ## Common Lifecycle Outcomes
 
@@ -24,8 +35,8 @@ Use only the applicable layers, but explicitly mark a skipped layer and why it i
 | Reload/configure | registered, generated, and effective runtime values agree; restart-required values are not reported as dynamically applied |
 | Upgrade/reinstall | actual per-node artifact version/release/hash matches the target; mixed versions are only those allowed by the reviewed path; data plane remains usable |
 | Scale out | new nodes/components are registered, running, and visible from product-side topology; existing members remain healthy |
-| Component add/delete | dependency references, component-specific health, and data plane match the new topology; no residual references remain after deletion |
-| Destroy/drop/overwrite | the exact authorized object is absent or replaced; separately owned or external data is preserved unless explicitly included |
+| Component add/delete | registration and runtime agree with the new topology; deletion verifies `config.yaml`, `inner_config.yaml`, dependencies, processes, listeners, paths, component data plane, and retained data, with no unexplained residual reference or service |
+| Destroy/drop/overwrite | the exact authorized runtime/data object is absent or replaced; separately owned or external data is preserved unless explicitly included; expected retained parent directories, controller registration, traces, and package repositories are reported separately from unexpected residue |
 
 ## Domain Additions
 

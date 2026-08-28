@@ -12,7 +12,7 @@ If an executable or metadata exists, this is controller maintenance or takeover,
 
 ## Establish the Controller Identity
 
-Record the controller host, current user, exact `obd` executable, OBD version and build or revision, runtime, `OBD_HOME`, and active OBD processes. Do not assume the first executable on `PATH` owns the registered deployments or plugins under inspection.
+Record the controller host, current user, exact `obd` executable, OBD version and build or revision, runtime, resolved `OBD_HOME`, and active OBD processes. Apply the operation contract's controller-home resolution; do not assume the first executable on `PATH` owns the registered deployments or plugins under inspection, and do not set `OBD_HOME` to a guessed default metadata directory.
 
 For development builds, record the source revision as additional evidence. A source revision does not replace the identity of the installed executable and plugin tree.
 
@@ -34,25 +34,39 @@ Do not copy a community template and replace only the component name. Product fo
 
 Use the evidence needed for the requested operation:
 
-1. Read the exact target subcommand's `--help`; prefer unambiguous long options.
-2. Inspect the selected component schema or workflow when the documented command leaves a version-specific field or behavior unresolved.
-3. Inspect registered deployment state and effective configuration when the target already exists.
-4. List repository candidates by component, version, release, architecture, hash, and source.
+1. Follow the routed workflow in this Skill; do not rediscover an implementation detail that it already establishes unless installed evidence conflicts.
+2. Read the exact target subcommand's public `--help`; prefer unambiguous long options. Use installed validation/schema output and released examples when they expose the required field.
+3. Inspect registered deployment state, effective configuration, public command results, and actual runtime/data-plane state when the target already exists.
+4. List repository candidates by component, version, release, operating-system suffix, architecture, hash, and source.
 5. Resolve dependencies and compatibility edges that apply to the selected components, operating system, and architecture.
 6. Select a compatible artifact per component; use an exact reviewed artifact when reproducibility or an existing deployment requires it.
+7. Inspect the installed packaged plugin or workflow only when the public surface and observed state cannot establish an execution-critical behavior.
 
 The evidence priority is:
 
-1. the installed command help and installed plugin/schema;
-2. the registered configuration and resolved repository artifacts;
-3. version-matched official documentation or released examples;
-4. implementation source for unresolved behavior, clearly identified as implementation evidence.
+1. this Skill's applicable workflow and invariants;
+2. installed public help, validation/schema surfaces, and released examples;
+3. registered configuration, resolved artifacts, public command output, and observed runtime/data-plane state;
+4. version-matched official documentation;
+5. installed packaged implementation for a still-unresolved critical behavior, clearly labeled as implementation evidence.
 
-If these layers disagree on a material behavior, report the conflict and resolve it from the installed command or version-matched documentation before relying on that behavior.
+If these layers disagree on a material behavior, report the conflict and prefer the installed public surface and observed state. Do not decompile or disassemble binaries, modify OBD/plugins, execute extracted code, or inspect a development checkout as routine capability discovery.
 
-## Preferred Package Source
+## Preferred Package Source and Platform Fallback
 
-For every package acquired by this skill bundle, use `https://mirrors.oceanbase.com` as the preferred mirror. Search it first for the exact component, version, release, operating-system package suffix, and architecture. Use another source only when the required artifact is unavailable there or the user explicitly selects a different source, and record that fallback in the execution record.
+For every package acquired by this skill bundle, use `https://mirrors.oceanbase.com` as the preferred mirror. For an RPM or another package family that publishes EL operating-system suffixes, preserve the exact product form, component, version, release, and architecture, then select the suffix in this order:
+
+1. the suffix matching the observed target operating-system major version;
+2. EL8 when no exact-suffix artifact exists;
+3. EL7 when neither an exact-suffix nor EL8 artifact exists.
+
+This order applies to the OBD RPM and every OBD-managed component RPM; packages that do not publish EL suffixes retain their own format/platform compatibility rules. It is a candidate-selection policy, not proof of compatibility: for an EL8 or EL7 fallback, inspect the exact RPM requirements and verify the target package manager, executable format, dynamic loader, GLIBC and required libraries/symbols before use. Stop if the fallback changes product/component/version/release/architecture, crosses the community/commercial boundary, or cannot be proved runnable. Use another source only when the selected artifact is unavailable from the preferred mirror or the user explicitly chooses another source, and record that source.
+
+Choose the repository-resolution mode explicitly. Online mode may resolve the reviewed artifact from an enabled remote repository and does not require downloading it into the local repository first. Local-package mode requires the complete selected dependency closure in the local repository and follows the mirror workflow's remote-disable gate for the package-resolution window. Do not leave local and remote candidates to compete without proving the exact winner.
+
+For a remote workflow, `local` in these modes means local to the selected remote OBD controller. Do not move package acquisition or OBD execution to the automation runner after a failed route. Follow the operation contract's [remote execution identity](operation-contract.md#keep-remote-execution-identities-stable) and the mirror workflow's [same-controller acquisition](../obd-administration/references/mirror-and-repositories.md#keep-acquisition-on-the-selected-controller). A user-approved runner relay may transfer a checksummed artifact to the controller without becoming the controller.
+
+Before classifying an exact artifact or platform path as `UNSUPPORTED`, complete the standard [repository availability probe](../obd-administration/references/mirror-and-repositories.md#repository-availability-probe). A disabled remote section, stale or unreadable metadata, or an empty candidate list for only the current `$releasever` is not proof of absence. Resolve the target operating-system suffix and the EL8/EL7 compatibility candidates per component, inspect the preferred official mirror and every reachable approved backup source, and distinguish a conclusive negative result from an inaccessible source. Repository access that cannot be completed is `BLOCKED` or unresolved, not `UNSUPPORTED`.
 
 ## Maintainer Evidence Baseline
 

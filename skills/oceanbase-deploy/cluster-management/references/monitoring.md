@@ -110,6 +110,15 @@ Verify each requested layer independently:
 
 Prometheus `/-/ready`, a Grafana login page, or an Alertmanager UI proves only that local service layer. None proves collection, query, visualization, or delivery end to end.
 
+When Grafana API access is available and within scope, prefer an additional datasource-proxy evidence chain:
+
+1. query the installed version's `/api/health` endpoint;
+2. list datasources and identify the intended Prometheus datasource by UID, type, and redacted URL;
+3. use that version's supported datasource-proxy route to submit a bounded Prometheus query for an OceanBase metric, and verify the returned cluster/tenant labels and sample freshness;
+4. use dashboard search or a dashboard-UID endpoint to prove the intended compatible dashboard exists.
+
+Keep the direct Prometheus target/query check as separate evidence: the proxy query proves the Grafana-to-datasource-to-Prometheus path rather than replacing collector validation. Determine whether the installed Grafana uses an ID- or UID-based proxy route and how it authenticates; do not hard-code one API shape or expose credentials. If that build does not expose a safe proxy API, record the limitation and use an equivalent version-proved UI/API check instead of treating a remembered route as universal.
+
 <a id="component-deletion-order"></a>
 
 ## Upgrade and Removal

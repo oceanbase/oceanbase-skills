@@ -4,7 +4,9 @@ Treat `obd env` values and developer mode as persistent controller-wide policy. 
 
 ## Baseline and Concurrency Gate
 
-Before a change, record the controller, user, executable/build, `OBD_HOME`, active CLI/Web/API tasks, developer-mode state, and the installed version's complete OBD environment view. Determine the storage scope and which processes read values only at startup.
+Before a change, record the controller, user, executable/build, resolved `OBD_HOME`, whether that variable was originally unset or explicit, active CLI/Web/API tasks, developer-mode state, and the installed version's complete OBD environment view. Determine the storage scope and which processes read values only at startup.
+
+Resolve the controller home under the unchanged caller environment through the shared operation contract. Do not export an observed metadata directory as `OBD_HOME`; a value such as `/root/.obd` can be interpreted as a base and produce an unintended `/root/.obd/.obd`. If a scoped operation requires an explicit override, verify the resulting registration and trace location before continuing and restore the original unset/value state afterward.
 
 If another task depends on a value or the baseline cannot be read, do not mutate it. Prefer a command-local option when the installed build provides an equivalent.
 
@@ -15,6 +17,7 @@ If another task depends on a value or the baseline cannot be read, do not mutate
 - Developer mode can expose hidden commands, accept undefined options, or weaken validation. Enable it only for an explicit development workflow with a reviewed reason and stop condition; restore it afterward.
 - Lock-mode changes can weaken controller concurrency protection. Do not downgrade or disable locks to bypass an active task or lock error.
 - Transfer, repository-install, SSH-algorithm, base-directory, and Web-idle settings can change persistent paths, security, or runtime behavior. Review the installed meaning and consumers before changing one.
+- `OBD_HOME` is part of controller identity, not a convenience switch for finding state. Never change it to make a deployment or trace appear, and do not treat a new empty home as repair.
 
 Do not guess an environment key or value from another OBD version. Save whether the key was absent as well as its value so restoration can distinguish `unset` from a configured default.
 

@@ -12,7 +12,7 @@ Read the installed `obd mirror` and `obd repo` help before constructing commands
 
 ## Preferred Online Mirror
 
-Use `https://mirrors.oceanbase.com` as the preferred online source for every package. Resolve the required component, version, release, operating-system package suffix, architecture, and checksum there before considering another source. Fall back only when the required artifact is unavailable or the user explicitly chooses another source, and record the selected fallback source.
+Use `https://mirrors.oceanbase.com` as the preferred online source for every package. When the package family publishes EL suffixes, apply the shared [package-source and platform-fallback policy](../../references/product-and-capability-resolution.md#preferred-package-source-and-platform-fallback): preserve product/component/version/release/architecture, then search the target OS suffix, EL8, and EL7 in that order. Verify fallback runtime compatibility before use. Consider another source only when the selected artifact is unavailable or the user explicitly chooses another source, and record the selected source.
 
 The V4.6.0 command surface preserves these ordinary operation shapes:
 
@@ -35,6 +35,37 @@ Confirm each form with the installed help. `list` is inventory; `update`, `clone
 3. Resolve dependency and compatibility edges separately. A repository can contain individually valid packages that cannot be used together.
 
 Listing the mirror and listing the local repository answer different questions. Preserve both views when diagnosing why resolution changed.
+
+## Keep Acquisition on the Selected Controller
+
+In a remote workflow, `local repository`, `local package`, and `download locally` refer to the selected OBD controller, not the automation runner. Keep package discovery, candidate selection, download, checksum verification, import, and OBD execution on that controller by default.
+
+One failed command proves only that one route failed at that time. On the same controller, first identify the failing layer—name resolution, route, proxy, TLS trust, HTTP response or redirect, repository enabled state, metadata refresh, exact artifact URL, package-manager resolution, authentication, or local capacity. Then make a bounded set of meaningful attempts through distinct applicable routes that already exist or the user has approved. Depending on the observed failure, these can include the preferred official mirror through its normal repository path and an exact artifact URL, an already configured or approved direct/proxy route, the compatible suffix sequence, and registered or user-approved trusted backup sources. Do not repeatedly issue the same unchanged request and call that fallback coverage, and do not make persistent proxy, trust, repository, or host changes without their normal authorization.
+
+Record the route, resolved URL, relevant proxy/repository state, timestamps, and result of each attempt, and restore any authorized temporary state. If all applicable safe routes on that controller are exhausted, ask the user how to proceed and present the evidence-backed choices. Do not autonomously download on the runner, install or run OBD there, or switch to another controller. If the user approves the runner only as an artifact relay, acquire and verify the exact artifact there, transfer it to a reviewed controller-local path, verify the checksum again on the controller, and continue package resolution and installation remotely.
+
+## Repository Availability Probe
+
+Do not classify a package, platform, or component as unsupported merely because the currently enabled remote sections return no candidate or the repository substituted the target system's current `$releasever`. Before an `UNSUPPORTED` verdict:
+
+1. Record the target `/etc/os-release` identity and major version, architecture, package manager, OBD's resolved `$releasever`, and the fully substituted URL of every relevant repository section.
+2. List all remote sections, including disabled ones, with enabled/available state, base URL, metadata age, refresh errors, and relevant local candidates.
+3. For each required component and dependency, preserve product form, version, release, and architecture while probing the target-system suffix, EL8, and EL7 in that order. Do not stop after only the current `$releasever` returns no package.
+4. Probe `https://mirrors.oceanbase.com` first, then every already registered or user-approved trusted backup source that is reachable. Do not discover or register an arbitrary third-party mirror merely to satisfy a probe count. If the official source is inaccessible and no approved backup can be tested, the result is blocked or unresolved rather than unsupported.
+5. For each source and suffix, establish three independent layers: repository metadata/index presence and freshness; resolved base, metadata, and candidate-object URL reachability with expected TLS/redirect behavior; and an exact package filename or NEVRA candidate for the required component plus its dependency closure.
+
+If a trusted relevant section is disabled, a package-resolution or compatibility-test plan may temporarily enable that exact section only when this controller-wide mutation is within the reviewed authorization. Capture its original state, refresh and inspect the candidate set, and restore the exact state after the probe unless an authorized online workflow still needs it enabled through final package selection. Verify restoration. If enabling is not authorized, report that limitation as `BLOCKED`; do not infer package absence or switch machines to evade it.
+
+Only a conclusive negative result at the metadata, URL, and exact-package layers for every required suffix and approved source supports an `UNSUPPORTED` package verdict. A timeout, authentication failure, certificate failure, stale metadata, unreachable URL, skipped suffix, disabled untested source, or omitted backup probe does not. In a test report, omitting a required in-scope probe is an incomplete or failed test execution, not a blocked product capability.
+
+## Choose Online or Local-Package Resolution
+
+Choose one resolution mode before a deployment or other package-selecting workflow:
+
+- **Online mode:** keep the reviewed remote repository enabled and prove the exact remote source and winning component/version/release/suffix/architecture/hash. Online mode does not require downloading or importing the package into the local repository first.
+- **Local-package mode:** prove that the exact selected artifacts and complete dependency closure already exist in the local repository. Capture the enabled-state baseline, use the installed public command to disable every remote section that can participate in resolution—commonly the section named `remote`—and immediately re-list mirror state and eligible candidates. Do not execute the package-selecting workflow unless remote resolution is absent and the expected local hashes are the only proved winners.
+
+Disabling a remote section is a controller-wide repository mutation, so include it in the reviewed deployment plan and do not infer permission from package or deployment authorization alone. Keep remote resolution disabled through the final package-selecting stage in that local-package workflow. Unless the user requested a persistent local-only controller policy, restore every temporarily disabled section to its exact prior state afterward and verify the candidate-set baseline. Do not use an unresolved hybrid mode; acquire the remaining closure locally or choose online mode explicitly.
 
 ## Register or Update a Remote Source
 
@@ -62,9 +93,11 @@ After import, verify the local repository shows the expected exact artifact and 
 
 ## Enable, Disable, and Clean
 
-Changing a mirror's enabled state is controller-wide and can affect every later resolution. Capture the original state and active tasks, change only the named section, then verify the candidate-set delta.
+Changing a mirror's enabled state is controller-wide and can affect every later resolution. Capture the original state and active tasks, change only the named section, then verify the candidate-set delta. The local-package isolation window above is conditional on choosing local packages; it is not a requirement to pre-download packages for an online deployment.
 
 Repository or mirror cleaning is destructive. The V4.6.0 guide documents that `obd mirror clean` without filters removes all currently unused component files while retaining only a version-sorted latest RPM per component; that is still a broad deletion, not maintenance discovery. Do not invoke the clean command to obtain a preview: inspected code can continue from its listing directly into deletion, and a controller-wide automatic-confirm setting can suppress the prompt.
+
+Handle a `mirror clean` confirmation through [non-interactive automation execution](../../references/automation-execution.md). If the installed command needs an interactive answer, use a real PTY rather than an ordinary pipe, display the exact expanded hash/path selection before confirmation, and confirm only that reviewed selection.
 
 Read [cleanup and ownership boundaries](../../references/cleanup-boundaries.md) before producing the repository deletion set. Deployment, component, tenant, test, or controller-maintenance authorization never implies mirror, cache, downloaded-package, or tag cleanup.
 

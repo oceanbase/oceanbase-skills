@@ -6,6 +6,8 @@ Use this workflow for a new OBD installation. Use [controller-maintenance.md](co
 
 Controller bootstrap precedes the installed-build capability gate. If inventory proves there is no OBD executable, no existing OBD metadata owner, and no installation to take over, route directly through this installation workflow; do not require help output from a nonexistent CLI. Establish the OBD/plugin/schema capability record only after installation acceptance. Before then, deployment material is planning-only and commercial artifacts/repositories remain unresolved.
 
+For a workflow that manages remote hosts, use the remote controller selected under the shared [operation contract](../../references/operation-contract.md#keep-remote-execution-identities-stable) as the installation target by default. A failed download or repository request does not justify installing OBD on the automation runner or moving the controller. Follow the [repository availability probe](mirror-and-repositories.md#repository-availability-probe) and same-controller recovery rules first. After the applicable routes are exhausted, ask the user whether to change the network/source, approve an exact artifact relay, select another remote controller, or stop. A relay transfers a verified artifact to the controller; OBD remains installed and run remotely unless the user explicitly changes the control-plane location.
+
 1. Confirm the intended controller host and user. Inventory every existing `obd` executable on `PATH`, package-manager record, profile entry, installation prefix, `OBD_HOME`, registered deployment, active OBD process, and shared automation that invokes OBD.
 2. Select an installation method supported for the target operating system and artifact: a released package, an approved all-in-one distribution, or a source/development build. Do not mix methods without an explicit ownership and rollback plan.
 3. Resolve the exact OBD version/build, operating system, architecture, runtime requirements, source, checksum/signature, installation prefix, executable path, and expected plugin/repository content. Do not use an unpinned “latest” command when reproducibility matters.
@@ -18,18 +20,18 @@ Build the installation decision from target evidence rather than a remembered pl
 
 | Decision | Required evidence | Stop condition |
 |---|---|---|
-| Operating platform | Distribution and version, kernel, architecture, package manager, container boundary, and available OBD package suffixes | No package matches the observed OS and no same-version, same-release, same-architecture EL8 OBD fallback can be resolved |
+| Operating platform | Distribution and version, kernel, architecture, package manager, container boundary, and available OBD package suffixes | No same-version, same-release, same-architecture candidate remains after the shared exact-suffix, EL8, then EL7 order, or neither fallback is runtime-compatible |
 | Runtime compatibility | Dynamic loader, GLIBC and other required libraries/symbols, executable format, and disk/inode capacity for the exact OBD artifact | A required loader/library/symbol is absent; do not transfer an OBServer component requirement to the OBD controller package or vice versa |
 | Ownership and privilege | Intended controller user, package/prefix/profile owners, required package-manager or installer privilege, umask, and shared automation | The method requires broader privilege or overwrites another owner without an approved plan; do not assume root is always required or always acceptable |
 | Connectivity | Online/offline boundary, approved repositories, proxy/TLS trust, artifact transfer route, and checksum/signature verification | The only available path requires an unreviewed network source, credential exposure, or unpinned package |
 | Existing state | Every executable, `OBD_HOME`, registration, active task, package record, profile entry, and rollback artifact | Existing state has no proved owner or safe maintenance/migration path |
 
-For an RPM-based Linux controller, first select the OBD package matching the observed operating-system major version. If no matching OBD package exists, use the same-version, same-release, same-architecture EL8 `ob-deploy` package. This EL8 fallback applies to OBD only; do not transfer it to OBServer, OBProxy, OBAgent, or another managed component. Verify the fallback package's dependencies and installed executable on the controller.
+For an RPM-based Linux controller, apply the shared [package-source and platform-fallback policy](../../references/product-and-capability-resolution.md#preferred-package-source-and-platform-fallback): first the suffix matching the observed OS major version, then same-version/same-release/same-architecture EL8, then EL7. Verify the selected fallback package's loader, GLIBC/library dependencies, package-manager compatibility, and installed executable on the controller. This is the same suffix order used for every OBD-managed component; each component still requires its own runtime and dependency proof.
 
 For the V4.6.0 official baseline, distinguish the supported methods rather than mixing their ownership:
 
 - **All-in-One:** preferred when a tested compatible component set or offline installation is required; inspect its installer, bundled RPM closure, profile changes, mirror import, and remote-mirror state.
-- **Released RPM/repository:** prefer `https://mirrors.oceanbase.com`, use the exact downloaded `ob-deploy` RPM, and record package-manager/profile ownership; do not use an unpinned latest package when the required version is fixed. If the mirror has no package matching the controller OS major version, use the EL8 OBD fallback defined above.
+- **Released RPM/repository:** prefer `https://mirrors.oceanbase.com`, use the exact selected `ob-deploy` RPM, and record package-manager/profile ownership; do not use an unpinned latest package when the required version is fixed. If the mirror has no package matching the controller OS major version, use the shared EL8-then-EL7 fallback defined above.
 - **Source:** development-only unless the user's release process explicitly approves it; validate the built revision and generated plugin/example content separately.
 
 These are the three installation methods. An offline All-in-One archive does not create a fourth standalone TAR method: extraction only stages the All-in-One distribution whose reviewed `bin/install.sh` owns installation.
@@ -46,7 +48,7 @@ The V4.6.0 guide also documents a remote All-in-One bootstrap script, but do not
 
 ## Install
 
-Use the selected method's version-matched instructions and the reviewed absolute artifact path. Install only on the controller. Do not copy the OBD package to every managed host merely because OBD will later connect to them.
+Use the selected method's version-matched instructions and the reviewed controller-local absolute artifact path. Install only on the controller. Do not copy the OBD package to every managed host merely because OBD will later connect to them, and do not install it on the runner merely because the controller needed an approved artifact relay.
 
 Keep privilege scope narrow. Do not pipe an unreviewed remote installer into a shell, overwrite another package owner's files, or create a second implicit `OBD_HOME`. Preserve existing shell and service configuration unless the chosen method requires a reviewed change.
 

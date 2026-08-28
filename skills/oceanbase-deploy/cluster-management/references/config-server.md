@@ -76,7 +76,7 @@ Do not add `--confirm` as a generic non-interactive flag. In inspected implement
 
 Deploy and start the reviewed `ob-configserver` configuration as its own OBD deployment. It does not register an existing database merely by becoming healthy. Register only an already running, identified OceanBase cluster through the version-supported `obconfig_url`/SQL workflow, then configure each intended ODP with the reviewed `obproxy_config_server_url`. Treat the database reload/restart and ODP route change as separate availability/configuration operations. Preserve the previous endpoint or `rs_list` route until rollback is proved.
 
-## Acceptance and Removal
+## Acceptance
 
 After deployment or change, verify:
 
@@ -88,6 +88,19 @@ After deployment or change, verify:
 
 Initialization or registration may be asynchronous. Poll a documented bounded status with a deadline and preserve intermediate errors; do not use an unexplained fixed sleep or infer readiness from an open port.
 
-Before address replacement or removal, list every configuration, runtime, database, ODP, and external reference; migrate consumers first and preserve the prior endpoint/configuration as rollback. The official V4.6.0 Web component guide states that uninstalling Config Server is not supported there. Do not infer that the generic CLI component-delete path supports it: require exact installed help and workflow evidence, or report removal as unsupported. Apply [cleanup and ownership boundaries](../../references/cleanup-boundaries.md) to any supported removal.
+## Version-Gated Removal
+
+Before address replacement or removal, list every configuration, runtime, database, ODP, and external reference; migrate consumers first and preserve the prior endpoint/configuration as rollback. The official V4.6.0 Web component guide states that uninstalling Config Server is not supported there. Do not infer that the generic CLI component-delete path provides a complete lifecycle.
+
+Config Server addition can insert reverse dependency references such as `oceanbase-ce.depends: [ob-configserver]`, and other database or proxy components can also depend on it. Use this guarded sequence for an installed version that exposes component deletion:
+
+1. Capture the complete dependency graph, both OBD configuration files, Config Server process/listener/path state, registered clusters, and every ODP or external consumer.
+2. Migrate consumers away from the endpoint and verify their replacement route and authenticated data plane.
+3. Use the reviewed [configuration-change workflow](configuration-changes.md) to remove every `ob-configserver` dependency reference, not only the first database reference. Validate the edited graph before applying it.
+4. If the installed version requires reload or restart for that dependency/route change, display and authorize the exact affected set, apply it, and verify consumers again before deletion.
+5. Inspect the installed Config Server plugin/workflow inventory for `delete_component_pre` and `delete_component`. For ordinary removal, stop if the workflow needed to stop and clean the component is absent. An explicitly authorized compatibility test may continue only after displaying the expected partial-state risk and recovery boundary.
+6. Run the version-proved `component del` command only after all remaining reverse dependencies are gone. Correlate its Trace with the workflow inventory, then independently verify `config.yaml`, `inner_config.yaml`, OBD registration, process/PID, listener, and canonical work/data paths.
+
+In the reviewed 4.7 development checkout, `ob-configserver` exposes add/start/stop/restart workflows but no `delete_component` workflow, while the generic deletion path can ignore that missing stage and still remove the component from registered configuration. Treat this as version-specific implementation evidence. If registration disappears while the process or listener remains, report `FAIL — lifecycle gap`; do not report a complete removal or kill/delete the residual runtime without a separately authorized recovery action. Apply [cleanup and ownership boundaries](../../references/cleanup-boundaries.md) to every supported removal.
 
 On failure preserve trace, plugin/configuration, component logs, actual endpoint, metadata response, registration state, and consumer errors. Do not remove the component, edit consumer files ad hoc, or redeploy until the failed layer is identified.

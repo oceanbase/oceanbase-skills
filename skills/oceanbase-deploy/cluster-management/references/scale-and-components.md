@@ -49,6 +49,10 @@ Before deletion, derive all dependants and consumers and identify retained data/
 
 Use only the installed command form. Remove dependants or migrate consumers in the derived order; do not assume one fixed monitoring deletion order across versions. After deletion, prove registered configuration, processes, listeners, dependency references, client/management paths, and separately owned data match the approved result.
 
+Treat registration removal and runtime removal as separate required outcomes. Before invocation, capture the selected component's entries in `config.yaml` and `inner_config.yaml`, reverse dependency references, artifact identity, process executable/PID, listeners, canonical home/work/data paths, and representative consumer health. Afterward verify that both configuration files and OBD registration contain exactly the intended retained state, no live dependency points to the deleted component, its processes/listeners are absent when deletion promises to stop it, and every work/data path matches the approved remove-or-retain set. Correlate the Trace with the expected `delete_component_pre` and `delete_component` stages when the installed component exposes them.
+
+A successful `component del` exit with removed registration but a live process, listener, stale inner configuration, or unexecuted required deletion workflow is a lifecycle gap. Report the operation or test as `FAIL`, not `PASS`; preserve the residual state and do not kill the process or delete its directory without a separately reviewed recovery action.
+
 The established command surface commonly uses:
 
 ```bash

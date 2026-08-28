@@ -45,6 +45,8 @@ For `obd obdiag`, diagnostic collection, checks, analysis, scenes, or RCA, use [
 
 Before acting, identify the controller host, current user, exact executable, installation owner and method, `OBD_HOME`, registered deployments, active CLI/Web/API tasks, repository state, and tool inventory. Re-resolve them after an SSH hop, user change, executable change, or environment change.
 
+When the workflow manages remote hosts, use an approved remote host as the controller by default and keep OBD execution and metadata there. Do not turn the automation runner into the controller, or switch to another machine after an acquisition failure, without the user's explicit choice. Follow the shared operation contract for same-controller attempts and the optional user-approved artifact-relay boundary.
+
 Do not:
 
 - install or replace OBD on a target host unless that host is explicitly the controller;

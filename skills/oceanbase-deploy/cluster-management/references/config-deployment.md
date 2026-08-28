@@ -60,7 +60,7 @@ Record these inputs before downloading artifacts or writing YAML:
 |---|---|
 | Controller | host, user, exact OBD executable/build, `OBD_HOME`, active tasks |
 | Product | product form, exact component key, component/plugin version |
-| Artifacts | component, version, release, architecture, hash, source, dependency closure |
+| Artifacts | component, version, release, operating-system suffix when applicable, architecture, hash, source, dependency closure |
 | Topology | deployment name, app/cluster identity, zones, server-to-component mapping |
 | SSH | target machine identity, management IP, SSH user/port/key and privilege boundary |
 | Paths | canonical home, data, log, redo, cache, temporary, and shared-storage paths as applicable |
@@ -74,14 +74,16 @@ Every component in the manifest must map to a requested outcome or a proved pack
 
 ## Preflight
 
-1. Read `obd --version`, the selected `obd cluster deploy --help`, and the installed component schema/workflows.
-2. Confirm exactly one compatible artifact for every selected component. Record version, release, architecture, hash, and repository source; repository presence alone does not prove compatibility.
+1. Read `obd --version`, the selected `obd cluster deploy --help`, and the installed public component schema/validation surface. Inspect a packaged workflow only when those interfaces cannot establish an execution-critical behavior.
+2. Confirm exactly one compatible artifact for every selected component. Record version, release, operating-system suffix, architecture, hash, and repository source; repository presence alone does not prove compatibility. Apply the shared exact-suffix, EL8, then EL7 fallback and verify every fallback's runtime dependencies.
 3. Prove each target's hostname/machine identity, management address, OS, architecture, runtime libraries, time synchronization, routes, firewall boundary, and SSH behavior.
 4. Resolve every path canonically. Inspect owner, mode, free space, inode capacity, mount identity, symlinks, non-empty contents, overlap with other deployments, and cleanup ownership.
 5. Map every proposed port to its host and namespace. Check real listeners and processes, not only registered deployments.
 6. Check available CPU, memory, log/data capacity, cgroup/container constraints, and topology failure domains. Do not infer usable resources from host totals alone.
 7. Inspect existing OBD registrations and remote processes. The deployment name, app identity, paths, and ports must not collide with an existing or unmanaged service.
 8. Run only the public version-supported precheck/strict-check path. In reusable deployment instructions spell `--strict-check` in full when the installed command exposes it; never transfer the short option `-S` from another subcommand.
+
+Declare the package-resolution mode before execution. In online mode, prove the exact expected remote winner; do not require a local download. In a remote workflow, `local-package` and `local closure` mean controller-local, not runner-local. In local-package mode, prove the complete local closure, disable participating remote repositories through the reviewed mirror workflow, immediately verify their disabled state and the local winning hashes, and keep that isolation through the final package-selecting stage. Stop rather than allowing unresolved local/remote competition. Restore a temporary remote-mirror change after the workflow unless persistent disablement was separately requested.
 
 Stop when the plugin schema, artifact closure, product compatibility, host identity, path ownership, or topology cannot be proved. Do not use `--force`, `redeploy`, path deletion, `init4env`, or a community package as a preflight workaround.
 

@@ -4,7 +4,7 @@ Use this workflow to retrieve and interpret an OBD trace ID. A trace is correlat
 
 ## Fix the Evidence Boundary
 
-Before retrieval, record the controller host and user, exact OBD executable/build, resolved `OBD_HOME`, originating command, deployment or other target, trace ID, and approximate start/end time. Retrieve the trace under the same controller identity and `OBD_HOME` that produced it. A trace from another user, installation, or home directory is not interchangeable evidence.
+Before retrieval, record the controller host and user, exact OBD executable/build, resolved `OBD_HOME` and whether it was originally unset or explicit, originating command, deployment or other target, trace ID, and approximate start/end time. Resolve the home through the shared operation contract rather than assigning a guessed metadata path. Retrieve the trace under the same controller identity and unchanged environment that produced it. A trace from another user, installation, or home directory is not interchangeable evidence.
 
 Read the installed help first. When supported, the public command shape is:
 
@@ -30,6 +30,8 @@ If output is empty or attribution is ambiguous, preserve that result and stop us
 Trace content can contain commands, paths, SQL, component errors, or credentials exposed by an affected workflow. Keep raw evidence access-controlled, redact secret values in reports, and preserve the non-secret identity and ordering needed to diagnose the operation. Do not delete or rewrite a trace to remove a secret; handle the exposed credential separately.
 
 After a failure, timeout, or interruption, use the shared [failure recovery workflow](../../references/failure-recovery-and-evidence.md). Do not retry, clean, or claim a terminal task state from `display-trace` output alone.
+
+For unattended or multi-stage work, attach the trace ID and attribution result to the structured record defined by [non-interactive automation execution](../../references/automation-execution.md); do not substitute raw trace text for the task, control-plane, runtime, or data-plane event fields.
 
 ## Maintainer Evidence
 

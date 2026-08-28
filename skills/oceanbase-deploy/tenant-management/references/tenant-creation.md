@@ -20,11 +20,15 @@ Stop when the requested locality cannot be satisfied, a zone lacks resources, or
 
 Collect every source that must connect: application clients, OBProxy, OCP, the OBD controller when needed, backup/restore workers, and a controlled emergency-management path. Present the resulting IP/CIDR allowlist for review.
 
-Verified OBD 4.7-era implementations can default `ob_tcp_invited_nodes` to `%` when tenant variables are omitted. Treat that as version-specific evidence, not a safe production default. For a production tenant, pass an explicit reviewed allowlist in the installed command's `--variables` syntax. Use `%` only for an isolated environment after the user accepts the exposure. Do not create the tenant broadly exposed and promise to tighten it later.
+Verified OBD 4.7-era implementations can default `ob_tcp_invited_nodes` to `%` when tenant variables are omitted. Treat that as version-specific evidence, not a safe default. Pass the final reviewed allowlist in the same tenant-create request through the installed command's supported variables syntax. Use `%` only when it is itself the reviewed final value for an isolated environment and the user accepts that exposure.
+
+Before submission, prove that the installed create workflow carries the final `ob_tcp_invited_nodes` value into initial tenant creation. If it cannot do so, stop. Never create with `%` or another temporary broad value and tighten it after creation; successful post-create correction does not make the exposure atomic.
 
 ## Protect the Initial Credential
 
 Determine how the installed build accepts the tenant credential. Prefer a protected interactive input, permission-controlled file, or supported secret reference. If the only supported path is a command argument such as `--password`, disclose process-list and shell-history exposure and use an approved local execution procedure; never print the value.
+
+When the installed OBD command offers only argv password input and argv exposure is not accepted, do not invent stdin, file-descriptor, environment-variable, or file options. A separately authorized fallback may create the tenant without the final password and immediately set it through an already available SQL client using a permission-controlled local credential file. This fallback is not atomic: require the final restricted allowlist in the original create request, define the bounded empty-password window and controller source, protect the file and process output, and record its retention/cleanup. Stop when that window is unacceptable or the intended password cannot be set without exposing it.
 
 Verify the intended account and password immediately after creation. Tenant existence with a failed intended login is a partial result, not success.
 
@@ -60,7 +64,7 @@ obd cluster tenant create <deploy_name> \
   [version-supported credential option; value supplied only through the approved local procedure]
 ```
 
-Omit unsupported or unnecessary fields rather than guessing; bracketed fields above are conditional, and installed help decides whether a value is optional or mutually exclusive. Never rely on the V4.6.0 documented default `ob_tcp_invited_nodes='%'` for production. Show the redacted final plan and obtain authorization for the tenant, resources, topology, variables, and network exposure immediately before creation.
+Omit unsupported or unnecessary fields rather than guessing; bracketed fields above are conditional, and installed help decides whether a value is optional or mutually exclusive. The final `ob_tcp_invited_nodes` value is not optional merely because the CLI has a broad default: verify it is present in the redacted create plan before execution. Show the redacted final plan and obtain authorization for the tenant, resources, topology, credential procedure, variables, and network exposure immediately before creation.
 
 Preserve the ordinary read-only inspection command from the installed interface:
 
@@ -78,7 +82,9 @@ Verify all applicable layers:
 2. database-side tenant status is terminal and healthy rather than creating or deleting;
 3. locality, replicas, primary zone, Units, resource pool, and effective resource values match the plan;
 4. the effective `ob_tcp_invited_nodes` value equals the reviewed allowlist;
-5. the intended account authenticates and can execute a bounded identity query in the intended compatibility mode;
+5. the intended account authenticates and can execute a bounded identity query in the intended compatibility mode, following [version-adaptive SQL evidence](../../references/sql-evidence.md);
 6. no unexplained partial Unit, pool, user, or tenant object remains.
+
+If the client times out or disconnects, do not classify the create as failed and do not submit it again. Under the same controller identity, correlate the Trace/task, `tenant show`, database tenant/Unit/pool objects, effective allowlist, and authenticated SQL state within a bounded deadline. Accept a server-side success only when the exact tenant passes every required layer; otherwise classify it as failed, still running, or unknown through the shared failure-recovery workflow.
 
 If creation fails after any object appears, freeze retries and inventory the tenant, Units, pools, accounts, variables, trace, and real SQL state. Do not rerun creation or drop the partial tenant as generic cleanup; follow the shared failure-recovery reference.

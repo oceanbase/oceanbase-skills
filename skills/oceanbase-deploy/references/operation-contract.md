@@ -34,6 +34,22 @@ Use the exact registered name for an existing deployment and follow the installe
 
 Deduplicate physical hosts by observed host identity, not only by IP. Normalize paths and detect symbolic links, mount boundaries, overlaps, and non-empty targets before a file-affecting operation. Re-resolve the map whenever the shell, SSH hop, current user, executable, `OBD_HOME`, deployment, target list, or artifact path changes; authorization bound to the former identity does not carry over.
 
+### Resolve the Controller Home Without Guessing
+
+Start from the caller's actual environment and record whether `OBD_HOME` is unset or explicitly configured. Correlate the exact executable and controller user with public inventory, registered deployment metadata, and trace locations under that unchanged environment before naming the controlling home.
+
+Do not export a path merely because it looks like the default metadata directory. For example, observing `/root/.obd` does not justify setting `OBD_HOME=/root/.obd`; an installed build can derive another `.obd` child and resolve `/root/.obd/.obd`. Set or replace `OBD_HOME` only when the user, runner configuration, or proved existing controller identity requires it. After an explicit setting, verify the resolved registration and trace location and stop on an unexpected nested suffix, empty deployment inventory, ownership mismatch, or competing controller home.
+
+Keep the resolved environment unchanged for every command and trace that belongs to one operation. Re-resolve it after an SSH hop, user or executable change, or automation-worker handoff; never switch homes merely to find a missing deployment or trace.
+
+## Keep Remote Execution Identities Stable
+
+For a workflow that manages remote hosts, distinguish the automation runner or workstation from the OBD controller, artifact-acquisition host, and managed hosts. By default, select an approved remote host as the controller and install and run OBD there. Keep its `OBD_HOME`, deployment metadata, traces, package resolution, and lifecycle commands on that controller unless the user explicitly chooses a different control-plane location. The runner is transport and evidence-capture infrastructure by default, not an implicit fallback controller.
+
+In a remote workflow, an unqualified **local repository**, **local package**, **local path**, or **local download** means controller-local. Do not reinterpret it as runner-local merely because a network, proxy, repository, or package command failed.
+
+Do not silently change the controller, execution host, or artifact-acquisition host after a failure. Make bounded, meaningful attempts through the applicable existing or user-approved routes on the same controller, preserving evidence for each distinct route rather than blindly repeating one request. If those routes do not work, stop and ask the user to choose among the evidenced options, such as changing proxy/source/package, approving the runner as a temporary artifact relay, selecting another remote controller, or ending the operation. A user-approved relay may acquire, verify, and transfer an exact artifact; it does not move OBD or its metadata off the remote controller unless the user separately and explicitly changes that requirement.
+
 ## Minimize Scope
 
 Resolve selectors to explicit objects before execution. Show selected and unselected servers, components, services, tenants, paths, repositories, or storage prefixes. Do not widen a server-, component-, service-, or tenant-scoped request to an entire deployment without explaining why and obtaining authorization for the wider impact.
@@ -74,6 +90,8 @@ Before execution, record:
 5. completion checks and the failure stop condition.
 
 After execution, record observed state rather than merely repeating command output.
+
+For unattended or multi-stage work, read [non-interactive automation execution](automation-execution.md) before the first command and use its runtime preflight, prompt handling, structured event record, and timeout-reconciliation rules.
 
 ## Sources
 
