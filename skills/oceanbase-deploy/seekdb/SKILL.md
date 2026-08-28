@@ -11,6 +11,8 @@ metadata:
 
 This skill covers operations performed through `obd seekdb` and OBD-managed monitoring components attached to the same SeekDB deployment. It is not the product-level SeekDB skill. A generic mention of SeekDB does not activate this route.
 
+Before acquiring a SeekDB deployment package, read the shared [deployment package closure](../references/deployment-package-sets.md#seekdb-sets). A deployable local/offline set includes matching `seekdb` and `seekdb-libs`; add monitoring only through the version-proved closure. The V4.6.0 documentation names `obagent` + `prometheus` + `ob-dashboard`, while the reviewed 4.7 development path uses `obagent` + `prometheus` + `grafana`. Do not interchange those dashboard artifacts or download only the `seekdb` primary RPM.
+
 Before any package network request, apply the shared [fixed mirror-source order](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order): actual controller-side acquisition from `https://mirrors.oceanbase.com` first, then the direct package directories under `https://mirrors.aliyun.com/oceanbase`, switching only after three failed attempts on the current mirror source. A generic Internet-connectivity test cannot precede or replace those attempts.
 
 Use the installed OBD help and version-matched SeekDB guidance to select the command. Inspected builds can expose an HA command that performs no role-change stage for an unsupported target, so verify the resulting database roles and topology rather than treating command exit as proof of the transition.

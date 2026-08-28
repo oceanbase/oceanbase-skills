@@ -68,6 +68,8 @@ Identify host role, owner when derivable, persistence/cleanup boundary, and evid
 
 ## Build the Deployment Manifest
 
+Before resolving artifacts, expand the selected topology through the shared [deployment package closure](../../references/deployment-package-sets.md). Record primary component packages, companion runtime packages, selected conditional utilities, image archives, and external prerequisites separately. The YAML component list alone is not the package closure.
+
 Record these inputs before downloading artifacts or writing YAML:
 
 | Area | Required inputs |
@@ -90,7 +92,7 @@ Every component in the manifest must map to a requested outcome or a proved pack
 ## Preflight
 
 1. Read `obd --version`, the selected `obd cluster deploy --help`, and the installed public component schema/validation surface. Inspect a packaged workflow only when those interfaces cannot establish an execution-critical behavior.
-2. Confirm exactly one compatible artifact for every selected component. Record version, release, operating-system suffix, architecture, hash, and repository source; repository presence alone does not prove compatibility. Apply the shared exact-suffix, EL8, then EL7 fallback and the [fixed mirror-source order](../../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order), and verify every fallback's runtime dependencies.
+2. Confirm exactly one compatible artifact for every required entry in the expanded deployment package closure, not only every YAML component. Record version, release, operating-system suffix, architecture, hash, and repository source; repository presence alone does not prove compatibility. Apply the shared exact-suffix, EL8, then EL7 fallback and the [fixed mirror-source order](../../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order), and verify every fallback's runtime dependencies.
 3. Prove each target's hostname/machine identity, management address, OS, architecture, runtime libraries, time synchronization, routes, firewall boundary, and SSH behavior.
 4. Resolve every path canonically. Inspect owner, mode, free space, inode capacity, mount identity, symlinks, non-empty contents, overlap with other deployments, and cleanup ownership.
 5. Map every proposed port to its host and namespace. Check real listeners and processes, not only registered deployments.
@@ -137,7 +139,7 @@ Use `--strict-check` only when the installed `cluster start --help` exposes it; 
 
 ### Interactive Deployment
 
-Use `obd cluster deploy <deploy_name> --interactive` only when the user chooses the integrated guided workflow, the installed help exposes that long option, and a controllable TTY exists. In inspected builds it always proceeds from configuration generation into deploy and start, and it may then create a tenant; the tenant prompt can default to yes. Explicitly select no when tenant creation was not requested. Do not describe this as a configuration-only wizard or silently accept defaults for product, artifacts, hosts, paths, ports, resources, tenant creation, other credentials, or cleanup. For the new-cluster database bootstrap password alone, accept OBD's generated random default without asking the user unless the user already supplied an override, and protect the terminal and resulting controller metadata from disclosure.
+Use `obd cluster deploy <deploy_name> --interactive` only when the user chooses the integrated guided workflow, the installed help exposes that long option, and a controllable TTY exists. In inspected builds it always proceeds from configuration generation into deploy and start, and it may then create a tenant; the tenant prompt can default to yes. Explicitly select no when tenant creation was not requested. Do not describe this as a configuration-only wizard or silently accept defaults for product, artifacts, hosts, cluster paths/ports/resources, the decision to create a tenant, non-tenant credentials, or cleanup. For the new-cluster database bootstrap password alone, accept OBD's generated random default without asking the user unless the user already supplied an override, and protect the terminal and resulting controller metadata from disclosure. When tenant creation was explicitly requested, apply the [tenant-creation default workflow](../../tenant-management/references/tenant-creation.md): omitted tenant settings intentionally remain OBD defaults, including `%` and an empty tenant password in the reviewed baseline, and must not become follow-up questions.
 
 Before entering the workflow, inspect an existing deployment with the same name. An inspected implementation can confirm destruction of an already deployed name and use a force-kill path; it also sets force mode for the generated deployment, which can overwrite a home path. Treat either collision branch as a separately reviewed destructive operation, and stop unless every path is proved empty or owned and the impact is authorized.
 
@@ -156,7 +158,7 @@ Treat `autodeploy` as an integrated mutating workflow, not a YAML generator. Ins
 Keep optional destructive/convenience branches absent unless their exact installed behavior is separately requested and authorized. In the inspected command:
 
 - `--force` permits overwriting `home_path`, while `--clean` cleans a `home_path` judged to belong to the invoking user; either branch also suppresses the normal cluster-status check;
-- `--auto-create-tenant` creates a tenant named `test` using all resources the workflow considers available; it requires a separate tenant identity/resource/credential review and data-plane acceptance;
+- `--auto-create-tenant` creates a tenant named `test` using all resources the workflow considers available; use it only after the user explicitly requests tenant creation, apply the tenant default workflow without asking for omitted settings, and require data-plane acceptance;
 - `--force-delete` deletes the registered cluster and is a separate destructive operation, not a name-collision convenience.
 
 Display the canonical paths, existing registration, processes/listeners, tenant/resource outcome, and the equivalent health evidence that would replace any suppressed status check. Do not add any of these options to make the workflow unattended or to repair a partial deployment.

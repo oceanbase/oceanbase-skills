@@ -38,6 +38,10 @@ When OBD or the version-matched plugin is unavailable, you may still prepare a c
 
 When a new OceanBase deployment request does not specify resource values, a cap, or a non-maximum profile, select [maximum-utilization sizing](references/maximum-utilization.md) by default and do not ask the user to choose a deployment size. Preserve explicit user sizing. Apply maximum sizing only to the resolved target hosts and requested database component; do not infer extra nodes, optional components, or tenants.
 
+## Deployment Package Closure
+
+Before the first package lookup, download, import, or image load for a deployment, component addition, upgrade, or reinstall, read the shared [deployment package closure](../references/deployment-package-sets.md). Expand the final requested component graph into every primary and companion artifact before acquisition. A database RPM without its applicable `*-libs`, an OCP package without its plugin-selected JRE, or an OMS archive loaded on only some nodes is not a complete local/offline package plan.
+
 ## Online Package Source Priority
 
 Before any package network request, apply the shared [fixed mirror-source order](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order): actual controller-side acquisition from `https://mirrors.oceanbase.com` first, then the direct package directories under `https://mirrors.aliyun.com/oceanbase`, switching only after three failed attempts on the current mirror source. A generic Internet-connectivity test cannot precede or replace those attempts.
@@ -64,6 +68,7 @@ Read only the references needed for the request.
 
 | Request | Reference |
 |---|---|
+| Determine or validate every package needed by a deployment topology before acquisition | [deployment-package-sets.md](../references/deployment-package-sets.md) |
 | Default sizing for a new cluster with no user-specified resources, or an explicitly requested dedicated-host/capped maximum-utilization deployment | [maximum-utilization.md](references/maximum-utilization.md) |
 | Any new community, commercial distributed, or commercial standalone/centralized config-file, interactive, or autodeploy request | [config-deployment.md](references/config-deployment.md), which performs common preflight and then selects exactly one product blueprint |
 | `edit-config`, `reload`, parameter classification, or `chst` | [configuration-changes.md](references/configuration-changes.md) |

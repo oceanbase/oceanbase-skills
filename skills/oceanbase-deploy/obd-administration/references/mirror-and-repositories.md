@@ -2,6 +2,8 @@
 
 Use this workflow to inspect or change OBD mirror sections, local repository artifacts, remote repository definitions, and package candidates.
 
+When acquisition serves a deployment, component addition, upgrade, or reinstall, first build the full [deployment package closure](../../references/deployment-package-sets.md). Apply mirror and operating-system candidate resolution to every required closure entry; do not begin with one obvious component and discover its companion libraries, JRE, client library, or node-local image only after deployment has started.
+
 ## Keep the Layers Distinct
 
 - A **mirror section** describes a local or remote source and its enabled/available state.

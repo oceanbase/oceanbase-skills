@@ -2,69 +2,73 @@
 
 Use this workflow to plan, create, or inspect an OceanBase tenant. Read the installed `obd cluster tenant create --help` and `show --help` before constructing a command; option names, defaults, supported modes, and resource semantics vary by OBD and component version.
 
-## Resolve the Tenant Plan
+## Use OBD Defaults for Unspecified Settings
 
-Record the exact deployment, OceanBase product form and component, cluster identity, target tenant name, compatibility mode, zone list, locality, replica and log-only-replica policy, primary zone, resource-unit count, minimum/maximum CPU, memory, log disk, minimum/maximum IOPS and IOPS weight, time zone, charset/collation, tablegroup when applicable, workload optimization choice, variables, and credential source.
+Creating a tenant requires an explicit user request. That request does not need to enumerate ordinary tenant settings. Separate the request into:
 
-Do not rely on a default tenant name or copy resource values from an unrelated topology. Check database-side capacity in every selected zone, including:
+- **explicit overrides:** values the user actually supplied;
+- **unspecified settings:** options to omit so the installed OBD workflow applies its own defaults.
+
+Do not ask the user to choose an unspecified tenant name, mode, zone list, locality, replica policy, primary zone, Unit count, CPU, memory, log disk, IOPS, time zone, charset/collation, tablegroup, workload optimization, variables, network allowlist, or password. Do not replace omission with agent-generated values. Explicit overrides take precedence only for the named settings.
+
+The reviewed OBD 4.7-era minimal-create baseline behaves as follows. Confirm the active installed build before execution and report any material difference; do not hard-code the table into options when omission produces the same result.
+
+| Setting | OBD default baseline when omitted |
+|---|---|
+| Tenant name | `test` |
+| Compatibility mode | `mysql` |
+| Zone list | All active zones |
+| Primary zone | `RANDOM` |
+| Replica count | Number of selected zones |
+| Log-only replicas | `0` |
+| Units per zone | Minimum active Observer count across active zones in the reviewed implementation; with the default zone list this covers the same complete zone set |
+| Maximum CPU | Minimum currently tenant-allocatable CPU across the selected servers |
+| Minimum CPU | Same as the default maximum CPU |
+| Memory size | Minimum currently tenant-allocatable memory across the selected servers |
+| Log-disk size | Minimum currently tenant-allocatable log disk across the selected servers |
+| IOPS, charset/collation, time zone, optimization, and other omitted options | Installed OBD/database defaults |
+| `ob_tcp_invited_nodes` | `%` |
+| Tenant password | Empty password |
+
+Record the exact deployment, OceanBase product form and component, cluster identity, explicit overrides, installed-default evidence, and the expected effective plan. Check database-side capacity in every defaulted or explicitly selected zone, including:
 
 - available CPU and memory;
 - log-disk capacity and required headroom;
 - Unit and resource-pool occupancy;
 - eligible OBServer nodes and zone placement;
-- existing tenant, Unit, resource-pool, or account objects with the proposed names.
+- existing tenant, Unit, resource-pool, or account objects with the effective names.
 
-Stop when the requested locality cannot be satisfied, a zone lacks resources, or the intended tenant identity conflicts with a partial earlier attempt.
+The default resource path can consume all resources OBD currently considers tenant-allocatable. Show that expected effect in the creation plan, but do not ask the user to choose another size merely because no resource override was supplied. Stop when the effective locality cannot be satisfied, a selected zone lacks the resources required by OBD's computed default, or the effective tenant identity conflicts with an existing or partial earlier attempt. Do not silently choose a different name, topology, or smaller resource plan.
 
-## Set the Network Allowlist Deliberately
+## Apply the Allowlist Default Without a Prompt
 
-Collect every source that must connect: application clients, OBProxy, OCP, the OBD controller when needed, backup/restore workers, and a controlled emergency-management path. Present the resulting IP/CIDR allowlist for review.
+When the user supplies an allowlist, pass that final value in the initial tenant-create request through the installed command's supported variables syntax. Prove that the installed create workflow carries it into initial tenant creation; never create with a temporary `%` and tighten it afterward.
 
-Verified OBD 4.7-era implementations can default `ob_tcp_invited_nodes` to `%` when tenant variables are omitted. Treat that as version-specific evidence, not a safe default. Pass the final reviewed allowlist in the same tenant-create request through the installed command's supported variables syntax. Use `%` only when it is itself the reviewed final value for an isolated environment and the user accepts that exposure.
+When the user omits the allowlist, do not ask for client addresses or synthesize CIDRs. Omit the allowlist variable and use the installed OBD default. In the reviewed OBD baseline that final default is `%`; state that expected exposure in the redacted plan and verify the effective value after creation. It is the intended final default, not a temporary broad value requiring post-create correction.
 
-Before submission, prove that the installed create workflow carries the final `ob_tcp_invited_nodes` value into initial tenant creation. If it cannot do so, stop. Never create with `%` or another temporary broad value and tighten it after creation; successful post-create correction does not make the exposure atomic.
+If a user-supplied allowlist cannot be applied atomically by the installed workflow, stop. Do not discard the override and fall back to `%`.
 
-## Protect the Initial Credential
+## Apply the Password Default Without a Prompt
 
-Determine how the installed build accepts the tenant credential. Prefer a protected interactive input, permission-controlled file, or supported secret reference. If the only supported path is a command argument such as `--password`, disclose process-list and shell-history exposure and use an approved local execution procedure; never print the value.
+When the user omits the tenant password, omit the credential option. The reviewed OBD baseline creates the tenant with an empty password; preserve that as the final requested default. Do not ask for a password, generate one in the agent, describe it as OBD-random, or set a password immediately after creation. State the empty-password result accurately in the redacted plan and final report without fabricating a secret.
 
-When the installed OBD command offers only argv password input and argv exposure is not accepted, do not invent stdin, file-descriptor, environment-variable, or file options. A separately authorized fallback may create the tenant without the final password and immediately set it through an already available SQL client using a permission-controlled local credential file. This fallback is not atomic: require the final restricted allowlist in the original create request, define the bounded empty-password window and controller source, protect the file and process output, and record its retention/cleanup. Stop when that window is unacceptable or the intended password cannot be set without exposing it.
+When the user explicitly supplies a password, determine how the installed build accepts it. Prefer a protected interactive input, permission-controlled file, or supported secret reference. If the only supported path is a command argument such as `--password`, disclose process-list and shell-history exposure and use an approved local execution procedure; never print the value. Do not invent stdin, file-descriptor, environment-variable, or file options that the installed interface does not support.
 
-Verify the intended account and password immediately after creation. Tenant existence with a failed intended login is a partial result, not success.
+Verify authentication with the expected credential state after creation: an empty password when omitted, or the explicit protected value when supplied. Tenant existence with a failed expected login is a partial result, not success.
 
 ## Construct and Execute
 
 Use only options confirmed by the installed help. In the V4.6.0 command guide, Community Edition supports MySQL mode only; commercial capability must still be proved from the installed product/plugin. For OceanBase 4.0 and later use `--memory-size` rather than the legacy min/max-memory options. The documented minimum log-disk size is 2G, and `--optimize` requires a supporting OceanBase release (documented as 4.2.5 or later in this guide).
 
-Choose one internally consistent placement model from installed help: do not combine locality, replica-count, zone-list, and primary-zone values that describe different topologies. A reviewed command can have this shape:
+Choose one internally consistent placement model from installed help when the user supplied placement overrides; do not combine explicit locality, replica-count, zone-list, and primary-zone values that describe different topologies. With no overrides, preserve the minimal OBD command rather than expanding defaults into guessed flags:
 
 ```bash
-obd cluster tenant create <deploy_name> \
-  --tenant-name=<tenant_name> \
-  --mode=<compatibility_mode> \
-  --zone-list=<zone_list> \
-  --primary-zone=<primary_zone> \
-  --replica-num=<replica_count> \
-  [--logonly-replica-num=<log_only_replica_count>] \
-  [--locality=<reviewed_locality>] \
-  --unit-num=<units_per_zone> \
-  --min-cpu=<minimum_cpu> \
-  --max-cpu=<cpu> \
-  --memory-size=<memory> \
-  --log-disk-size=<log_disk> \
-  --min-iops=<minimum_iops> \
-  --max-iops=<maximum_iops> \
-  --iops-weight=<iops_weight> \
-  --time-zone=<time_zone> \
-  --charset=<charset> \
-  --collate=<collation> \
-  [--tablegroup=<tablegroup>] \
-  [--optimize=<workload>] \
-  --variables=<shell_quoted_reviewed_variables> \
-  [version-supported credential option; value supplied only through the approved local procedure]
+obd cluster tenant create <deploy_name>
 ```
 
-Omit unsupported or unnecessary fields rather than guessing; bracketed fields above are conditional, and installed help decides whether a value is optional or mutually exclusive. The final `ob_tcp_invited_nodes` value is not optional merely because the CLI has a broad default: verify it is present in the redacted create plan before execution. Show the redacted final plan and obtain authorization for the tenant, resources, topology, credential procedure, variables, and network exposure immediately before creation.
+Add only user-supplied overrides using option names confirmed by installed help. If the user supplied an allowlist, include the corresponding shell-quoted variables option in the initial request. If the user supplied a password, include the version-supported credential option only through the approved local procedure. Otherwise omit both and retain OBD's `%` and empty-password defaults.
+
+Show the redacted effective plan, distinguishing explicit overrides from OBD defaults, before execution. Existing authorization to create the tenant covers use of unspecified OBD defaults; do not turn each default into another configuration question. Authorization does not cover changing an explicit override or adding a tenant when the user requested only cluster deployment.
 
 Preserve the ordinary read-only inspection command from the installed interface:
 
@@ -80,9 +84,9 @@ Verify all applicable layers:
 
 1. the OBD task reached a successful terminal state and `tenant show` identifies exactly one intended tenant;
 2. database-side tenant status is terminal and healthy rather than creating or deleting;
-3. locality, replicas, primary zone, Units, resource pool, and effective resource values match the plan;
-4. the effective `ob_tcp_invited_nodes` value equals the reviewed allowlist;
-5. the intended account authenticates and can execute a bounded identity query in the intended compatibility mode, following [version-adaptive SQL evidence](../../references/sql-evidence.md);
+3. locality, replicas, primary zone, Units, resource pool, and effective resource values match the explicit overrides or resolved installed OBD defaults;
+4. the effective `ob_tcp_invited_nodes` value equals the explicit allowlist when supplied, otherwise the installed default (expected `%` in the reviewed baseline);
+5. the intended account authenticates using the explicit password when supplied, otherwise an empty password, and can execute a bounded identity query in the effective compatibility mode, following [version-adaptive SQL evidence](../../references/sql-evidence.md);
 6. no unexplained partial Unit, pool, user, or tenant object remains.
 
 If the client times out or disconnects, do not classify the create as failed and do not submit it again. Under the same controller identity, correlate the Trace/task, `tenant show`, database tenant/Unit/pool objects, effective allowlist, and authenticated SQL state within a bounded deadline. Accept a server-side success only when the exact tenant passes every required layer; otherwise classify it as failed, still running, or unknown through the shared failure-recovery workflow.

@@ -28,6 +28,12 @@ metadata:
 
 Resolve the installed OBD build, product form, deployment, and tenant before selecting a command. This skill supports community and commercial OceanBase forms when the installed command and component plugins prove the requested operation is available.
 
+## Default Tenant Configuration
+
+Creating a tenant still requires an explicit user request; cluster deployment alone never implies a business tenant. After creation is requested, do not ask for tenant settings the user omitted. Confirm the installed OBD defaults and omit those options so OBD owns the defaults for tenant name, mode, placement, replicas, Units, resources, IOPS, time zone, charset/collation, optimization, variables, network allowlist, and initial password. Explicit user values override only the corresponding defaults.
+
+In the reviewed OBD baseline, the minimal create path produces tenant `test`, MySQL mode, all active zones, `RANDOM` primary zone, maximum currently allocatable tenant resources bounded by the selected servers, allowlist `%`, and an empty tenant password. Preserve that empty-password default when no password was supplied: do not ask for one, generate one, or set one after creation. Read the full [tenant default and verification workflow](references/tenant-creation.md) before creating a tenant.
+
 ## Shared Gates
 
 Read the shared references required by the current stage:
