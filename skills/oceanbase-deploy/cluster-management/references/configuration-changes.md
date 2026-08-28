@@ -30,7 +30,7 @@ If the installed plugin cannot establish the apply class, stop. Do not assume `r
 
 ## Auditable Editing
 
-`obd cluster edit-config <deploy_name>` can open an editor. Use it only with a controllable TTY or a version-proven editor integration.
+`obd cluster edit-config <deploy_name>` can open an editor. Use the editor-driven path only through a real, controllable PTY and a version-proven editor integration. In a tested build, invoking the command without a TTY caused standard input to be treated as replacement configuration; empty input failed with `Empty configuration` instead of opening the editor. Do not use an empty pipe or a non-PTY session to trigger the editor. A non-TTY invocation is appropriate only when deliberately using the complete-YAML standard-input path described below.
 
 The inspected current implementation first reads standard input and, when it receives non-empty content, treats that content as the complete candidate deployment YAML instead of opening an editor. For non-interactive automation, use this path only when the installed implementation proves the same behavior: submit exactly one complete, reviewed YAML through protected standard input, preserve its checksum, and require the resulting semantic diff to match the approved change set. This is whole-document replacement, not a field-patch interface. Do not send a fragment, omit unchanged secret-bearing fields, or invent a `--set` option.
 
@@ -39,11 +39,14 @@ For automation, first inspect how the installed OBD build selects and invokes it
 - accepts only the exact generated configuration path supplied by OBD;
 - verifies the expected pre-edit checksum;
 - changes only the reviewed keys;
+- records the file device and inode, rewrites and truncates that same file in place, and verifies that its device and inode remain unchanged;
 - rejects a missing, symlinked, or unexpected path;
 - writes no secret into terminal output;
 - returns failure unless the post-edit YAML parses and the semantic diff matches the approved change set.
 
-Do not invent a `--set` option, leave a persistent global editor override, or edit hidden `.obd` files directly. If no safe non-interactive path is supported, use the controlled interactive editor or stop.
+Do not use `sed -i`, temporary-file replacement, rename-based atomic writing, or an editor that swaps the generated file's inode in this path. In the tested build, such a replacement made OBD report `config unchange`; an in-place rewrite under a controlled editor and PTY was observed correctly. This is an editor-path compatibility requirement, not permission to edit hidden OBD metadata.
+
+Do not invent a `--set` option, leave a persistent global editor override, or edit hidden `.obd` files directly. If no safe PTY/editor path or deliberate complete-YAML standard-input path is supported, stop.
 
 ## Apply and Verify
 
@@ -56,12 +59,15 @@ obd cluster reload <deploy_name>
 
 Before reload, inspect the recorded diff and refresh component health. Obtain availability authorization if the installed workflow can restart any target. Current inspected OBD HEAD exposes no component/server selector for reload and applies it across the deployment; on a stopped or unhealthy deployment it may first start the whole deployment. Display and authorize that full scope and implicit start, or stop when the requested scope is narrower. Preserve the trace ID.
 
+For a field already proved dynamically applicable by the installed plugin, capture Observer PIDs and start times and run a bounded authenticated SQL continuity probe before, throughout, and after reload. The tested dynamic-parameter path changed the effective value without restarting Observer and kept SQL continuously available. Treat that as the expected no-restart acceptance result only for fields classified dynamic in the selected build; do not generalize it to restart-required or unresolved fields. Any PID/start-time change or SQL interruption disproves a no-restart claim even when final health recovers, and inability to observe the reload interval means uninterrupted availability was not established.
+
 Afterward compare:
 
 - registered configuration and generated per-server files;
 - component command line or local configuration where relevant;
 - database/API-side effective values;
 - selected process PIDs/start times and service health;
+- SQL continuity across the reload interval when a dynamic no-restart result is expected;
 - unselected fields and targets.
 
 Report values that remain pending restart. Never report a field as applied solely because `reload` exited successfully.
