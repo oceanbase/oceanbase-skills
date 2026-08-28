@@ -19,6 +19,10 @@ metadata:
 
 Use this entry point to identify the product form, execution mode, and owning skill. Do not turn an explanation, configuration review, or diagnostic request into a deployment.
 
+## Default New-Cluster Sizing
+
+For a new OceanBase cluster deployment, when the user does not specify resource values, a resource cap, or a non-maximum sizing profile, default to the [maximum-utilization workflow](cluster-management/references/maximum-utilization.md) without asking the user to choose a size. Explicit user values or caps take precedence. This default maximizes only the resolved target hosts; it does not add hosts, components, tenants, or topology that the user did not request.
+
 ## Online Package Source Priority
 
 For every package acquired online from OceanBase public repositories, make the actual controller-side resolution/download attempts in this fixed mirror-source order: first `https://mirrors.oceanbase.com`, then the direct package directories under `https://mirrors.aliyun.com/oceanbase`. Do not put a generic Internet-connectivity test ahead of the first mirror-source attempt. Keep using the current mirror source until the same exact package acquisition has failed three times; only then move to the next mirror source, and stop the search as soon as the package is acquired and verified. Read the detailed [fixed package-source workflow](obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order) before the first package network request.

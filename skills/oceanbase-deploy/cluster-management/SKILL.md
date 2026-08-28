@@ -34,6 +34,10 @@ This skill supports both community and commercial OceanBase. Never select a comp
 
 When OBD or the version-matched plugin is unavailable, you may still prepare a clearly labeled, non-executable decision blueprint containing placeholders and unresolved evidence. Do not claim schema validation, artifact compatibility, precheck success, or runtime support until those inputs exist.
 
+## Default New-Cluster Sizing
+
+When a new OceanBase deployment request does not specify resource values, a cap, or a non-maximum profile, select [maximum-utilization sizing](references/maximum-utilization.md) by default and do not ask the user to choose a deployment size. Preserve explicit user sizing. Apply maximum sizing only to the resolved target hosts and requested database component; do not infer extra nodes, optional components, or tenants.
+
 ## Online Package Source Priority
 
 Before any package network request, apply the shared [fixed mirror-source order](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order): actual controller-side acquisition from `https://mirrors.oceanbase.com` first, then the direct package directories under `https://mirrors.aliyun.com/oceanbase`, switching only after three failed attempts on the current mirror source. A generic Internet-connectivity test cannot precede or replace those attempts.
@@ -60,7 +64,7 @@ Read only the references needed for the request.
 
 | Request | Reference |
 |---|---|
-| Dedicated-host or capped multi-node maximum-utilization deployment and deterministic resource sizing | [maximum-utilization.md](references/maximum-utilization.md) |
+| Default sizing for a new cluster with no user-specified resources, or an explicitly requested dedicated-host/capped maximum-utilization deployment | [maximum-utilization.md](references/maximum-utilization.md) |
 | Any new community, commercial distributed, or commercial standalone/centralized config-file, interactive, or autodeploy request | [config-deployment.md](references/config-deployment.md), which performs common preflight and then selects exactly one product blueprint |
 | `edit-config`, `reload`, parameter classification, or `chst` | [configuration-changes.md](references/configuration-changes.md) |
 | Start, stop, restart, display, destroy, redeploy, prune, `demo`, or `perf` | [lifecycle.md](references/lifecycle.md) |

@@ -6,7 +6,7 @@ Use this blueprint only after the installed OBD build proves the community distr
 
 - approved OceanBase Community Edition version, release, architecture, artifact hash, repository source, and plugin identity;
 - one-node development or multi-node availability topology, zones and failure domains;
-- target host identities, SSH account, canonical paths, ports, and resource budget;
+- target host identities, SSH account, canonical paths, and ports, plus any explicitly supplied resource values or caps; when sizing is omitted, derive the resource budget through the default maximum-utilization workflow;
 - any user-specified initial cluster/administrator password override and any explicitly requested tenant behavior; do not request an override when none was supplied because OBD owns random generation by default;
 - explicit persistent auto-start choice; keep the schema option false or unset unless requested and approved through the lifecycle systemd gate;
 - optional OBProxy/OBAgent/monitoring components, each separately justified.

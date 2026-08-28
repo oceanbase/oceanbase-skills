@@ -1,8 +1,10 @@
 # Multi-Node Maximum-Utilization Deployment
 
-Use this workflow when the user explicitly asks an OBD-managed OceanBase Community Edition cluster to consume the OBD-compatible maximum of dedicated hosts, or asks for a capped maximum on shared hosts. This workflow restores cluster-consistent sizing: derive each node's verified candidate independently, take the minimum for every resource key, and apply one common specification to every Observer.
+Use this workflow when the user explicitly requests maximum utilization or when a new OceanBase cluster request does not specify resource values, a cap, or a non-maximum sizing profile. Do not ask the user to choose a deployment size in the latter case. Explicit user sizing takes precedence. Maximum utilization applies only to the resolved target hosts and requested database component; it does not add nodes, components, tenants, or topology.
 
-This deterministic baseline is verified for the Community Edition `oceanbase-ce` 4.3.5.5 path using the `plugins/oceanbase/4.2.0.0/generate_general_config.py` generator. Another product form, component, plugin, or generator may use different keys, constants, or algorithms. Inspect and reproduce the selected installed implementation before adapting this workflow; do not transfer these formulas by analogy to commercial distributed, standalone, centralized, or SeekDB deployments.
+For an OBD-managed OceanBase Community Edition cluster, this workflow provides cluster-consistent sizing: derive each node's verified candidate independently, take the minimum for every resource key, and apply one common specification to every Observer. On shared hosts, use the capped path only after the required reserves or caps are known.
+
+This deterministic baseline is verified for the Community Edition `oceanbase-ce` 4.3.5.5 path using the `plugins/oceanbase/4.2.0.0/generate_general_config.py` generator. The default maximum-utilization goal still applies to another OceanBase product form when sizing was omitted, but another component, plugin, or generator may use different keys, constants, or algorithms. Inspect and reproduce the selected installed implementation before adapting this workflow; do not transfer these formulas by analogy to commercial distributed, standalone, centralized, or SeekDB deployments, and do not silently fall back to a mini or arbitrary profile when that derivation is unresolved.
 
 ## Required Shared Gates
 
