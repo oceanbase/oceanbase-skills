@@ -121,7 +121,7 @@ Before execution, show the source backup identity, target tenant, target point, 
 
 For backup, require a successful terminal task, database-side backup success, a complete manifest/catalog entry, verified SCN/time coverage, accessible artifacts from the required nodes, and integrity checks supported by that version.
 
-For restore, require a successful terminal task, a healthy target tenant with the intended source identity and recovery point, correct resources and allowlist, authenticated login, and a bounded representative data check. Inventory every generated restore Unit Config/resource pool and verify that each is owned by and attached to the intended tenant or otherwise disposed of exactly as the reviewed workflow specifies. Do not expose business data in the report.
+For restore, establish the expected post-restore account and allowlist state from the selected backup's metadata plus explicit restore overrides before execution; do not call an unspecified state “correct.” Require a successful terminal task, a healthy target tenant with the intended source identity and recovery point, the reviewed resources and allowlist, authenticated login using the expected credential state, and a bounded representative data check. Inventory every generated restore Unit Config/resource pool and verify that each is owned by and attached to the intended tenant or otherwise disposed of exactly as the reviewed workflow specifies. Do not expose business data in the report.
 
 ## Failure, Retry, and Retention
 

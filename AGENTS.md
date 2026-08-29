@@ -38,9 +38,6 @@ oceanbase-skills/
 │   │   ├── tenant-management/    # Tenant ops
 │   │   │   ├── SKILL.md
 │   │   │   └── references/
-│   │   ├── seekdb/               # skill name obd-seekdb; stable path
-│   │   │   ├── SKILL.md
-│   │   │   └── references/
 │   │   └── testing-and-benchmark/ # Benchmarks
 │   │       ├── SKILL.md
 │   │       └── references/
@@ -70,11 +67,10 @@ oceanbase-skills/
 | Directory | Skill Name | Domain |
 |-----------|------------|--------|
 | `skills/oceanbase-deploy` | `oceanbase-deploy` | Overview and routing to specialized skills |
-| `skills/oceanbase-deploy/cluster-management` | `cluster-management` | Cluster deploy, multi-node maximum-utilization sizing, start, stop, upgrade, OCP CE, monitoring |
-| `skills/oceanbase-deploy/obd-administration` | `obd-administration` | OBD controller installation, update, repositories, tools, Web/API, and runtime |
+| `skills/oceanbase-deploy/cluster-management` | `cluster-management` | Community Edition cluster deploy, multi-node maximum-utilization sizing, lifecycle, upgrade, retained components, and monitoring |
+| `skills/oceanbase-deploy/obd-administration` | `obd-administration` | Tested OBD controller installation, update/rollback, repositories, exact tool provisioning, traces, and runtime identity |
 | `skills/oceanbase-deploy/obdiag-diagnostics` | `obdiag-diagnostics` | Diagnostic collection, checks, analysis, scenes, ASH, and RCA through OBD |
 | `skills/oceanbase-deploy/tenant-management` | `tenant-management` | Tenant CRUD, backup, restore |
-| `skills/oceanbase-deploy/seekdb` | `obd-seekdb` | OBD-managed SeekDB deployment, lifecycle, takeover, and primary-standby HA |
 | `skills/oceanbase-deploy/testing-and-benchmark` | `testing-and-benchmark` | Sysbench, TPC-H, TPC-C, mysqltest |
 | `skills/seekdb` | `seekdb` (product) | Standalone SeekDB product: overview and routing |
 | `skills/seekdb/install` | `seekdb-install` | Install SeekDB on Linux/macOS/Windows (Homebrew / Docker / yum / apt / MSI / pip) |
@@ -104,7 +100,7 @@ oceanbase-skills/
 ### What NOT to Do
 
 - Do not add application source code (this repo is documentation only).
-- Do not remove or soften safety warnings (e.g., confirmation before `destroy`, `redeploy`, `failover`).
+- Do not remove or soften safety warnings for retained destructive operations, or the current-Skill-version unsupported boundary for removed workflows such as `redeploy`.
 - Do not invent undocumented commands or flags.
 - Do not commit secrets, credentials, or environment-specific configuration.
 
@@ -118,6 +114,6 @@ A high-quality `SKILL.md` should:
 - **Be safe**: destructive operations must have explicit safety warnings and require user confirmation.
 - **Be agent-friendly**: clear, imperative language an LLM can follow without ambiguity.
 - **Include examples**: realistic usage patterns for common and edge-case scenarios.
-- **Define terminology**: overlapping or confusing terms (e.g., OCP CE vs. OCP Express) must be defined clearly.
+- **Define terminology**: overlapping or confusing retained terms must be defined clearly.
 - **Stay focused**: only cover the domain of that specific skill; cross-skill concerns belong in separate skills.
 - **Cross-reference**: link to related skills for adjacent functionality.

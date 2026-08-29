@@ -1,6 +1,6 @@
 ---
 name: obd-administration
-description: Install, update, and administer the tested OBD controller workflows, including mirrors and repositories, offline artifacts, dynamic tools, trace evidence, OBD_HOME discovery, and scoped automatic-confirm handling. Use for controller-scoped OBD work; use the specialized cluster, tenant, testing, or obdiag skill for those domains.
+description: Install, update, and administer the tested OBD controller workflows, including mirrors and repositories, offline artifacts, exact dynamic-tool provisioning for retained workflows, trace evidence, OBD_HOME discovery, and scoped automatic-confirm handling. Use for controller-scoped OBD work; use the specialized cluster, tenant, testing, or obdiag skill for those domains.
 metadata:
   author: oceanbase
   version: "3.0"
@@ -9,6 +9,8 @@ metadata:
 # OBD Administration
 
 Operate the OBD control plane without silently changing a managed deployment. Controller installation, repository state, tool inventory, trace evidence, and tested OBD environment values have independent lifecycles and authorization boundaries.
+
+Before the first package lookup or acquisition for controller installation, maintenance, offline preparation, or dynamic-tool provisioning, read the shared [deployment package closure](../references/deployment-package-sets.md). Before treating an unlisted controller operation as executable, read the shared [current Skill-version unsupported capabilities](../references/current-version-unsupported.md).
 
 ## Online Package Source Priority
 

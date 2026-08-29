@@ -2,7 +2,7 @@
 
 Use this workflow only for `edit-config`, `reload`, `chst` configuration-style conversion, and classifying how configuration fields become effective. Lifecycle operations, component changes, upgrade/reinstall, tenant operations, and deployment rebuilds belong to their dedicated workflows. A text edit, a successful reload, and an effective runtime change are distinct outcomes.
 
-A deployed component's server-set change is a topology operation, not an ordinary configuration edit. Adding or removing Observer servers from a registered deployment is unsupported. Do not use `edit-config`, its complete-YAML standard-input path, a generated-file editor, SQL, obshell, component operations, process control, or metadata edits to perform or reconcile that transition. Generic access to a `servers` field is not evidence of support.
+A deployed component's server-set change is a topology operation, not an ordinary configuration edit. Adding or removing Observer servers from a registered deployment is not supported by the current Skill version. Report `UNSUPPORTED — current Skill version`; do not use `edit-config`, its complete-YAML standard-input path, a generated-file editor, SQL, obshell, component operations, process control, or metadata edits to perform or reconcile that transition. Generic access to a `servers` field is not evidence of support.
 
 ## Select an Existing or New Registered Configuration
 

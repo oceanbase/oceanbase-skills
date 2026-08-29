@@ -17,7 +17,9 @@ Use only the applicable layers, but explicitly mark a skipped layer and why it i
 
 When a test, audit, or operation report uses uppercase verdicts, apply them consistently:
 
-- **`UNSUPPORTED`:** installed public help/schema and the version-matched plugin/workflow prove that the exact operation is absent, or the standard repository probe conclusively proves that no compatible artifact exists for the resolved product/version/platform. A disabled, stale, inaccessible, or incompletely probed repository is not unsupported.
+- **`UNSUPPORTED`:** always state which of these two reasons applies:
+  - **Current Skill-version boundary:** the exact requested workflow is explicitly listed in [current Skill-version unsupported capabilities](current-version-unsupported.md). This verdict requires no live product probe and makes no claim that OBD itself lacks the capability.
+  - **Observed product/version boundary:** installed public help/schema and the version-matched plugin/workflow prove that the exact operation is absent, or the standard repository probe conclusively proves that no compatible artifact exists for the resolved product/version/platform. A disabled, stale, inaccessible, or incompletely probed repository is not unsupported.
 - **`BLOCKED`:** every safe, authorized, in-scope probe and compatible alternative has been completed, but an external condition such as network access, credentials, missing authorization, unavailable TTY, or conflicting live state prevents continuation. Name the blocking condition and completed probes.
 - **`FAIL`:** a supported path exists but the attempted behavior, required acceptance layer, or test procedure does not meet the expected result. Skipping a required safe probe and then stopping is an incomplete or failed test execution, not blocked.
 - **`PASS`:** every acceptance layer applicable to the exact case succeeds. If cleanup is part of the test case, its selected-object removal and retained-object checks must also succeed; command exit alone never passes a case.
@@ -34,7 +36,7 @@ When a test, audit, or operation report uses uppercase verdicts, apply them cons
 | Restart | stop/start transition completed for selected targets; runtime identity is new where expected; data plane recovered |
 | Reload/configure | registered, generated, and effective runtime values agree; restart-required values are not reported as dynamically applied |
 | Upgrade/reinstall | actual per-node artifact version/release/hash matches the target; mixed versions are only those allowed by the reviewed path; data plane remains usable |
-| Add/remove Observer servers from an existing deployment | `UNSUPPORTED`; make no mutation. Product-side topology change with stale OBD registration is `partial`/`FAIL`, never `PASS` |
+| Add/remove Observer servers from an existing deployment | `UNSUPPORTED — current Skill version`; make no mutation. Product-side topology change with stale OBD registration is `partial`/`FAIL`, never `PASS` |
 | Component add/delete | registration and runtime agree with the new topology; deletion verifies `config.yaml`, `inner_config.yaml`, dependencies, processes, listeners, paths, component data plane, and retained data, with no unexplained residual reference or service |
 | Destroy/drop/overwrite | the exact authorized runtime/data object is absent or replaced; separately owned or external data is preserved unless explicitly included; expected retained parent directories, controller registration, traces, and package repositories are reported separately from unexpected residue |
 

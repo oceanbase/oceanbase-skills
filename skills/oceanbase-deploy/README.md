@@ -15,6 +15,8 @@ OceanBase Community Edition 的 OBD 部署与运维 Skill 集合。此分支只�
 | [`testing-and-benchmark`](./testing-and-benchmark/) | Sysbench、TPC-H、TPC-C 和 mysqltest |
 | [`obdiag-diagnostics`](./obdiag-diagnostics/) | 按实际安装能力使用 obdiag 做采集、分析、巡检和根因定位 |
 
+当前版本已删除的工作流统一标记为“当前 Skill 版本不支持”；这只描述本 Skill 的覆盖范围，不代表 OBD 产品本身不具备相应能力。完整清单见 [`current-version-unsupported.md`](./references/current-version-unsupported.md)。
+
 > 更多 skill 持续开发中，计划覆盖：内核调优、SQL 诊断、数据迁移等。
 
 ---

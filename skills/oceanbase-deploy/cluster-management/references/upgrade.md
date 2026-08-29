@@ -1,6 +1,6 @@
-# Cluster and Component Upgrade
+# OceanBase Community Edition Cluster Upgrade
 
-Use the supported upgrade workflow for a version transition that requires compatibility checks or upgrade scripts. Use [component-reinstall.md](component-reinstall.md) only for a supported artifact/release reassignment that is not an upgrade.
+Use this retained workflow for a proved OceanBase Community Edition cluster version transition that requires compatibility checks or upgrade scripts. Other component-upgrade families are [not supported by the current Skill version](../../references/current-version-unsupported.md). Use [component-reinstall.md](component-reinstall.md) only for the retained `obproxy-ce` exact-hash artifact/release reassignment that is not an upgrade.
 
 ## Build the Upgrade Path
 
@@ -24,7 +24,7 @@ Construct the command only from installed help, for example:
 
 ```bash
 obd cluster upgrade <deploy_name> \
-  --component=<component> \
+  --component=<verified_community_database_component> \
   --version=<target_version> \
   --usable=<comma_separated_reviewed_hashes_for_every_hop> \
   --disable=<all_other_frozen_candidate_hashes_for_involved_versions>

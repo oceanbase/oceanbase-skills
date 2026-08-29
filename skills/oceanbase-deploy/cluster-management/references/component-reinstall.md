@@ -1,6 +1,6 @@
 # Component Reinstallation
 
-Use `obd cluster reinstall` only when an already deployed component must be reassigned to a specific compatible repository artifact and the installed workflow supports that operation. Reinstall can replace executables and restart services; it is not generic cleanup, restart, or upgrade.
+The current Skill version retains `obd cluster reinstall` only for reassigning an already deployed `obproxy-ce` component to a specific compatible repository artifact, including the tested same-version alternate-hash and original-hash restoration workflow. Reinstall of another component is [not supported by the current Skill version](../../references/current-version-unsupported.md). Reinstall can replace executables and restart services; it is not generic cleanup, restart, or upgrade.
 
 ## Decision and Artifact Gate
 
@@ -21,7 +21,7 @@ Use only options exposed by installed help. A verified OBD 4.7.x surface include
 
 ```bash
 obd cluster reinstall <deploy_name> \
-  --component=<component> \
+  --component=obproxy-ce \
   --hash=<reviewed_repository_hash>
 ```
 

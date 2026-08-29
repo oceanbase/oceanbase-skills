@@ -1,12 +1,12 @@
 # Component Changes
 
-Use this workflow for OBD component add/delete. A registered component is not accepted until its runtime and product data plane recognize it.
+Use this workflow only for add/delete of the retained `obproxy-ce`, `obagent`, `prometheus`, `grafana`, and `ob-configserver` components. Enter it from the owning OBProxy, monitoring, or Config Server workflow; it is not a discovery route for arbitrary OBD components. For another component, follow the [current Skill-version unsupported boundary](../../references/current-version-unsupported.md) instead of adapting this generic command shape. A registered component is not accepted until its runtime and product data plane recognize it.
 
-Adding or removing Observer servers from an already registered deployment is unsupported. Report `UNSUPPORTED` before mutation and do not reinterpret a node-topology request as component addition/deletion.
+Adding or removing Observer servers from an already registered deployment is not supported by the current Skill version. Report `UNSUPPORTED — current Skill version` before mutation and do not reinterpret a node-topology request as component addition/deletion.
 
 ## Capability and Dependency Gate
 
-1. Record the installed OBD build and selected subcommand help, deployment/product form, component plugins, repositories, status, topology, and real runtime state.
+1. Record the installed OBD build and selected subcommand help, deployment/product form, component plugins, repositories, status, topology, and real runtime state. Stop with the current Skill-version `UNSUPPORTED` verdict unless every requested add/delete component is in the retained set above.
 2. Derive the dependency graph and supported component transitions from the registered configuration and installed workflows. Do not transfer a dependency order from a different product form or release.
 3. Build an explicit incremental manifest: selected component and target servers, versions/releases/hashes, paths, ports, resources, network identity, and dependencies.
 4. Check package compatibility and exact artifact availability. A component must not silently resolve a different release from the reviewed artifact.

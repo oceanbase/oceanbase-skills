@@ -22,7 +22,7 @@ obd cluster tenant optimize <deploy_name> <tenant_name> \
   --tenant-root-password=<value_supplied_only_through_the_approved_local_procedure>
 ```
 
-Do not treat permission to benchmark or create a tenant as permission to optimize it. Obtain configuration-change authorization for the observed tenant and diff.
+Do not treat permission only to benchmark or create a tenant as permission to optimize it. When the user explicitly requested optimization of the identified tenant, that request authorizes the reviewed scenario's ordinary persistent parameter changes; do not ask again solely because they persist. Ask again only when the resolved target, parameter diff, restart/outage, or other impact expands beyond the requested optimization.
 
 ## Accept and Restore
 

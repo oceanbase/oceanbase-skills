@@ -10,6 +10,8 @@ metadata:
 
 Choose the smallest evidence scope that can answer the question. Tool availability, tool installation, collection, analysis, a tool finding, and independently confirmed root cause are separate results.
 
+Before resolving or acquiring obdiag, read the shared [deployment package closure](../references/deployment-package-sets.md) and identify the exact dynamic diagnostic-tool artifact and installation path required by the retained workflow.
+
 Before any package network request, apply the shared [fixed mirror-source and acquisition-fallback workflow](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order). Try normal OBD/tool acquisition on the selected controller first; if it fails, use controller-local `curl`, `wget`, the operating-system package manager, or another applicable downloader, verify and import/register the exact artifact locally, then retry. If no controller-local method works, use another reachable host only as a checksummed artifact relay from the same ordered sources. Keep OBD and obdiag execution on the selected controller, and never use `obd mirror` as a network downloader.
 
 ## Required Shared Gates
@@ -26,9 +28,9 @@ Then read [workflows.md](references/workflows.md) for tool discovery, scope sele
 
 ## Tool Discovery
 
-Identify the active OBD and obdiag versions using the installed command's normal inventory, help, or version paths. If invoking `obd obdiag` installs or updates the dynamic tool, record the resulting package identity and continue only when it is compatible with the requested diagnostic workflow.
+Identify the active OBD build and obdiag installation through core OBD tool inventory, already installed executable paths, and non-alias version evidence. Do not invoke `obd obdiag` or `obd obdiag --help` as an inventory probe because alias resolution can install or replace a dynamic tool.
 
-If the tool is absent, install it through the supported [dynamic tool lifecycle](../obd-administration/references/tool-lifecycle.md) and verify the resulting executable and package version. Tool setup does not by itself authorize production collection; establish the diagnostic target and impact separately afterward.
+If the tool is absent, install it through the supported [dynamic tool lifecycle](../obd-administration/references/tool-lifecycle.md) and verify the resulting executable, package version, and hash. Only after that exact installed identity is proved may alias-specific help be used to discover the available diagnostic command syntax. If alias invocation then attempts an unreviewed install or replacement, stop and reconcile tool state instead of accepting the side effect. Tool setup does not by itself authorize production collection; establish the diagnostic target and impact separately afterward.
 
 ## Diagnostic Boundary
 

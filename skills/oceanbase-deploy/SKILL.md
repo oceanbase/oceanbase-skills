@@ -33,7 +33,7 @@ For a new distributed deployment with multiple user-supplied Observer hosts and 
 
 ## Deployment Package Closure
 
-Before the first package lookup or acquisition for any deployment, component addition, upgrade, or reinstall, read the shared [deployment package closure](references/deployment-package-sets.md). Build the complete package set from the final requested component graph, including selected `*-libs`, client-library, and test-tool dependencies; do not stop after downloading the obvious primary component RPM. In online mode prove every closure entry is resolvable; in local-package/offline mode place and verify the complete closure on the selected remote controller before package selection.
+Before the first package lookup or acquisition for any retained workflow, read the shared [deployment package closure](references/deployment-package-sets.md). This includes controller installation or maintenance, deployment, component changes, upgrade, reinstall, `obd test`, and obdiag tool provisioning. Build the complete package set from the final requested workflow, including selected `*-libs`, client-library, test-tool, diagnostic-tool, and rollback dependencies; do not stop after downloading the obvious primary artifact. In online mode prove every closure entry is resolvable; in local-package/offline mode place and verify the complete closure on the selected remote controller before package selection. Child Skills can be invoked directly and therefore repeat this link at their own acquisition entry points.
 
 ## Online Package Source Priority
 
@@ -48,10 +48,14 @@ For a new OceanBase cluster deployment, do not ask the user to choose the initia
 | Skill | Use when |
 |---|---|
 | [cluster-management](cluster-management/SKILL.md) | Deploy or operate OceanBase Community Edition clusters; manage configuration, lifecycle, upgrades, component changes, monitoring, Config Server, and network access. |
-| [obd-administration](obd-administration/SKILL.md) | Install or update the OBD controller; manage mirrors/repositories, dynamic tools, trace evidence, and the tested runtime settings. |
+| [obd-administration](obd-administration/SKILL.md) | Install or update the OBD controller; manage mirrors/repositories, provision the exact dynamic tool required by a retained workflow, inspect trace evidence, and handle the tested runtime settings. |
 | [tenant-management](tenant-management/SKILL.md) | Create, inspect, optimize, back up, restore, drop, or manage physical primary/standby tenants. |
 | [testing-and-benchmark](testing-and-benchmark/SKILL.md) | Run Sysbench, TPC-H, TPC-C, or mysqltest through `obd test`. |
 | [obdiag-diagnostics](obdiag-diagnostics/SKILL.md) | Install-gated diagnostic collection, analysis, checks, scenes, or RCA through `obd obdiag`. |
+
+## Current Skill-Version Boundary
+
+Before routing any request, check whether its operation appears in [current Skill-version unsupported capabilities](references/current-version-unsupported.md). For a listed capability, report `UNSUPPORTED — the current Skill version does not support this workflow` before proposing or executing commands. This is a Skill-coverage verdict, not a claim that the installed OBD product can never support the capability. Do not recover a deleted workflow from repository history or route it through a generic component or tool command.
 
 ## Resolve Product and Capability First
 

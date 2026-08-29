@@ -25,6 +25,8 @@ metadata:
 
 # OceanBase Testing and Benchmarking
 
+Before resolving or acquiring any test prerequisite, read the shared [deployment package closure](../references/deployment-package-sets.md) and expand the selected test into its complete controller-side toolchain and runtime dependencies.
+
 Before any package network request, apply the shared [fixed mirror-source and acquisition-fallback workflow](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order). For a missing prerequisite such as `ob-sysbench`, first use the installed OBD build's supported controller-side tool-install path. If it fails, use controller-local `curl`, `wget`, the operating-system package manager, or another applicable downloader for the exact package; verify it, import an OBD-consumed RPM with `obd mirror clone <path>` or use the proved local installation path, and retry `obd test`. If no controller-local method works, use another reachable host only as a checksummed artifact relay from the same ordered sources. Do not move OBD or test execution off the selected controller, and never use `obd mirror` as a network downloader.
 
 Read [common-workflow.md](references/common-workflow.md) for every test. Then read exactly the selected tool reference:

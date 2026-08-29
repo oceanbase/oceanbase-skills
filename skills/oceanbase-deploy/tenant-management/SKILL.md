@@ -28,6 +28,8 @@ metadata:
 
 Resolve the installed OBD build, Community Edition deployment, and tenant before selecting a command. Confirm the requested operation against the installed command and component plugin.
 
+This Skill version retains tenant workflows only for OceanBase Community Edition. Commercial OceanBase tenant operations and OBD-managed SeekDB HA are [not supported by the current Skill version](../references/current-version-unsupported.md); do not translate either into the Community Edition tenant commands below.
+
 ## Default Tenant Configuration
 
 Creating a tenant still requires an explicit user request; cluster deployment alone never implies a business tenant. After creation is requested, do not ask for tenant settings the user omitted. Confirm the installed OBD defaults and omit those options so OBD owns the defaults for tenant name, mode, placement, replicas, Units, resources, IOPS, time zone, charset/collation, optimization, variables, network allowlist, and initial password. Explicit user values override only the corresponding defaults.

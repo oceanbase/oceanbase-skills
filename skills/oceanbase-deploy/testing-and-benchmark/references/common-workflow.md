@@ -4,6 +4,8 @@ Apply this workflow to Sysbench, TPC-H, TPC-C, and mysqltest. The selected tool 
 
 ## Capability and Toolchain
 
+Read the shared [deployment package closure](../../references/deployment-package-sets.md) before resolving or acquiring the selected test toolchain.
+
 Record the exact OBD executable/build, selected `obd test <tool> --help`, deployment/component/plugin identity, target server, OceanBase version, tenant, database, user, and test-tool versions.
 
 Do not assume OBD always downloads a missing tool, and do not forbid package-manager installation universally. Depending on the installed OBD/plugin and repository state, a tool may be supplied by an OBD tool package, an OceanBase repository package, a local binary path, or a preinstalled external dependency. Resolve one reviewed source and record package name, version, release, architecture, hash, executable path, dependencies, download/install paths, and rollback.

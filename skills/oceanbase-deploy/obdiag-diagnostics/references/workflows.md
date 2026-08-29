@@ -4,7 +4,7 @@ Use this workflow for the installed OBD build's supported obdiag collection, ana
 
 ## 1. Identify the Installed Tool
 
-Use the installed OBD build's normal inventory, `obd obdiag --help`, or version path to identify the available diagnostic command families. Some builds may install the dynamic obdiag tool while resolving the alias; record any resulting package change and verify the final tool identity before collection.
+Use the installed OBD build's core tool inventory, already installed executable paths, and non-alias version evidence to determine whether obdiag is installed. Do not use `obd obdiag` or `obd obdiag --help` as the inventory probe: some builds can install or replace the dynamic tool while resolving that alias.
 
 First record:
 
@@ -18,7 +18,7 @@ If obdiag is absent, follow [the tool lifecycle](../../obd-administration/refere
 
 Tool installation does not authorize collection, inspection of a deployment, or access to diagnostic data. Establish that scope separately.
 
-The available command families and options are determined by the resulting OBD/tool combination, not by examples from another release. Use its help to select the exact syntax and record the version used for the diagnostic result.
+Only after the exact installed tool identity is verified may alias-specific help be used to enumerate diagnostic command families and options. If that invocation attempts an unreviewed installation or replacement, stop, preserve before/after inventory, and reconcile the tool state. The available syntax is determined by the resulting OBD/tool combination, not by examples from another release; record the exact version used for the diagnostic result.
 
 ## 2. Define the Diagnostic Scope
 

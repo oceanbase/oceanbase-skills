@@ -28,6 +28,8 @@ This skill covers the tested OceanBase Community Edition workflows. Confirm the 
 
 When OBD or the version-matched plugin is unavailable, you may still prepare a clearly labeled, non-executable decision blueprint containing placeholders and unresolved evidence. Do not claim schema validation, artifact compatibility, precheck success, or runtime support until those inputs exist.
 
+Before treating an unlisted cluster, product, or component operation as executable, read the shared [current Skill-version unsupported capabilities](../references/current-version-unsupported.md). Do not use a generic component, upgrade, reinstall, configuration, or lifecycle command to recreate a workflow that the current Skill version does not support.
+
 ## Default Controller, SSH, and Cluster Discovery
 
 Across every cluster deployment path, default the OBD controller to one of the user-supplied cluster hosts, never the automation runner. Inspect all target hosts in supplied order before selecting it. Reuse the host that owns the intended OBD registration or another unambiguous existing target-host controller; when all targets are reachable and every target is confirmed to have no OBD executable, package record, or metadata, install OBD on the first target host without asking. An explicit user-selected controller overrides this default.
@@ -77,9 +79,9 @@ Read only the references needed for the request.
 | A new Community Edition configuration-file deployment | [config-deployment.md](references/config-deployment.md) |
 | `edit-config`, `reload`, parameter classification, or `chst` | [configuration-changes.md](references/configuration-changes.md) |
 | Start, stop, restart, display, destroy, or prune | [lifecycle.md](references/lifecycle.md) |
-| Add or delete a component | [component-changes.md](references/component-changes.md) |
-| Component or cluster upgrade | [upgrade.md](references/upgrade.md) |
-| Change a deployed component artifact with `cluster reinstall` | [component-reinstall.md](references/component-reinstall.md) |
+| Add or delete retained `obproxy-ce`, `obagent`, `prometheus`, `grafana`, or `ob-configserver` components | [component-changes.md](references/component-changes.md) plus the owning OBProxy, monitoring, or Config Server reference |
+| OceanBase Community Edition cluster rolling upgrade | [upgrade.md](references/upgrade.md) |
+| Change a deployed `obproxy-ce` artifact with `cluster reinstall` | [component-reinstall.md](references/component-reinstall.md) |
 | OBAgent, Prometheus, or Grafana | [monitoring.md](references/monitoring.md) |
 | SQL/RPC/obshell access or OBProxy | [network-access.md](references/network-access.md) |
 | OceanBase Config Server | [config-server.md](references/config-server.md) |
@@ -89,7 +91,7 @@ Read only the references needed for the request.
 - Prefer a uniquely named, reviewed configuration-file deployment.
 - Add optional components only when the user requested them or accepted their explained purpose and impact. Monitoring, Config Server, and OBProxy are never implicit.
 - Destroy, prune, component deletion, and forced operations require authorization bound to the exact observed target and impact. An explicit request to execute an ordinary non-destructive cluster workflow already authorizes its necessary in-scope persistent changes and expected rolling restarts; do not ask again only because those effects persist.
-- Adding or removing Observer servers from an already registered deployment is unsupported. Report `UNSUPPORTED` before mutation; do not simulate the topology change through SQL, obshell, `edit-config`, component operations, process control, metadata edits, or path deletion.
+- Adding or removing Observer servers from an already registered deployment is not supported by the current Skill version. Report `UNSUPPORTED — current Skill version` before mutation; do not simulate the topology change through SQL, obshell, `edit-config`, component operations, process control, metadata edits, or path deletion.
 - A successful command, registered deployment, or running process is not sufficient. Verify the applicable control-plane, runtime, and data-plane outcomes.
 
 ## Out of Scope

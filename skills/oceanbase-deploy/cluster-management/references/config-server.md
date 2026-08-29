@@ -83,7 +83,7 @@ After deployment or change, verify:
 1. exact OBD registration, artifact, process, listener, bind/advertised address, path ownership, and metadata-store identity;
 2. a bounded request for the supported `GetObProxyConfig` action returns the expected registered cluster identity, with approved TLS/authentication when supported and network access restricted when it is not;
 3. the intended database is registered under the exact non-empty application/cluster identity and stale or unrequested clusters are absent;
-4. every intended ODP retrieves the current metadata and its authenticated SQL data plane reaches the intended cluster;
+4. every intended OBProxy retrieves the current metadata and its authenticated SQL data plane reaches the intended cluster;
 5. direct database access and unrelated consumers remain healthy.
 
 Initialization or registration may be asynchronous. Poll a documented bounded status with a deadline and preserve intermediate errors; do not use an unexplained fixed sleep or infer readiness from an open port.
