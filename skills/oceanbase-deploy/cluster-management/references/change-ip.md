@@ -6,7 +6,7 @@ In the maintainer-observed development implementation, the normal fresh-deployme
 
 The reviewed implementation additionally requires a running deployment, unchanged registered configuration with no pending temporary config, exactly one `oceanbase-standalone` OceanBase component, exactly one configured server whose management address is the old IP, and a verified loopback Observer-identity marker. Treat every condition as version-specific and re-prove it from the installed build.
 
-This operation changes OBD's management address for the supported deployment. It is not a host replacement, distributed Observer migration, scale operation, VIP move, or generic change to `local_ip`/`devname`.
+This operation changes OBD's management address for the supported deployment. It is not a host replacement, distributed Observer addition/removal/migration, VIP move, or generic change to `local_ip`/`devname`.
 
 ## Identity and Scope Gate
 

@@ -32,7 +32,7 @@ Use the smallest unambiguous configuration:
 
 Never copy one node's network identity into every server. Do not represent a remote VIP as `local_ip` unless the runtime makes that address locally bindable and the product explicitly requires it.
 
-Before changing identity, verify interfaces/addresses/namespaces/routes, duplicate IP ownership, firewall/TLS/DNS, peer connectivity, client/OCP/monitoring/Config Server references, and whether the change requires reload, restart, change-ip, scale, or redeploy. Use [change-ip.md](change-ip.md) only for its supported standalone management-address case.
+Before changing identity, verify interfaces/addresses/namespaces/routes, duplicate IP ownership, firewall/TLS/DNS, peer connectivity, client/OCP/monitoring/Config Server references, and whether the change requires reload, restart, the supported standalone change-ip workflow, host replacement, or redeploy. Adding, removing, or replacing Observer servers in a registered distributed deployment is unsupported. Use [change-ip.md](change-ip.md) only for its supported standalone management-address case.
 
 ## Access and Security Gate
 

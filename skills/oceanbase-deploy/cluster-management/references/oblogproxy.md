@@ -10,7 +10,7 @@ For a Binlog Service mode, verify the exact OceanBase, OBProxy/ODP, and Config S
 
 ## Deploy or Change
 
-For a new configuration, use the common [configuration deployment](config-deployment.md) with only installed-schema keys. For an explicitly supported component add/delete, use [scale and component changes](scale-and-components.md); do not use redeploy. Confirm the installed OBD minimum/version-specific command because V4.6.0 documents different minimum OBD versions for full deployment and component add.
+For a new configuration, use the common [configuration deployment](config-deployment.md) with only installed-schema keys. For an explicitly supported component add/delete, use [component changes](component-changes.md); do not use redeploy. Confirm the installed OBD minimum/version-specific command because V4.6.0 documents different minimum OBD versions for full deployment and component add.
 
 Before execution, show the exact artifact, servers, service and optional Binlog paths, ports, dependencies, users/credentials, consumers, retention boundary, and component-add impact. Do not infer that a generic `oblogproxy` process owns already generated Binlog data.
 

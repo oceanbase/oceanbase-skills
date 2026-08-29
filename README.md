@@ -13,7 +13,7 @@ Each skill is a self-contained directory with a `SKILL.md` file (plus optional `
 | Skill | Description |
 |-------|-------------|
 | [`oceanbase-deploy`](./skills/oceanbase-deploy/) | Overview & routing — start here if unsure which skill to use |
-| [`cluster-management`](./skills/oceanbase-deploy/cluster-management/) | Cluster lifecycle: deploy, multi-node maximum-utilization sizing, start, stop, upgrade, scale out, OCP CE takeover, monitoring |
+| [`cluster-management`](./skills/oceanbase-deploy/cluster-management/) | Cluster lifecycle: deploy, multi-node maximum-utilization sizing, start, stop, upgrade, component changes, OCP CE takeover, monitoring |
 | [`obd-administration`](./skills/oceanbase-deploy/obd-administration/) | OBD installation, update, repositories, credentials, tools, Web/API, runtime, and telemetry |
 | [`obdiag-diagnostics`](./skills/oceanbase-deploy/obdiag-diagnostics/) | Bounded diagnostic collection, checks, analysis, scenes, ASH, and RCA through `obd obdiag` |
 | [`tenant-management`](./skills/oceanbase-deploy/tenant-management/) | Tenant CRUD, backup, restore, workload optimization |

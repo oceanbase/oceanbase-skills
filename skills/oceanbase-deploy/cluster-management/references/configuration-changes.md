@@ -1,6 +1,8 @@
 # Configuration Changes
 
-Use this workflow only for `edit-config`, `reload`, `chst` configuration-style conversion, and classifying how configuration fields become effective. Lifecycle operations, scale/component changes, upgrade/reinstall, tenant operations, and deployment rebuilds belong to their dedicated workflows. A text edit, a successful reload, and an effective runtime change are distinct outcomes.
+Use this workflow only for `edit-config`, `reload`, `chst` configuration-style conversion, and classifying how configuration fields become effective. Lifecycle operations, component changes, upgrade/reinstall, tenant operations, and deployment rebuilds belong to their dedicated workflows. A text edit, a successful reload, and an effective runtime change are distinct outcomes.
+
+A deployed component's server-set change is a topology operation, not an ordinary configuration edit. Adding or removing Observer servers from a registered deployment is unsupported. Do not use `edit-config`, its complete-YAML standard-input path, a generated-file editor, SQL, obshell, component operations, process control, or metadata edits to perform or reconcile that transition. Generic access to a `servers` field is not evidence of support.
 
 ## Select an Existing or New Registered Configuration
 
@@ -22,7 +24,7 @@ If the name appears concurrently, the stored content differs, or any target-host
    - dynamically applicable;
    - accepted by OBD but requiring a component restart;
    - immutable or unsupported after deployment;
-   - requiring a supported upgrade, scale, reinstall, or destructive rebuild path.
+   - requiring a supported upgrade, reinstall, component transition, or destructive rebuild path.
 3. Show the semantic before/after values, target servers/components, generated-file impact, availability effect, persistence boundary, and rollback value.
 4. Save a protected, redacted-for-display snapshot outside deployment-owned paths. Preserve the unredacted source only with permissions appropriate for its credentials.
 
@@ -82,7 +84,9 @@ After conversion, prove semantic equivalence and that OBD can parse/display the 
 
 ## Failure Boundary
 
-On edit, reload, or conversion failure, preserve both configurations, trace, generated files, real process state, and effective runtime values. Do not apply a second edit, restart all components, or redeploy until the observed state identifies the narrow recovery action.
+If `edit-config` fails while loading the unchanged generated YAML, before an approved semantic edit has occurred, classify the editor path as unavailable for that exact OBD build and registered configuration. Preserve the unchanged checksum, temporary-YAML parsing error, trace, registered configuration, and runtime state, then stop. Do not automatically switch editors, submit the whole document through standard input, or edit hidden metadata to bypass the failing parser.
+
+On any edit, reload, or conversion failure, preserve both configurations, trace, generated files, real process state, and effective runtime values. Do not apply a second edit, restart all components, or redeploy until the observed state identifies the narrow recovery action.
 
 ## Sources
 

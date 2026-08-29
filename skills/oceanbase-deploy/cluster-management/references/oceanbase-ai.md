@@ -15,7 +15,7 @@ Do not substitute `oceanbase-ce`, `oceanbase`, `oceanbase-standalone`, another p
 
 Use [config-deployment.md](config-deployment.md) and the exact installed `oceanbase.ai` schema. Treat all field names, topology constraints, bootstrap behavior, and dependencies as version-specific. Build a non-secret artifact lock manifest and a fully rendered YAML only after schema validation.
 
-If an existing deployment supports incremental component addition, follow [scale-and-components.md](scale-and-components.md); otherwise stop. Do not redeploy another OceanBase product merely to introduce `oceanbase.ai`.
+If an existing deployment supports incremental component addition, follow [component-changes.md](component-changes.md); otherwise stop. Do not redeploy another OceanBase product merely to introduce `oceanbase.ai`.
 
 If the component depends on `oblogservice`, read [oblogservice.md](oblogservice.md) and validate its direction, minimum-version, bootstrap, and resource constraints from the installed workflow.
 
@@ -23,4 +23,4 @@ If the component depends on `oblogservice`, read [oblogservice.md](oblogservice.
 
 Verify exact artifact identity, registered topology/configuration, processes/listeners/paths, authenticated product-specific SQL/API readiness, storage mode, and every explicitly requested integration. A generic HTTP health endpoint or an ordinary OceanBase process is not sufficient unless the selected product workflow defines it as acceptance.
 
-For configuration, scale, upgrade, reinstall, or removal, use the corresponding cluster reference and the installed component workflow. Preserve commercial data and artifact boundaries. On failure, preserve trace, plugin/configuration, processes/listeners, paths, logs, and data-plane evidence; do not fall back to a different product form or community package.
+For configuration, upgrade, reinstall, or removal, use the corresponding cluster reference and the installed component workflow. Preserve commercial data and artifact boundaries. On failure, preserve trace, plugin/configuration, processes/listeners, paths, logs, and data-plane evidence; do not fall back to a different product form or community package.

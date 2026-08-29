@@ -237,7 +237,7 @@ The explicit common values are authoritative. The consistency flag is only an ad
 
 Do not pass an automatic-tenant option. An explicit tenant request starts only after Observer acceptance and follows [tenant management](../../tenant-management/SKILL.md) as a separate operation.
 
-On failure, freeze retries and preserve the OBD trace, exact command, input checksum, registered/generated configuration, status, per-host processes/listeners/mounts/disk use, and ownership. Classify the reached state before changing anything. Do not use `init4env`, force, cleanup, redeploy, path deletion, or another deployment as generic recovery. Route an environment-check finding through [host environment initialization](environment-initialization.md), with an exact reviewed persistent diff and separate authorization.
+On failure, freeze retries and preserve the OBD trace, exact command, input checksum, registered/generated configuration, status, per-host processes/listeners/mounts/disk use, and ownership. Classify the reached state before changing anything. Do not use `init4env`, force, cleanup, redeploy, path deletion, or another deployment as generic recovery. Route an environment-check finding through [host environment initialization](environment-initialization.md) with an exact reviewed persistent diff; when initialization is necessary to the requested deployment, do not request duplicate confirmation solely because the diff persists.
 
 ## Verify
 

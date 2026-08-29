@@ -26,6 +26,7 @@ Use observed evidence to classify the target, for example:
 - partially running;
 - running but unhealthy;
 - healthy at control plane but unavailable at data plane;
+- product topology changed while OBD registration remains stale or contradictory;
 - timeout with server-side state unknown;
 - destroyed or dropped with residual objects;
 - asynchronous task accepted, running, failed, or recoverable.
@@ -75,9 +76,9 @@ One unexplained repeated failure is enough to stop automated retries when anothe
 
 ### Network and Artifact-Acquisition Failures
 
-A DNS, connection, proxy, TLS, HTTP, metadata, or download failure establishes only one failed package-source attempt and observation window; it does not by itself prove that the controller has no usable network path. For OBD packages and components, keep the selected controller and acquisition location stable and follow the repository workflow's [fixed mirror-source order](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order): three failed actual acquisitions on source 1 before source 2, then three on source 2 before advancing to another compatible suffix or asking the user after the full matrix. A generic connectivity probe neither counts as an attempt nor permits a source to be skipped.
+A DNS, connection, proxy, TLS, HTTP, metadata, or download failure establishes only one failed package-source attempt and observation window; it does not by itself prove that the controller has no usable network path. For OBD packages and components, keep the selected controller and follow the repository workflow's [fixed mirror-source order](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order): three meaningful acquisition attempts on source 1 before source 2, then three on source 2 before advancing to another compatible suffix. After the normal OBD/repository path fails, use controller-local `curl`, `wget`, the operating-system package manager, or another applicable downloader rather than blindly repeating that same path. A generic connectivity probe neither counts as an attempt nor permits a source to be skipped.
 
-Do not silently move a download to the automation runner, install or run OBD there, introduce a third mirror source, or select another controller as recovery. Once every required source attempt and compatible suffix on the controller has been exhausted, present the attempt evidence and ask the user to choose the next source or location. A user-approved artifact relay changes only artifact transport unless the user separately authorizes a control-plane move.
+After all applicable controller-local mechanisms, required source attempts, and compatible suffixes are exhausted, use another reachable host only as a bounded artifact relay for the same exact package from the same ordered sources. Verify it on the relay and again on the controller before local import/install. Do not install or run OBD on the relay, introduce a third source, or select another controller as recovery. Ask the user only when the relay also fails, an unlisted source is needed, or the exact artifact remains ambiguous.
 
 ## Report the Outcome
 

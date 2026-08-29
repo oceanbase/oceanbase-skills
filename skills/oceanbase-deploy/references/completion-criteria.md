@@ -34,7 +34,7 @@ When a test, audit, or operation report uses uppercase verdicts, apply them cons
 | Restart | stop/start transition completed for selected targets; runtime identity is new where expected; data plane recovered |
 | Reload/configure | registered, generated, and effective runtime values agree; restart-required values are not reported as dynamically applied |
 | Upgrade/reinstall | actual per-node artifact version/release/hash matches the target; mixed versions are only those allowed by the reviewed path; data plane remains usable |
-| Scale out | new nodes/components are registered, running, and visible from product-side topology; existing members remain healthy |
+| Add/remove Observer servers from an existing deployment | `UNSUPPORTED`; make no mutation. Product-side topology change with stale OBD registration is `partial`/`FAIL`, never `PASS` |
 | Component add/delete | registration and runtime agree with the new topology; deletion verifies `config.yaml`, `inner_config.yaml`, dependencies, processes, listeners, paths, component data plane, and retained data, with no unexplained residual reference or service |
 | Destroy/drop/overwrite | the exact authorized runtime/data object is absent or replaced; separately owned or external data is preserved unless explicitly included; expected retained parent directories, controller registration, traces, and package repositories are reported separately from unexpected residue |
 

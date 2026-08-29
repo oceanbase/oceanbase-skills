@@ -16,6 +16,12 @@ An OBD inventory command can initialize `OBD_HOME` and write controller-local tr
 
 Authorization for one mode or object does not authorize another. Ask again when new evidence requires a materially broader mutation.
 
+## Default Consent for In-Scope Persistent Changes
+
+An explicit request to execute a non-destructive workflow authorizes the ordinary persistent configuration, package, repository, host-setting, and service-state changes that are necessary and intrinsic to that requested outcome after their exact targets have been resolved. Record those effects and verify them, but do not ask for a second confirmation merely because they persist across process exit or reboot.
+
+This default does not activate optional persistent features the user did not request, widen the target set, or authorize destroy, prune, drop, overwrite, forced operation, failover, secret exposure, unrelated cleanup, or a materially different recovery action. Those remain separate operations under their own boundaries.
+
 ## Resolve Every Identity
 
 Build an identity map appropriate to the task:
@@ -34,6 +40,16 @@ Use the exact registered name for an existing deployment and follow the installe
 
 Deduplicate physical hosts by observed host identity, not only by IP. Normalize paths and detect symbolic links, mount boundaries, overlaps, and non-empty targets before a file-affecting operation. Re-resolve the map whenever the shell, SSH hop, current user, executable, `OBD_HOME`, deployment, target list, or artifact path changes; authorization bound to the former identity does not carry over.
 
+### Default Controller, SSH, and Cluster Discovery
+
+For an OBD-based cluster deployment, preserve the user's target-host order. Unless the user explicitly selected a separate controller, the controller must be one of those cluster deployment hosts. Before choosing or installing it, inspect every reachable target for `obd` executables, package-manager ownership, candidate controller homes under the unchanged login environment, registered deployments, and active tasks. Prefer the target host whose registration identifies the intended deployment. If there is no such registration, reuse an otherwise unambiguous usable OBD installation on a target host. If multiple target hosts remain plausible controllers with conflicting or unrelated state, present the observed ambiguity and ask only after completing the safe inspection.
+
+Only when every supplied cluster host has been reached and confirmed to contain no OBD executable, package record, controller metadata, or registration may the workflow select the first supplied host and install OBD there without asking. This default applies regardless of whether the later deployment uses a configuration file, interactive mode, autodeploy, demo, perf, an online repository, or local packages. Do not install or run OBD on the automation runner as a fallback. A host that is unreachable has not been confirmed empty.
+
+For each target where the user supplied neither an SSH user nor an SSH password, first attempt bounded, non-interactive passwordless SSH as `root`, using only the runner's existing key or agent and disabling password prompts. Do not ask for credentials before this attempt. If it fails, record whether the failure was name resolution, route, timeout, host-key, authentication, or remote execution, then ask the user for the missing or corrected access information for that host. Do not guess alternate users, passwords, private keys, privilege escalation, or tunnels. When the user supplied an SSH user, preserve it; when the user supplied authentication material, use only its approved protected path.
+
+A deployment request includes read-only discovery needed to determine existing state. Do not ask the user whether the cluster is deployed, whether a host is clean, or which target owns it before checking. Correlate candidate-controller registrations and deployment status with target-host package/service records, processes, listeners, expected or discovered deployment directories, and SQL/obshell identity when safely reachable. No single missing layer proves absence: an unregistered runtime can be unmanaged, a registered deployment can be stopped, and stopped processes can leave deployment data. Classify the result as registered and running, registered and stopped/partial, unmanaged or conflicting, or absent. Ask the user only for failed access or a material identity/ownership decision that remains after those observations; ask for that missing decision, not for facts the workflow can inspect.
+
 ### Resolve the Controller Home Without Guessing
 
 Start from the caller's actual environment and record whether `OBD_HOME` is unset or explicitly configured. Correlate the exact executable and controller user with public inventory, registered deployment metadata, and trace locations under that unchanged environment before naming the controlling home.
@@ -44,11 +60,13 @@ Keep the resolved environment unchanged for every command and trace that belongs
 
 ## Keep Remote Execution Identities Stable
 
-For a workflow that manages remote hosts, distinguish the automation runner or workstation from the OBD controller, artifact-acquisition host, and managed hosts. By default, select an approved remote host as the controller and install and run OBD there. Keep its `OBD_HOME`, deployment metadata, traces, package resolution, and lifecycle commands on that controller unless the user explicitly chooses a different control-plane location. The runner is transport and evidence-capture infrastructure by default, not an implicit fallback controller.
+For a workflow that manages remote hosts, distinguish the automation runner or workstation from the OBD controller, artifact-acquisition host, and managed hosts. For cluster deployment, select the controller through the target-host discovery rule above; for another remote workflow, select an approved remote host. Install and run OBD there. Keep its `OBD_HOME`, deployment metadata, traces, package resolution, and lifecycle commands on that controller unless the user explicitly chooses a different control-plane location. The runner is transport and evidence-capture infrastructure by default, not an implicit fallback controller.
 
 In a remote workflow, an unqualified **local repository**, **local package**, **local path**, or **local download** means controller-local. Do not reinterpret it as runner-local merely because a network, proxy, repository, or package command failed.
 
-Do not silently change the controller, execution host, or artifact-acquisition host after a failure. For online packages from the OceanBase public repositories, the fixed [mirror-source workflow](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order) takes precedence over generic connectivity diagnosis: make the first actual request to `https://mirrors.oceanbase.com`, remain on that mirror source until the same acquisition has failed three times, then use the direct package directories under `https://mirrors.aliyun.com/oceanbase` for up to three attempts. Only after the complete suffix-by-source matrix is exhausted may the agent ask the user to select another source, relay, controller, or stopping point.
+Do not silently change the controller or execution host after a failure. For online packages from the OceanBase public repositories, the fixed [mirror-source workflow](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order) takes precedence over generic connectivity diagnosis: make the first actual request to `https://mirrors.oceanbase.com`, remain on that source for up to three meaningful attempts, then use the direct package directories under `https://mirrors.aliyun.com/oceanbase`. After a normal OBD/repository fetch fails, vary the controller-local mechanism with `curl`, `wget`, the operating-system package manager, or another applicable downloader instead of repeating only the same path. Verify and import/register the exact artifact locally before retrying. Never use `obd mirror` as a network downloader.
+
+Only after the complete controller-local suffix-by-source-and-mechanism matrix is exhausted may another reachable host become a bounded checksummed artifact relay for the same exact artifact from the same ordered sources. The relay must transfer the artifact to the existing controller for verification and local import/install; it does not become the controller and must not run OBD or the requested operation. Ask the user only after that relay also fails, or before introducing an unlisted source or different controller.
 
 For non-package transfers, make bounded, meaningful attempts through applicable existing or user-approved routes on the same controller and preserve evidence for each route rather than blindly repeating one request. A user-approved relay may acquire, verify, and transfer an exact artifact; it does not move OBD or its metadata off the remote controller unless the user separately and explicitly changes that requirement.
 
@@ -69,7 +87,7 @@ Treat these as separate risk classes:
 - credential encryption, passkey rotation, secret migration, or exposure change;
 - network listener, firewall, whitelist, download, or other external side effect.
 
-Immediately before a high-impact mutation, state the exact target, observed current state, intended change, impact, rollback or recovery boundary, and validation plan. Bind authorization to those facts. Do not reuse confirmation for a different object or risk class.
+Immediately before a high-impact mutation, state the exact target, observed current state, intended change, impact, rollback or recovery boundary, and validation plan. For a requested non-destructive workflow, this record does not trigger duplicate confirmation for its intrinsic persistent changes. Obtain new authorization only when the action is destructive, forced, materially broader than the request, or belongs to another risk class that the request did not cover.
 
 ## Protect Credentials and Evidence
 

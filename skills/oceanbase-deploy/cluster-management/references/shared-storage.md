@@ -8,7 +8,7 @@ Use this workflow only for a commercial OceanBase deployment topology whose sele
 2. Identify the storage backend, protocol/driver/client, endpoint, namespace/tenant, pool/volume/filesystem/object identifiers, mount or URI semantics, authentication/TLS, and external owner.
 3. Record per-host device/mount identity, canonical paths, permissions/UID/GID, symlinks, mount options, multipath/fencing/lease behavior, capacity/inodes, latency/throughput, durability, and failure domains.
 4. Separate shared database data from local home, logs, caches, temporary files, and any local redo/log areas as defined by the plugin. Do not assume every path is shared.
-5. Establish exactly what OBD deploy, stop, destroy, redeploy, scale, and upgrade workflows create, format, retain, or delete. External storage ownership is not inferred from a path appearing in YAML.
+5. Establish exactly what OBD deploy, stop, destroy, redeploy, and upgrade workflows create, format, retain, or delete. External storage ownership is not inferred from a path appearing in YAML.
 6. Define storage provisioning, snapshot/backup, fencing, credential rotation, and recovery ownership outside OBD when the plugin does not manage them.
 
 The same path text on multiple servers does not prove the same backing storage. Conversely, different mount points may refer to one volume. Verify stable backend identity.
@@ -45,6 +45,6 @@ Do not simulate a host/storage failure merely to prove resilience without separa
 
 ## Lifecycle and Recovery
 
-Before scale, upgrade, redeploy, destroy, or storage replacement, map leases/fencing, active I/O, snapshots/backups, data ownership, and external consumers. Treat removal of OBD metadata, local paths, mounts, external volumes, snapshots, and stored data as separate operations with separate authorization.
+Before upgrade, redeploy, destroy, or storage replacement, map leases/fencing, active I/O, snapshots/backups, data ownership, and external consumers. Treat removal of OBD metadata, local paths, mounts, external volumes, snapshots, and stored data as separate operations with separate authorization.
 
 On failure preserve trace, storage identities/mounts, plugin/configuration, process and product state, leases/fencing evidence, and backend errors. Do not remount with weaker options, reformat, clear locks, delete a namespace, or redeploy as generic recovery.

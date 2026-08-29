@@ -34,9 +34,19 @@ This skill supports both community and commercial OceanBase. Never select a comp
 
 When OBD or the version-matched plugin is unavailable, you may still prepare a clearly labeled, non-executable decision blueprint containing placeholders and unresolved evidence. Do not claim schema validation, artifact compatibility, precheck success, or runtime support until those inputs exist.
 
+## Default Controller, SSH, and Cluster Discovery
+
+Across every cluster deployment path, default the OBD controller to one of the user-supplied cluster hosts, never the automation runner. Inspect all target hosts in supplied order before selecting it. Reuse the host that owns the intended OBD registration or another unambiguous existing target-host controller; when all targets are reachable and every target is confirmed to have no OBD executable, package record, or metadata, install OBD on the first target host without asking. An explicit user-selected controller overrides this default.
+
+If both SSH user and password are omitted, first try passwordless `root` SSH with the existing key or agent and ask for access details only after that host-specific attempt fails. Do not ask whether the cluster is already deployed: inspect OBD registrations plus target-host processes, listeners, services, deployment paths, and reachable database identity. Read and apply the shared [default controller, SSH, and cluster discovery contract](../references/operation-contract.md#default-controller-ssh-and-cluster-discovery) before choosing a controller or classifying a target as clean, deployed, stopped, or unmanaged.
+
 ## Default New-Cluster Sizing
 
 When a new OceanBase deployment request does not specify resource values, a cap, or a non-maximum profile, select [maximum-utilization sizing](references/maximum-utilization.md) by default and do not ask the user to choose a deployment size. Preserve explicit user sizing. Apply maximum sizing only to the resolved target hosts and requested database component; do not infer extra nodes, optional components, or tenants.
+
+## Default New-Cluster Zone Placement
+
+For a new distributed deployment with multiple user-supplied Observer hosts and no explicit zone mapping, assign each distinct host to a distinct new zone in deterministic host order. Do not ask the user to choose this default. Preserve explicit placement, do not infer extra hosts or replicas, and do not claim high availability when logical zones share one physical failure domain. This default does not apply to standalone or centralized product forms.
 
 ## Deployment Package Closure
 
@@ -44,7 +54,7 @@ Before the first package lookup, download, import, or image load for a deploymen
 
 ## Online Package Source Priority
 
-Before any package network request, apply the shared [fixed mirror-source order](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order): actual controller-side acquisition from `https://mirrors.oceanbase.com` first, then the direct package directories under `https://mirrors.aliyun.com/oceanbase`, switching only after three failed attempts on the current mirror source. A generic Internet-connectivity test cannot precede or replace those attempts.
+Before any package network request, apply the shared [fixed mirror-source and acquisition-fallback workflow](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order). Try normal OBD/repository acquisition on the selected controller first. If that path fails, try the exact artifact there with `curl`, `wget`, the operating-system package manager, or another applicable downloader; verify it, import an OBD-consumed RPM with `obd mirror clone <path>` or use the artifact's proved local registration/install path, and continue through local resolution. If every controller-local method fails, use another reachable host only as a checksummed artifact relay from the same ordered sources; do not move OBD or deployment execution. Never use `obd mirror` as a network downloader.
 
 ## Default Database Bootstrap Password
 
@@ -73,7 +83,7 @@ Read only the references needed for the request.
 | Any new community, commercial distributed, or commercial standalone/centralized config-file, interactive, or autodeploy request | [config-deployment.md](references/config-deployment.md), which performs common preflight and then selects exactly one product blueprint |
 | `edit-config`, `reload`, parameter classification, or `chst` | [configuration-changes.md](references/configuration-changes.md) |
 | Start, stop, restart, display, destroy, redeploy, prune, `demo`, or `perf` | [lifecycle.md](references/lifecycle.md) |
-| Scale out/in or add/delete a component | [scale-and-components.md](references/scale-and-components.md) |
+| Add or delete a component | [component-changes.md](references/component-changes.md) |
 | Component or cluster upgrade | [upgrade.md](references/upgrade.md) |
 | Change a deployed component artifact with `cluster reinstall` | [component-reinstall.md](references/component-reinstall.md) |
 | Persistent host initialization with `cluster init4env` | [environment-initialization.md](references/environment-initialization.md) |
@@ -96,7 +106,8 @@ Read only the references needed for the request.
 - Prefer a uniquely named, reviewed configuration-file deployment. `obd demo` and `obd perf` are mutating convenience workflows with fixed `demo` and `perf` namespaces; inspect their installed behavior and existing state before use.
 - Add optional components only when the user requested them or accepted their explained purpose and impact. Monitoring, OCP, Config Server, OBProxy, `oceanbase.ai`, and `oblogservice` are never implicit.
 - Never use `redeploy` as a default repair, configuration apply, or component-add mechanism. It destroys and rebuilds deployment-owned state.
-- Destroy, redeploy, prune, component deletion, scale-in, forced operations, restart-causing changes, and persistent host changes require authorization bound to the exact observed target and impact.
+- Destroy, redeploy, prune, component deletion, and forced operations require authorization bound to the exact observed target and impact. An explicit request to execute an ordinary non-destructive cluster workflow already authorizes its necessary in-scope persistent changes and expected rolling restarts; do not ask again only because those effects persist.
+- Adding or removing Observer servers from an already registered deployment is unsupported. Report `UNSUPPORTED` before mutation; do not simulate the topology change through SQL, obshell, `edit-config`, component operations, process control, metadata edits, or path deletion.
 - A successful command, registered deployment, or running process is not sufficient. Verify the applicable control-plane, runtime, and data-plane outcomes.
 
 ## Out of Scope

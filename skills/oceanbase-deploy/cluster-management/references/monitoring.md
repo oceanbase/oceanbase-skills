@@ -95,7 +95,7 @@ Never use redeploy as the default way to add monitoring: it destroys and rebuild
 
 For an existing OBAgent, add only the requested downstream components and configure them against the observed endpoints. Do not deploy a duplicate agent merely to match an example.
 
-Before `component add`, read the restart and path-cleaning gate in [scale-and-components.md](scale-and-components.md#add-a-component). OBD V4.6.0 can prompt to restart the deployment after adding a component; `--confirm` skips that prompt and does not mean “no restart.” Do not add `--confirm`, `--force`, or `--clean` to make automation non-interactive. Display the exact restart set and any work-directory deletion first, or stop.
+Before `component add`, read the restart and path-cleaning gate in [component-changes.md](component-changes.md#add-a-component). OBD V4.6.0 can prompt to restart the deployment after adding a component; `--confirm` skips that prompt and does not mean “no restart.” Do not add `--confirm`, `--force`, or `--clean` to make automation non-interactive. Display the exact restart set and any work-directory deletion first, or stop.
 
 ## Layered Acceptance
 

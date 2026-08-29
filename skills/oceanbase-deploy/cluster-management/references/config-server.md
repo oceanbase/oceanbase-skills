@@ -8,7 +8,7 @@ Use this workflow for the OBD component commonly named `ob-configserver`. It sup
 2. Establish version compatibility with the selected community or commercial OceanBase product, OBProxy/ODP, and the exact metadata protocol expected by each consumer.
 3. Record deployment, Config Server nodes, listen and advertised addresses, ports, canonical home/log/storage paths, resources, TLS/authentication or network-access boundary, and every intended consumer.
 4. Check host identity, path/port conflicts, disk/resources, network reachability, metadata-store ownership, and exposure boundary.
-5. Decide whether this is a combined new deployment, incremental component add, Config-Server-only deployment, scale/restart/reload, address replacement, or deletion. Use only the installed supported workflow.
+5. Decide whether this is a combined new deployment, incremental component add, Config-Server-only deployment, restart/reload, address replacement, or deletion. Use only the installed supported workflow.
 
 Do not add Config Server solely because it appears in a bundle or an unrelated product error; first prove that the requested consumer and version require it.
 

@@ -31,9 +31,9 @@ Commercial OMS remains supported by capability resolution, not by copying the CE
 | Guided CE deployment | `obd web`, only when the user explicitly requests the graphical workflow |
 | Lifecycle or configuration change | Installed OMS lifecycle/reload workflow, with the migration-task impact shown first |
 | OMS upgrade | OMS-specific online/offline upgrade workflow; never generic reinstall or redeploy |
-| Scale out or component add/delete | Stop unless the installed OMS package exposes a dedicated OMS workflow and edition/version documentation authorizes it |
+| Component add/delete | Stop unless the installed OMS package exposes a dedicated OMS workflow and edition/version documentation authorizes it |
 
-OBD V4.6.0 explicitly excludes OMS from generic component addition and scale-out. Inspected current OMS packages also lack dedicated generic scale/add/delete workflows. A generic command being accepted is not evidence that OMS containers or topology changed correctly.
+OBD V4.6.0 explicitly excludes OMS from generic component addition. Inspected current OMS packages also lack dedicated generic component add/delete workflows. A generic command being accepted is not evidence that OMS containers or topology changed correctly.
 
 The documented Web entry point, `obd web`, listens on `0.0.0.0` and defaults to port 8680. Starting it creates a network listener and controller task. Review interface exposure, authentication, firewall, reverse proxy/TLS, port ownership, and shutdown before authorization. Do not start Web merely to discover whether OMS support exists.
 

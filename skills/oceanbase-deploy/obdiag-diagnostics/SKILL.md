@@ -10,7 +10,7 @@ metadata:
 
 Choose the smallest evidence scope that can answer the question. Tool availability, tool installation, collection, analysis, a tool finding, and independently confirmed root cause are separate results.
 
-Before any package network request, apply the shared [fixed mirror-source order](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order): actual controller-side acquisition from `https://mirrors.oceanbase.com` first, then the direct package directories under `https://mirrors.aliyun.com/oceanbase`, switching only after three failed attempts on the current mirror source. A generic Internet-connectivity test cannot precede or replace those attempts.
+Before any package network request, apply the shared [fixed mirror-source and acquisition-fallback workflow](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order). Try normal OBD/tool acquisition on the selected controller first; if it fails, use controller-local `curl`, `wget`, the operating-system package manager, or another applicable downloader, verify and import/register the exact artifact locally, then retry. If no controller-local method works, use another reachable host only as a checksummed artifact relay from the same ordered sources. Keep OBD and obdiag execution on the selected controller, and never use `obd mirror` as a network downloader.
 
 ## Required Shared Gates
 

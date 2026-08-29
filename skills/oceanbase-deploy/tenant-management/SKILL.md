@@ -34,6 +34,8 @@ Creating a tenant still requires an explicit user request; cluster deployment al
 
 In the reviewed OBD baseline, the minimal create path produces tenant `test`, MySQL mode, all active zones, `RANDOM` primary zone, maximum currently allocatable tenant resources bounded by the selected servers, allowlist `%`, and an empty tenant password. Preserve that empty-password default when no password was supplied: do not ask for one, generate one, or set one after creation. Read the full [tenant default and verification workflow](references/tenant-creation.md) before creating a tenant.
 
+Apply the same no-prompt identity and password policy when building a physical primary/standby tenant pair. If the primary tenant must be created, apply each omitted value independently: the ordinary OBD defaults are tenant `test` and an empty root password. When creating its standby, omit `--tenant-name` unless the user supplied a standby name, so OBD uses the primary tenant name; omit `--tenant-root-password` unless the user supplied the primary tenant's root password, so the reviewed workflow tries the empty-password default. The required positional primary-tenant identity must still be resolved from actual primary-cluster state rather than guessed. These tenant-root defaults do not apply to the separate `standbyro` replication account, whose password must follow the installed OBD workflow. Read [physical primary/standby tenants](references/physical-standby.md) before creating or operating that relationship.
+
 ## Shared Gates
 
 Read the shared references required by the current stage:

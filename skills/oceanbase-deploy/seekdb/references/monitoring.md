@@ -47,7 +47,7 @@ Do not redeploy a running SeekDB deployment to add monitoring. First prove from 
 obd cluster component add <deploy_name> --config=<reviewed_monitoring_increment.yaml>
 ```
 
-Read the [component-add restart and recovery gate](../../cluster-management/references/scale-and-components.md#add-a-component) before execution. The increment must preserve the existing SeekDB configuration and add only the requested dependency chain. If the installed build cannot prove safe in-place addition, stop and report that limitation; do not use `redeploy`, hidden metadata edits, or a separate deployment while claiming the same automatic SeekDB integration.
+Read the [component-add restart and recovery gate](../../cluster-management/references/component-changes.md#add-a-component) before execution. The increment must preserve the existing SeekDB configuration and add only the requested dependency chain. If the installed build cannot prove safe in-place addition, stop and report that limitation; do not use `redeploy`, hidden metadata edits, or a separate deployment while claiming the same automatic SeekDB integration.
 
 ## Version-Specific Data Path
 

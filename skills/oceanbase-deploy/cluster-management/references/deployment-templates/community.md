@@ -5,7 +5,7 @@ Use this blueprint only after the installed OBD build proves the community distr
 ## Required Inputs
 
 - approved OceanBase Community Edition version, release, architecture, artifact hash, repository source, and plugin identity;
-- one-node development or multi-node availability topology, zones and failure domains;
+- one-node development or multi-node availability topology, target hosts, and any explicit zone/failure-domain mapping; when no mapping is supplied for multiple Observer hosts, assign each distinct host to a distinct new zone in deterministic host order without asking;
 - target host identities, SSH account, canonical paths, and ports, plus any explicitly supplied resource values or caps; when sizing is omitted, derive the resource budget through the default maximum-utilization workflow;
 - any user-specified initial cluster/administrator password override and any explicitly requested tenant behavior; do not request an override when none was supplied because OBD owns random generation by default;
 - explicit persistent auto-start choice; keep the schema option false or unset unless requested and approved through the lifecycle systemd gate;
@@ -113,7 +113,7 @@ Keep the artifact hash in the execution manifest even when the selected schema c
 ## Topology Variants
 
 - A one-node topology is suitable only when the user accepts its failure-domain and availability limits.
-- A multi-node topology must use deliberate zone/failure-domain placement and per-host paths/ports; do not clone one server's network identity into all entries.
+- For a multi-node topology, preserve an explicit zone/failure-domain mapping. Otherwise assign each distinct Observer host to its own new zone in deterministic host order without asking. Keep per-host paths/ports distinct; do not clone one server's network identity into all entries or claim physical high availability from logical zone names alone.
 - Add community OBProxy only when the client routing design requires it. Direct SQL access is valid when it satisfies the request.
 - Add OBAgent or the monitoring chain only through the monitoring workflow; they are not database prerequisites.
 

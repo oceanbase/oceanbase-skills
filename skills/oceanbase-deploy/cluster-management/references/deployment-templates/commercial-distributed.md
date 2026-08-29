@@ -7,7 +7,7 @@ Use this blueprint for an authorized commercial distributed OceanBase artifact s
 - approved repository, all-in-one bundle, or local artifacts with provenance and access/license boundary;
 - exact OceanBase version, release, architecture, hash, plugin/workflow identity, and full dependency closure;
 - supported upgrade/deployment compatibility evidence for OBD, OS/runtime, OBProxy, OBAgent, OCP, Config Server, log service, and storage mode as selected;
-- cluster identity, multi-zone topology, host failure domains, paths, ports, resources, non-database credential sources, and any explicitly supplied database bootstrap-password override; do not request an override when none was supplied;
+- cluster identity, target hosts, any explicit zone/failure-domain mapping, paths, ports, resources, non-database credential sources, and any explicitly supplied database bootstrap-password override; when no mapping is supplied for multiple Observer hosts, assign each distinct host to a distinct new zone in deterministic host order without asking, and do not request a password override when none was supplied;
 - explicit persistent auto-start choice; keep the schema option false or unset unless requested and approved through the lifecycle systemd gate;
 - explicit choice between the plugin's supported local/shared-nothing layout and any supported shared-storage layout.
 

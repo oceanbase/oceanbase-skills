@@ -12,7 +12,7 @@ Operate the OBD control plane without silently changing a managed deployment. Co
 
 ## Online Package Source Priority
 
-Before any package network request, apply the [fixed mirror-source order](references/mirror-and-repositories.md#fixed-online-package-source-order): actual controller-side acquisition from `https://mirrors.oceanbase.com` first, then the direct package directories under `https://mirrors.aliyun.com/oceanbase`, switching only after three failed attempts on the current mirror source. A generic Internet-connectivity test cannot precede or replace those attempts.
+Before any package network request, apply the [fixed mirror-source and acquisition-fallback workflow](references/mirror-and-repositories.md#fixed-online-package-source-order). Try the installed OBD/repository path on the selected controller first. If it fails, use controller-local `curl`, `wget`, the operating-system package manager, or another applicable downloader for the exact artifact; verify it, import an OBD-consumed RPM with `obd mirror clone <path>` or use the artifact's proved local registration/install path, and retry through local resolution. If no controller-local method works, use another reachable host only as a checksummed artifact relay from the same ordered sources while keeping OBD and its metadata on the selected controller. Never use `obd mirror` as a network downloader.
 
 ## Required Shared Gates
 
@@ -47,9 +47,9 @@ For `obd obdiag`, diagnostic collection, checks, analysis, scenes, or RCA, use [
 
 ## Controller Boundary
 
-Before acting, identify the controller host, current user, exact executable, installation owner and method, `OBD_HOME`, registered deployments, active CLI/Web/API tasks, repository state, and tool inventory. Re-resolve them after an SSH hop, user change, executable change, or environment change.
+Before acting, identify the controller host, current user, exact executable, installation owner and method, `OBD_HOME`, registered deployments, active CLI/Web/API tasks, repository state, and tool inventory. For a cluster deployment, inspect all supplied cluster hosts before selecting the controller: reuse the target host that owns the intended registration or another unambiguous existing target-host controller; only after every target is reachable and confirmed to have no OBD executable, package record, or metadata, install OBD on the first supplied target without asking. Never default to the automation runner or an unrelated host. Re-resolve the controller identity after an SSH hop, user change, executable change, or environment change.
 
-When the workflow manages remote hosts, use an approved remote host as the controller by default and keep OBD execution and metadata there. Do not turn the automation runner into the controller, or switch to another machine after an acquisition failure, without the user's explicit choice. Follow the shared operation contract for same-controller attempts and the optional user-approved artifact-relay boundary.
+When the workflow manages remote hosts, use the remote host selected by the shared controller-discovery rule and keep OBD execution and metadata there. If the user omitted both SSH user and password, try passwordless `root` access before asking for credentials. Do not turn the automation runner or an artifact-relay host into the controller, ask the user whether the cluster is deployed instead of inspecting it, or switch controller identity after an acquisition failure. Follow the shared operation contract for target-host discovery, controller-local acquisition fallbacks, and the bounded artifact-relay boundary.
 
 Do not:
 

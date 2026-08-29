@@ -19,9 +19,19 @@ metadata:
 
 Use this entry point to identify the product form, execution mode, and owning skill. Do not turn an explanation, configuration review, or diagnostic request into a deployment.
 
+## Default Controller, SSH, and Existing-State Discovery
+
+For every OBD-based cluster deployment mode, including configuration-file, interactive, autodeploy, demo, and perf paths, keep the controller on a cluster deployment host unless the user explicitly selected a separate controller. Probe the user-supplied target hosts in their original order before choosing or installing OBD. Reuse the target host that owns the intended registered deployment, or an otherwise unambiguous existing target-host controller. Only after every target host is reachable and confirmed to have no OBD executable, package ownership, or controller metadata, install OBD on the first target host without asking the user to choose. Never default to installing or running OBD on the automation runner.
+
+When the user supplied neither an SSH user nor an SSH password, first try non-interactive passwordless SSH as `root` using the existing key or agent. Do not ask for credentials before that attempt. If it fails, preserve the host-specific error and then ask the user for the required access information; do not guess another account, password, key, or tunnel.
+
+Do not ask the user whether a cluster is already deployed. Determine that through read-only inspection of candidate-controller registrations and, on every target host, relevant package/service state, processes, listeners, deployment paths, and database identity when reachable. A missing registration or stopped process alone does not prove absence. Ask only when access failed or the completed inspection leaves a genuine identity or ownership ambiguity. Follow the detailed [controller, SSH, and cluster discovery contract](references/operation-contract.md#default-controller-ssh-and-cluster-discovery).
+
 ## Default New-Cluster Sizing
 
 For a new OceanBase cluster deployment, when the user does not specify resource values, a resource cap, or a non-maximum sizing profile, default to the [maximum-utilization workflow](cluster-management/references/maximum-utilization.md) without asking the user to choose a size. Explicit user values or caps take precedence. This default maximizes only the resolved target hosts; it does not add hosts, components, tenants, or topology that the user did not request.
+
+For a new distributed deployment with multiple user-supplied Observer hosts and no explicit zone mapping, assign each distinct host to a distinct new zone in deterministic host order. Do not ask the user to choose the default placement. Preserve an explicit zone mapping, do not infer extra hosts or replicas, and do not claim that logical zones sharing one physical failure domain provide high availability.
 
 ## Deployment Package Closure
 
@@ -29,7 +39,7 @@ Before the first package lookup or acquisition for any deployment, component add
 
 ## Online Package Source Priority
 
-For every package acquired online from OceanBase public repositories, make the actual controller-side resolution/download attempts in this fixed mirror-source order: first `https://mirrors.oceanbase.com`, then the direct package directories under `https://mirrors.aliyun.com/oceanbase`. Do not put a generic Internet-connectivity test ahead of the first mirror-source attempt. Keep using the current mirror source until the same exact package acquisition has failed three times; only then move to the next mirror source, and stop the search as soon as the package is acquired and verified. Read the detailed [fixed package-source workflow](obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order) before the first package network request.
+For every package acquired online from OceanBase public repositories, first let the selected controller-side OBD or repository workflow try the exact artifact in this fixed mirror-source order: `https://mirrors.oceanbase.com`, then the direct package directories under `https://mirrors.aliyun.com/oceanbase`. Do not put a generic Internet-connectivity test ahead of the first source attempt. Across the required attempts on one source, do not repeat only the same failed fetch path: after the normal OBD/repository acquisition fails, try the exact file on the same controller with `curl`, `wget`, the operating-system package manager, or another applicable downloader. Verify the artifact, import an OBD-consumed local RPM with `obd mirror clone <path>` or use the artifact's version-proved local registration/install path, and retry through local resolution. If no controller-local method can acquire it, use another reachable host only as a checksummed artifact relay from the same ordered sources; keep OBD and execution on the selected controller. Ask only after the approved sources, compatible suffixes, controller-local methods, and relay have failed, or before introducing an unlisted source or a different controller. Never use `obd mirror` as a network downloader. Read the detailed [fixed package-source workflow](obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order) before the first package network request.
 
 ## Default Database Bootstrap Password
 
@@ -39,7 +49,7 @@ For a new OceanBase cluster deployment, do not ask the user to choose the initia
 
 | Skill | Use when |
 |---|---|
-| [cluster-management](cluster-management/SKILL.md) | Deploy or operate OceanBase clusters and OBD-managed components; manage configuration, upgrades, scaling, monitoring, OCP, Config Server, Binlog/CDC services, OMS, networking, or shared-storage deployments. |
+| [cluster-management](cluster-management/SKILL.md) | Deploy or operate OceanBase clusters and OBD-managed components; manage configuration, upgrades, component changes, monitoring, OCP, Config Server, Binlog/CDC services, OMS, networking, or shared-storage deployments. |
 | [obd-administration](obd-administration/SKILL.md) | Install or update the OBD controller; manage mirrors/repositories, stored credentials, dynamic tools, OBD Web/API, top-level host commands, trace evidence, runtime environment, or telemetry. |
 | [tenant-management](tenant-management/SKILL.md) | Create, inspect, optimize, back up, restore, drop, or manage physical primary/standby tenants. |
 | [testing-and-benchmark](testing-and-benchmark/SKILL.md) | Run Sysbench, TPC-H, TPC-C, or mysqltest through `obd test`. |

@@ -24,9 +24,9 @@ An inspected `oblogservice` plugin treats an object-storage URL containing an ac
 
 ## Lifecycle and Upgrade Boundary
 
-Read selected lifecycle subcommand help and plugin workflows for start, stop, restart, scale, reinstall, upgrade, and delete. At least one inspected OBD source revision explicitly rejects `oblogservice` upgrade; when the installed build does so, stop and present supported alternatives rather than forcing a generic cluster upgrade or reinstall.
+Read selected lifecycle subcommand help and plugin workflows for start, stop, restart, reinstall, upgrade, and delete. At least one inspected OBD source revision explicitly rejects `oblogservice` upgrade; when the installed build does so, stop and present supported alternatives rather than forcing a generic cluster upgrade or reinstall.
 
-Before stop/delete/scale-in, identify upstream availability impact, active consumers, retained log data, and recovery boundary. Permission to stop does not authorize deleting component metadata or persistent data.
+Before stop or delete, identify upstream availability impact, active consumers, retained log data, and recovery boundary. Permission to stop does not authorize deleting component metadata or persistent data.
 
 ## Acceptance and Failure
 
