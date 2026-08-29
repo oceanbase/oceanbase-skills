@@ -58,7 +58,7 @@ Verify authentication with the expected credential state after creation: an empt
 
 ## Construct and Execute
 
-Use only options confirmed by the installed help. In the V4.6.0 command guide, Community Edition supports MySQL mode only; commercial capability must still be proved from the installed product/plugin. For OceanBase 4.0 and later use `--memory-size` rather than the legacy min/max-memory options. The documented minimum log-disk size is 2G, and `--optimize` requires a supporting OceanBase release (documented as 4.2.5 or later in this guide).
+Use only options confirmed by the installed help. In the V4.6.0 command guide, Community Edition supports MySQL mode only. For OceanBase 4.0 and later use `--memory-size` rather than the legacy min/max-memory options. The documented minimum log-disk size is 2G, and `--optimize` requires a supporting OceanBase release (documented as 4.2.5 or later in this guide).
 
 Choose one internally consistent placement model from installed help when the user supplied placement overrides; do not combine explicit locality, replica-count, zone-list, and primary-zone values that describe different topologies. With no overrides, preserve the minimal OBD command rather than expanding defaults into guessed flags:
 

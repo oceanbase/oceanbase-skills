@@ -11,9 +11,9 @@ Adding or removing Observer servers from an already registered deployment is uns
 3. Build an explicit incremental manifest: selected component and target servers, versions/releases/hashes, paths, ports, resources, network identity, and dependencies.
 4. Check package compatibility and exact artifact availability. A component must not silently resolve a different release from the reviewed artifact.
 5. Check target host identity, SSH, OS/runtime, canonical paths, ports, capacity, time/network, and overlap using the deployment preflight.
-6. Identify application, tenant, OCP, monitoring, Config Server, log-service, and shared-storage dependencies and the availability impact.
+6. Identify application, tenant, OBProxy, monitoring, and Config Server dependencies and the availability impact.
 
-Do not add a component simply because it appears in an example, bundle, or repository. Do not convert an incremental request into a replacement full configuration or redeploy.
+Do not add a component simply because it appears in an example, bundle, or repository. Do not convert an incremental request into a replacement full configuration.
 
 ## Add a Component
 
@@ -23,11 +23,11 @@ Build a schema-validated incremental config containing only the requested compon
 obd cluster component add <deploy_name> --config=<incremental_config.yaml>
 ```
 
-For monitoring read [monitoring.md](monitoring.md); for OCP, Config Server, `oceanbase.ai`, `oblogservice`, and shared storage read their dedicated references. Verify the component exactly once in registered state, actual process/listener/path ownership, dependency integration, its own health/API, and a representative consumer path.
+For monitoring read [monitoring.md](monitoring.md); for Config Server read [config-server.md](config-server.md). Verify the component exactly once in registered state, actual process/listener/path ownership, dependency integration, its own health/API, and a representative consumer path.
 
 Inspect the exact semantics of any `--confirm`-like option before using it. In inspected OBD code, `component add --confirm` skips the prompt and immediately invokes restart. Adding Config Server when OBProxy already exists builds a selector containing OBProxy plus the existing OceanBase database component; adding it without OBProxy leaves the selector empty and can expand to a whole-deployment restart. Other component additions can reach the same empty-selector full-restart branch. Never use this flag merely to make automation non-interactive. Display the exact restart set first, or omit the flag and stop if the prompt cannot be handled safely.
 
-If no safe incremental-add path exists, stop and present the limitation. Do not substitute redeploy or manual `.obd` metadata edits.
+If no safe incremental-add path exists, stop. Do not substitute manual `.obd` metadata edits.
 
 ## Delete a Component
 
@@ -49,4 +49,4 @@ Do not turn the placeholder into an executable command until the exact component
 
 ## Partial Failure
 
-On failure, freeze retries and record the trace, incremental config, registered before/after state, artifact installs, real processes/listeners, product topology, and dependency health. Do not remove a partially installed component, delete its directories, rerun with force, or redeploy until the observed stage proves the recovery action safe.
+On failure, freeze retries and record the trace, incremental config, registered before/after state, artifact installs, real processes/listeners, product topology, and dependency health. Do not remove a partially installed component, delete its directories, or rerun with force until the observed stage proves the recovery action safe.

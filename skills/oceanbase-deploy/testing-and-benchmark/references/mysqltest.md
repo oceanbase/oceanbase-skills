@@ -42,7 +42,7 @@ Therefore use the installed long option `--disable-reboot` as the safe default a
 
 ## Tenant Identity Gate
 
-For a non-SeekDB OceanBase component in the reviewed OBD V4.6.0/mysqltest `3.1.0` path, the public command exposes `--mode` and `--user` but no independent tenant selector. The plugin appends `@mysql` or `@oracle` to the supplied base username according to the effective case mode. Therefore:
+For the OceanBase Community Edition component in the reviewed OBD V4.6.0/mysqltest `3.1.0` path, the public command exposes `--mode` and `--user` but no independent tenant selector. The plugin appends `@mysql` or `@oracle` to the supplied base username according to the effective case mode. Therefore:
 
 - `--mode=mysql` may target only the literal `mysql` tenant, and `--user` must be a base username with no `@` suffix;
 - `--mode=oracle` may target only the literal `oracle` tenant, and `--user` must be a base username with no `@` suffix;

@@ -45,7 +45,6 @@ Domain workflows must add their own proof:
 - tenants: login with the intended credential, topology/resources, allowlist, role, or restored data;
 - backup/restore: terminal task, manifest/catalog identity, SCN/time coverage, and representative restored data;
 - monitoring: exporter metric, Prometheus target/query, Grafana datasource/dashboard, and alert delivery when requested;
-- OCP: process, authenticated API/UI, MetaDB, terminal background task, and correct managed-cluster identity;
 - benchmarks: required phases, result files, failure counts, metrics, and post-test database health;
 - diagnostics: artifact integrity and independently corroborated findings.
 

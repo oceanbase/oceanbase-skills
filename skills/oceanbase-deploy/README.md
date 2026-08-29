@@ -1,6 +1,6 @@
 # oceanbase-deploy
 
-OceanBase 的 OBD 部署与运维 Skill 集合。它使用同一套安全工作流支持社区版、商业版分布式形态和商业版单机/集中式形态，并以当前安装的 OBD、插件、仓库和制品能力为准。
+OceanBase Community Edition 的 OBD 部署与运维 Skill 集合。此分支只保留已经完成正式测试的工作流，并以当前安装的 OBD、插件、仓库和制品能力为准。
 
 源码位置：[`oceanbase/oceanbase-skills`](https://github.com/oceanbase/oceanbase-skills) 的 `skills/oceanbase-deploy/` 目录。
 
@@ -8,15 +8,12 @@ OceanBase 的 OBD 部署与运维 Skill 集合。它使用同一套安全工作�
 
 | Skill | 功能 |
 |---|---|
-| [`oceanbase-deploy`](./) | 总入口：识别产品形态、能力和执行模式，并路由到具体 skill |
-| [`cluster-management`](./cluster-management/) | 集群部署、多节点最大化资源规格、配置、启停、升级、组件、监控、OCP 和网络接入 |
-| [`obd-administration`](./obd-administration/) | OBD 安装升级、镜像仓库、凭据、动态工具、主机工具、Trace 证据、Web/API 和运行环境 |
+| [`oceanbase-deploy`](./) | 总入口：识别目标、能力和执行模式，并路由到具体 skill |
+| [`cluster-management`](./cluster-management/) | 社区版集群部署、多节点最大化资源规格、配置、生命周期、升级、组件、Config Server、监控和网络接入 |
+| [`obd-administration`](./obd-administration/) | 已测试的 OBD 安装升级/回滚、镜像仓库、动态工具、Trace 证据和运行状态 |
 | [`tenant-management`](./tenant-management/) | 租户创建、删除、优化、备份恢复和物理主备 |
 | [`testing-and-benchmark`](./testing-and-benchmark/) | Sysbench、TPC-H、TPC-C 和 mysqltest |
 | [`obdiag-diagnostics`](./obdiag-diagnostics/) | 按实际安装能力使用 obdiag 做采集、分析、巡检和根因定位 |
-| [`obd-seekdb`（目录路径保留为 `seekdb/`）](./seekdb/) | OBD 管理的 SeekDB 部署、接管、生命周期、主备高可用和监控组件，并接入共享安全与恢复规则；与顶层产品 Skill `seekdb` 名称区分 |
-
-SeekDB 是独立产品：只有明确通过 `obd seekdb` 执行，要求 OBD 控制器管理已注册实例生命周期/高可用，或要求 OBD 管理该部署的监控组件时，才进入嵌套 skill。非 OBD 安装、构建、文档、CLI/SQL、导入和查询进入仓库中的顶层 [`seekdb`](../seekdb/) skill；即使目标最初由 OBD 部署，产品与数据面任务也仍走顶层 skill。
 
 > 更多 skill 持续开发中，计划覆盖：内核调优、SQL 诊断、数据迁移等。
 
@@ -90,11 +87,11 @@ npx skills add oceanbase/oceanbase-skills --skill oceanbase-deploy
 ### 集群管理
 
 ```text
-先识别当前 OBD 支持的商业版组件，再为三节点分布式集群生成配置草案；不要部署。
+在三台机器上部署社区版三节点集群；未指定规格时使用最大化资源配置。
 ```
 
 ```text
-审查这份商业版单机部署 YAML 与当前插件是否匹配，只报告问题。
+将现有社区版集群按当前 OBD 证明的路径执行滚动升级。
 ```
 
 ```text
@@ -112,27 +109,7 @@ npx skills add oceanbase/oceanbase-skills --skill oceanbase-deploy
 ```
 
 ```text
-用 obdiag 诊断最近一次启动失败；如果当前没有安装 obdiag，先停下来说明安装动作。
-```
-
-<a id="seekdb"></a>
-
-### obd-seekdb（OBD 管理）
-
-```text
-使用 obd seekdb 部署并启动一个 seekdb 实例
-```
-
-```text
-通过 OBD 创建一个 seekdb 主备集群，并告诉我主库和备库分别怎么部署
-```
-
-```text
-用 obd seekdb 查看 seekdb-test 的拓扑；如果主库挂了，该用 switchover 还是 failover
-```
-
-```text
-通过 OBD 为 seekdb-test 增加监控；先核验当前版本支持的 OBAgent、Prometheus 和可视化组件及变更影响
+用 obdiag 诊断最近一次启动失败；如果工具缺失，按已测试的控制机下载与动态工具安装流程处理。
 ```
 
 ### 压测
@@ -155,10 +132,8 @@ npx skills add oceanbase/oceanbase-skills --skill oceanbase-deploy
 
 ## 兼容性原则
 
-- 不因 OBD 开源而默认只支持社区版。
 - 不把源码中存在的能力当成当前已安装版本必然可用的能力。
-- 不凭空补写商业组件名、配置字段或版本范围；优先读取本机帮助、插件元数据、仓库元数据和用户提供的正式材料。
-- 不把 OCP CE、企业版 OCP、OCP Express 或 obshell Dashboard 相互替代。
+- 不凭空补写组件名、配置字段或版本范围；优先读取本机帮助、插件元数据和仓库元数据。
 - 命令成功不等于任务完成；还需验证拓扑、服务、控制面和数据面结果。
 
 ## License

@@ -4,19 +4,17 @@ Use this workflow for a new OBD installation. Use [controller-maintenance.md](co
 
 ## Resolve the Installation
 
-Controller bootstrap precedes the installed-build capability gate. If inventory proves there is no OBD executable, no existing OBD metadata owner, and no installation to take over, route directly through this installation workflow; do not require help output from a nonexistent CLI. Establish the OBD/plugin/schema capability record only after installation acceptance. Before then, deployment material is planning-only and commercial artifacts/repositories remain unresolved.
+Controller bootstrap precedes the installed-build capability gate. If inventory proves there is no OBD executable and no existing OBD metadata owner, route directly through this installation workflow; do not require help output from a nonexistent CLI. Establish the OBD/plugin/schema capability record only after installation acceptance.
 
 For a cluster deployment, select the installation target through the shared [default controller, SSH, and cluster discovery rule](../../references/operation-contract.md#default-controller-ssh-and-cluster-discovery). Inspect every supplied cluster host first. Reuse the target host that owns the intended registration or another unambiguous usable target-host OBD installation. Only after all targets are reachable and all are confirmed to have no OBD executable, package ownership, controller metadata, or registration, install OBD on the first supplied cluster host without asking the user to choose. This applies to every deployment mode and package-acquisition mode. A user-explicit separate controller overrides the default; an unreachable target does not count as empty.
 
 A failed download or repository request does not justify installing OBD on the automation runner or moving the controller. Follow the [fixed mirror-source order and acquisition fallback](mirror-and-repositories.md#fixed-online-package-source-order): after one controller-local package-manager or repository path fails, try the exact OBD artifact there with `curl`, `wget`, or another applicable downloader across the required source/suffix attempts. If no controller-local method works, use another reachable host only as a checksummed artifact relay, transfer the exact package to the controller, verify it again, and install it there. Because this is controller bootstrap, install the local OBD package directly rather than requiring a nonexistent OBD to import it. Ask only after the relay also fails, or before using an unlisted source or different controller.
 
 1. Resolve the intended controller host and user through inspection rather than asking for facts that can be observed. When both SSH user and password are omitted, first try non-interactive passwordless `root` access as required by the shared contract. Inventory every existing `obd` executable on `PATH`, package-manager record, profile entry, installation prefix, `OBD_HOME`, registered deployment, active OBD process, and shared automation that invokes OBD.
-2. Select an installation method supported for the target operating system and artifact: a released package, an approved all-in-one distribution, or a source/development build. Do not mix methods without an explicit ownership and rollback plan.
+2. Select the exact released RPM supported for the target operating system and architecture.
 3. Resolve the exact OBD version/build, operating system, architecture, runtime requirements, source, checksum/signature, installation prefix, executable path, and expected plugin/repository content. Do not use an unpinned “latest” command when reproducibility matters.
 4. Review the network source, destination path, privilege escalation, package dependencies, and files the installer can create or replace. An explicit request to install OBD authorizes the controller-local artifact acquisition, package installation, and necessary profile changes intrinsic to that selected method; record them but do not ask for separate confirmations solely because they are separate persistent stages. Overwriting another owner or changing the installation/controller identity remains out of scope.
 5. If existing OBD metadata is present, stop and classify the request as maintenance. A new binary with a fresh `OBD_HOME` can hide registered deployments; a new binary pointed at old metadata can migrate it.
-
-Source builds are development artifacts unless an approved release process says otherwise. Record the revision and build inputs; do not present source `HEAD` as a released version.
 
 Build the installation decision from target evidence rather than a remembered platform label:
 
@@ -30,23 +28,11 @@ Build the installation decision from target evidence rather than a remembered pl
 
 For an RPM-based Linux controller, apply the shared [package-source and platform-fallback policy](../../references/product-and-capability-resolution.md#fixed-package-sources-and-platform-fallback): first the suffix matching the observed OS major version, then same-version/same-release/same-architecture EL8, then EL7. Verify the selected fallback package's loader, GLIBC/library dependencies, package-manager compatibility, and installed executable on the controller. This is the same suffix order used for every OBD-managed component; each component still requires its own runtime and dependency proof.
 
-For the V4.6.0 official baseline, distinguish the supported methods rather than mixing their ownership:
-
-- **All-in-One:** preferred when a tested compatible component set or offline installation is required; inspect its installer, bundled RPM closure, profile changes, mirror import, and remote-mirror state.
-- **Released RPM/repository:** use controller-local `curl`, `wget`, or the operating-system package manager—not `obd mirror`—for any explicit remote download, following the fixed source order `https://mirrors.oceanbase.com` then the direct package directories under `https://mirrors.aliyun.com/oceanbase`, with three failed attempts per source before switching. Use the exact selected `ob-deploy` RPM and record package-manager/profile ownership; do not use an unpinned latest package when the required version is fixed. If neither source yields a package matching the controller OS major version, use the shared EL8-then-EL7 fallback with the same source order.
-- **Source:** development-only unless the user's release process explicitly approves it; validate the built revision and generated plugin/example content separately.
-
-These are the three installation methods. An offline All-in-One archive does not create a fourth standalone TAR method: extraction only stages the All-in-One distribution whose reviewed `bin/install.sh` owns installation.
+Use controller-local `curl`, `wget`, or the operating-system package manager—not `obd mirror`—for any explicit remote download, following the fixed source order `https://mirrors.oceanbase.com` then the direct package directories under `https://mirrors.aliyun.com/oceanbase`, with three failed attempts per source before switching. Use the exact selected `ob-deploy` RPM and record package-manager/profile ownership; do not use an unpinned latest package when the required version is fixed. If neither source yields a package matching the controller OS major version, use the shared EL8-then-EL7 fallback with the same source order.
 
 ## Version-Matched Command Skeletons
 
-Use these only after substituting reviewed absolute paths and confirming them against the selected V4.6.0 artifact/instructions:
-
-- **Offline All-in-One:** verify the exact `oceanbase-all-in-one-*.tar.gz` checksum, extract it into a new empty staging directory, inspect the extracted `bin/install.sh`, then execute that script from the All-in-One tree. Do not call this a standalone TAR installation and do not execute an unrelated `install_obd.sh` or guessed installer name.
-- **Local RPM:** install the exact reviewed `ob-deploy` RPM through the target OS package manager, for example `sudo yum install <absolute_reviewed_ob_deploy_rpm>` on a verified compatible YUM-based system. Do not use a glob or remote repository candidate when an exact version was requested.
-- **Source:** check out the approved release revision, verify the V4.6.0 build prerequisites and scripts, then run the release's documented `rpm/build.sh` target. Record the resulting executable and generated content as a development/source-owned installation.
-
-The V4.6.0 guide also documents a remote All-in-One bootstrap script, but do not pipe it from the network into a shell without separately reviewing and pinning its content. Prefer a downloaded, checksummed artifact when reproducibility or supply-chain control matters.
+After substituting a reviewed absolute path, install the exact `ob-deploy` RPM through the target OS package manager, for example `sudo yum install <absolute_reviewed_ob_deploy_rpm>` on a verified compatible YUM-based system. Do not use a glob or remote repository candidate when an exact version was requested.
 
 ## Install
 
@@ -69,5 +55,5 @@ On failure, preserve installer output and the before/after executable and metada
 
 ## Sources
 
-- Official OBD V4.6.0 Quick Start section 1: All-in-One, RPM, and source installation.
+- Official OBD V4.6.0 released-RPM installation guidance.
 - Exact package metadata, installer content, or source revision selected for the target controller.

@@ -31,4 +31,4 @@ After execution, verify registered repository hash, installed artifact checksum/
 
 ## Failure Handling
 
-Freeze retries and record the trace, stage reached, current/target hashes, files replaced, configuration, real processes/listeners, and dependency state. Do not rerun with force or switch to upgrade/redeploy. Reinstall the recorded prior artifact only when the observed state and installed workflow prove that rollback safe and the user authorizes the additional outage.
+Freeze retries and record the trace, stage reached, current/target hashes, files replaced, configuration, real processes/listeners, and dependency state. Do not rerun with force or switch to upgrade. Reinstall the recorded prior artifact only when the observed state and installed workflow prove that rollback safe and the user authorizes the additional outage.

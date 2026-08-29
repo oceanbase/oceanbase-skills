@@ -1,6 +1,6 @@
 ---
 name: oceanbase-deploy
-description: Route OceanBase deployment and operations through obd across community, commercial distributed, and commercial standalone or centralized product forms. Use for general or multi-domain OceanBase/obd requests, product-form discovery, or when the correct specialized skill is unclear. Route concrete work to cluster management, OBD administration, tenant management, testing, or diagnostics. Preserve the bundled SeekDB route for OBD-managed SeekDB lifecycle, HA, and monitoring work.
+description: Route tested OceanBase Community Edition deployment and operations through obd. Use for general or multi-domain OceanBase/obd requests or when the correct specialized skill is unclear. Route concrete work to cluster management, OBD administration, tenant management, testing, or diagnostics.
 metadata:
   author: oceanbase
   version: "3.0"
@@ -10,18 +10,16 @@ metadata:
 <a id="oceanbase-deploy-operations-obd"></a>
 <a id="oceanbase-deploy--operations-obd"></a>
 <a id="skill-index"></a>
-<a id="quick-start"></a>
 <a id="installation"></a>
-<a id="ocp-terminology-convention"></a>
 <a id="critical-safety-rules"></a>
 
 # OceanBase Deployment and Operations with obd
 
-Use this entry point to identify the product form, execution mode, and owning skill. Do not turn an explanation, configuration review, or diagnostic request into a deployment.
+Use this entry point to identify the target, execution mode, and owning skill. Do not turn an explanation, configuration review, or diagnostic request into a deployment.
 
 ## Default Controller, SSH, and Existing-State Discovery
 
-For every OBD-based cluster deployment mode, including configuration-file, interactive, autodeploy, demo, and perf paths, keep the controller on a cluster deployment host unless the user explicitly selected a separate controller. Probe the user-supplied target hosts in their original order before choosing or installing OBD. Reuse the target host that owns the intended registered deployment, or an otherwise unambiguous existing target-host controller. Only after every target host is reachable and confirmed to have no OBD executable, package ownership, or controller metadata, install OBD on the first target host without asking the user to choose. Never default to installing or running OBD on the automation runner.
+For every configuration-file or maximum-utilization `autodeploy` cluster deployment, keep the controller on a cluster deployment host unless the user explicitly selected a separate controller. Probe the user-supplied target hosts in their original order before choosing or installing OBD. Reuse the target host that owns the intended registered deployment, or an otherwise unambiguous existing target-host controller. Only after every target host is reachable and confirmed to have no OBD executable, package ownership, or controller metadata, install OBD on the first target host without asking the user to choose. Never default to installing or running OBD on the automation runner.
 
 When the user supplied neither an SSH user nor an SSH password, first try non-interactive passwordless SSH as `root` using the existing key or agent. Do not ask for credentials before that attempt. If it fails, preserve the host-specific error and then ask the user for the required access information; do not guess another account, password, key, or tunnel.
 
@@ -35,7 +33,7 @@ For a new distributed deployment with multiple user-supplied Observer hosts and 
 
 ## Deployment Package Closure
 
-Before the first package lookup or acquisition for any deployment, component addition, upgrade, or reinstall, read the shared [deployment package closure](references/deployment-package-sets.md). Build the complete package set from the final requested component graph, including selected `*-libs`, JRE, client-library, image, and conditional utility dependencies; do not stop after downloading the obvious primary component RPM. In online mode prove every closure entry is resolvable; in local-package/offline mode place and verify the complete closure on the selected remote controller, plus every required node-local image, before package selection.
+Before the first package lookup or acquisition for any deployment, component addition, upgrade, or reinstall, read the shared [deployment package closure](references/deployment-package-sets.md). Build the complete package set from the final requested component graph, including selected `*-libs`, client-library, and test-tool dependencies; do not stop after downloading the obvious primary component RPM. In online mode prove every closure entry is resolvable; in local-package/offline mode place and verify the complete closure on the selected remote controller before package selection.
 
 ## Online Package Source Priority
 
@@ -49,24 +47,19 @@ For a new OceanBase cluster deployment, do not ask the user to choose the initia
 
 | Skill | Use when |
 |---|---|
-| [cluster-management](cluster-management/SKILL.md) | Deploy or operate OceanBase clusters and OBD-managed components; manage configuration, upgrades, component changes, monitoring, OCP, Config Server, Binlog/CDC services, OMS, networking, or shared-storage deployments. |
-| [obd-administration](obd-administration/SKILL.md) | Install or update the OBD controller; manage mirrors/repositories, stored credentials, dynamic tools, OBD Web/API, top-level host commands, trace evidence, runtime environment, or telemetry. |
+| [cluster-management](cluster-management/SKILL.md) | Deploy or operate OceanBase Community Edition clusters; manage configuration, lifecycle, upgrades, component changes, monitoring, Config Server, and network access. |
+| [obd-administration](obd-administration/SKILL.md) | Install or update the OBD controller; manage mirrors/repositories, dynamic tools, trace evidence, and the tested runtime settings. |
 | [tenant-management](tenant-management/SKILL.md) | Create, inspect, optimize, back up, restore, drop, or manage physical primary/standby tenants. |
 | [testing-and-benchmark](testing-and-benchmark/SKILL.md) | Run Sysbench, TPC-H, TPC-C, or mysqltest through `obd test`. |
 | [obdiag-diagnostics](obdiag-diagnostics/SKILL.md) | Install-gated diagnostic collection, analysis, checks, scenes, or RCA through `obd obdiag`. |
-| [obd-seekdb](seekdb/SKILL.md) | Install/deploy, lifecycle, takeover, HA, or OBD-managed monitoring for a SeekDB deployment. |
-
-SeekDB is a separate product family. Route an action to the bundled skill above only when the requested mechanism is `obd seekdb`, the action is OBD controller lifecycle/HA management of a registered SeekDB deployment, or OBD is managing that deployment's monitoring components. Route product installation that does not use OBD, builds, documentation, CLI/SQL, import, and query/export work to the top-level `seekdb` skill when installed—even when OBD originally deployed the target instance. Keep those routes distinct; do not translate `obd seekdb` into OceanBase cluster or tenant commands.
 
 ## Resolve Product and Capability First
 
-Before proposing an executable command or configuration, read [product and capability resolution](references/product-and-capability-resolution.md). Support community and commercial deployments through the same operating model, but resolve the actual product form, component keys, plugins, repositories, and artifact set before selecting a template.
+Before proposing an executable command or configuration, read [product and capability resolution](references/product-and-capability-resolution.md). Resolve the installed Community Edition component keys, plugins, repositories, and artifact set before selecting syntax or rendering a configuration.
 
 Do not:
 
-- default to a community component or public mirror when the request or artifacts indicate a commercial deployment;
 - treat a source-tree feature as proof that the installed OBD package exposes it;
-- substitute OCP CE, enterprise OCP, OCP Express, or obshell Dashboard for one another;
 - infer compatibility only because every requested package exists in a repository.
 
 ## Preserve the User's Execution Mode
@@ -83,13 +76,9 @@ Command exit, task acceptance, process state, control-plane state, and data-plan
 
 - Read [completion criteria](references/completion-criteria.md) before declaring an operation complete.
 - On failure, timeout, interruption, or a mixed state, read [failure recovery and evidence](references/failure-recovery-and-evidence.md) before retrying or cleaning anything.
-- Before any cleanup, removal, reset, prune, drop, uninstall, or deletion, read [cleanup and ownership boundaries](references/cleanup-boundaries.md) and enumerate the exact removed and retained objects.
+- Before any cleanup, removal, reset, prune, drop, or deletion, read [cleanup and ownership boundaries](references/cleanup-boundaries.md) and enumerate the exact removed and retained objects.
 
-Never use `redeploy`, `destroy`, `--force`, metadata deletion, repository cleanup, tenant drop, or another broad mutation as a generic repair.
-
-## Quick Start Boundary
-
-Do not expose an unconditional `obd demo` or `obd perf` command as the default quick start. For a quick local deployment, route to the cluster skill and use its reviewed configuration workflow. If the user explicitly selects either shortcut, inspect its fixed deployment name, generated components, paths, ports, existing processes, implicit force/cleanup behavior, and recovery boundary first.
+Never use `destroy`, `--force`, metadata deletion, repository cleanup, tenant drop, or another broad mutation as a generic repair.
 
 ## Sensitive Values
 

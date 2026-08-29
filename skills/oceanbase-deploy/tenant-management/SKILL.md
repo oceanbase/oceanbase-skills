@@ -1,6 +1,6 @@
 ---
 name: tenant-management
-description: Manage OceanBase tenant lifecycle, workload optimization, backup and restore, and physical primary/standby relationships through obd. Use for tenant creation, deletion, inspection, optimization, backup, restore, switchover, failover, or related disaster-recovery requests. Do not use for SeekDB HA or cluster deployment lifecycle.
+description: Manage tested OceanBase Community Edition tenant lifecycle, workload optimization, backup and restore, and physical primary/standby relationships through obd. Use for tenant creation, deletion, inspection, optimization, backup, restore, switchover, failover, or related disaster-recovery requests; route cluster deployment lifecycle elsewhere.
 metadata:
   author: oceanbase
   version: "3.0"
@@ -26,7 +26,7 @@ metadata:
 
 # OceanBase Tenant Management
 
-Resolve the installed OBD build, product form, deployment, and tenant before selecting a command. This skill supports community and commercial OceanBase forms when the installed command and component plugins prove the requested operation is available.
+Resolve the installed OBD build, Community Edition deployment, and tenant before selecting a command. Confirm the requested operation against the installed command and component plugin.
 
 ## Default Tenant Configuration
 
@@ -40,7 +40,7 @@ Apply the same no-prompt identity and password policy when building a physical p
 
 Read the shared references required by the current stage:
 
-- Before selecting syntax, product form, or packages, read [product and capability resolution](../references/product-and-capability-resolution.md).
+- Before selecting syntax or packages, read [product and capability resolution](../references/product-and-capability-resolution.md).
 - Before any live controller/host/deployment query, SSH/SQL/API/network access, external action, or mutation, read the [operation contract](../references/operation-contract.md).
 - Before declaring success, read the [completion criteria](../references/completion-criteria.md).
 - After a failure, timeout, interruption, or mixed result, read [failure recovery and evidence](../references/failure-recovery-and-evidence.md) before retrying or cleaning anything.
@@ -61,6 +61,6 @@ Read the shared references required by the current stage:
 - Treat tenant drop, tenant restore, backup-task cancellation, restore-task cancellation, failover, and decouple as separate high-impact operations. Authorization for inspection, ordinary tenant creation, backup, restore, or switchover does not authorize cancellation. The V4.6.0/current reviewed restore path creates a new target tenant and refuses an existing target; do not invent overwrite semantics or turn restore authorization into permission to drop an existing tenant.
 - Do not place tenant, `standbyro`, storage, decryption, KMS, or other credentials in reusable commands or reports.
 - A tenant row or successful OBD exit is not completion. Apply the domain checks in the selected reference and verify an authenticated data-plane outcome when applicable.
-- Do not translate physical standby requests into SeekDB HA commands or infer a tenant relationship from deployment names alone.
+- Do not infer a physical standby relationship from deployment names alone.
 
 For cluster deployment, component lifecycle, or upgrades, use [cluster-management](../cluster-management/SKILL.md). For benchmarks and functional tests, use [testing-and-benchmark](../testing-and-benchmark/SKILL.md).

@@ -8,7 +8,6 @@ Use this blueprint only after the installed OBD build proves the community distr
 - one-node development or multi-node availability topology, target hosts, and any explicit zone/failure-domain mapping; when no mapping is supplied for multiple Observer hosts, assign each distinct host to a distinct new zone in deterministic host order without asking;
 - target host identities, SSH account, canonical paths, and ports, plus any explicitly supplied resource values or caps; when sizing is omitted, derive the resource budget through the default maximum-utilization workflow;
 - any user-specified initial cluster/administrator password override and any explicitly requested tenant behavior; do not request an override when none was supplied because OBD owns random generation by default;
-- explicit persistent auto-start choice; keep the schema option false or unset unless requested and approved through the lifecycle systemd gate;
 - optional OBProxy/OBAgent/monitoring components, each separately justified.
 
 ## Version Gate
@@ -21,16 +20,13 @@ Inspect the selected community plugin's parameter definition and examples. Confi
 4. which values the plugin generates and which must be supplied;
 5. whether the selected package supports the target OS/runtime and intended topology.
 
-Do not copy fields from a commercial `oceanbase`, `oceanbase-standalone`, SeekDB, or older community plugin.
+Do not copy fields from another product, component plugin, or older Community Edition plugin.
 
 The V4.6.0 guide shows both `el7` and `el8` OceanBase packages for x86 and ARM. Apply the shared package policy without changing component/version/release/architecture: prefer the suffix matching the target OS major version, then EL8 when that artifact is absent, then EL7 when both earlier candidates are absent. Inspect the exact RPM requirements and target runtime, including loader, GLIBC, and required libraries, before using either fallback; suffix order alone does not prove compatibility.
 
 ## Start from the Released Example
 
-For OBD V4.6.0, resolve the version-matched installed example root rather than reconstructing the schema from memory:
-
-- direct/RPM installation: `/usr/obd/example/`;
-- All-in-One installation: `~/.oceanbase-all-in-one/obd/usr/obd/example/` under that installation's resolved root.
+For OBD V4.6.0 installed through the retained RPM path, resolve `/usr/obd/example/` rather than reconstructing the schema from memory.
 
 Select the complete example that matches the requested topology:
 
@@ -38,9 +34,8 @@ Select the complete example that matches the requested topology:
 - `mini-distributed-example.yaml` for a low-resource multi-Observer layout, or `distributed-example.yaml` for the ordinary distributed baseline;
 - `distributed-with-obproxy-example.yaml` when community OBProxy is explicitly required;
 - `obagent/distributed-with-obproxy-and-obagent-example.yaml` when both OBProxy and OBAgent are explicitly required;
-- `all-components-min.yaml` only for an explicitly requested disposable multi-component demonstration after removing no required dependency and rejecting every unrequested component.
 
-Copy the complete selected example to a new reviewed work path, record its checksum and source OBD build, retain every component-specific field until the installed schema/dependency review proves whether it is required, then change only values justified by the deployment manifest. Mini and `all-components-min` examples are low-resource/development baselines with non-production choices; they are not production sizing recommendations. Do not use an example shipped by a different OBD installation or product form.
+Copy the complete selected example to a new reviewed work path, record its checksum and source OBD build, retain every component-specific field until the installed schema/dependency review proves whether it is required, then change only values justified by the deployment manifest. Mini examples are low-resource/development baselines with non-production choices; they are not production sizing recommendations. Do not use an example shipped by a different OBD installation or component plugin.
 
 ## V4.6.0 Concrete-Key Baseline
 

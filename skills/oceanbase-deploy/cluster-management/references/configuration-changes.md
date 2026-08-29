@@ -86,7 +86,7 @@ After conversion, prove semantic equivalence and that OBD can parse/display the 
 
 If `edit-config` fails while loading the unchanged generated YAML, before an approved semantic edit has occurred, classify the editor path as unavailable for that exact OBD build and registered configuration. Preserve the unchanged checksum, temporary-YAML parsing error, trace, registered configuration, and runtime state, then stop. Do not automatically switch editors, submit the whole document through standard input, or edit hidden metadata to bypass the failing parser.
 
-On any edit, reload, or conversion failure, preserve both configurations, trace, generated files, real process state, and effective runtime values. Do not apply a second edit, restart all components, or redeploy until the observed state identifies the narrow recovery action.
+On any edit, reload, or conversion failure, preserve both configurations, trace, generated files, real process state, and effective runtime values. Do not apply a second edit or restart all components until the observed state identifies the narrow recovery action.
 
 ## Sources
 

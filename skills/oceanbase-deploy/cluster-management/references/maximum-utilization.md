@@ -4,7 +4,7 @@ Use this workflow when the user explicitly requests maximum utilization or when 
 
 For an OBD-managed OceanBase Community Edition cluster, this workflow provides cluster-consistent sizing: derive each node's verified candidate independently, take the minimum for every resource key, and apply one common specification to every Observer. On shared hosts, use the capped path only after the required reserves or caps are known.
 
-This deterministic baseline is verified for the Community Edition `oceanbase-ce` 4.3.5.5 path using the `plugins/oceanbase/4.2.0.0/generate_general_config.py` generator. The default maximum-utilization goal still applies to another OceanBase product form when sizing was omitted, but another component, plugin, or generator may use different keys, constants, or algorithms. Inspect and reproduce the selected installed implementation before adapting this workflow; do not transfer these formulas by analogy to commercial distributed, standalone, centralized, or SeekDB deployments, and do not silently fall back to a mini or arbitrary profile when that derivation is unresolved.
+This deterministic baseline is verified for the Community Edition `oceanbase-ce` 4.3.5.5 path using the `plugins/oceanbase/4.2.0.0/generate_general_config.py` generator. Inspect the selected installed implementation before execution; do not silently fall back to a mini or arbitrary profile when that derivation is unresolved.
 
 ## Required Shared Gates
 
@@ -30,7 +30,7 @@ Calculate the minimum independently for each key. Different nodes may limit CPU,
 
 Host maximum utilization is separate from tenant allocation. Do not create a tenant, enable `auto_create_tenant`, or pass an automatic-tenant option unless the user separately requests a tenant after the Observer cluster is accepted.
 
-`obd perf` is a fixed-name single-node shortcut with implicit force/cleanup behavior. Route it through [quick-deploy shortcuts](lifecycle.md#quick-deploy-shortcuts). Multi-node maximum utilization uses a reviewed `autodeploy` configuration; never repeat `perf` on each node.
+Multi-node maximum utilization uses the reviewed `autodeploy` configuration path below.
 
 ## Eligibility and Stop Conditions
 
@@ -218,7 +218,7 @@ Render the complete YAML from the version-matched [Community distributed deploym
 
 Build a filesystem commitment ledger. Charge `max(datafile_size, datafile_maxsize)` plus the 4 GiB slog reserve to the data filesystem, `log_disk_size` to the clog filesystem, and retained syslog to the home filesystem. Combine charges once when paths share a filesystem; never sum unrelated free-space figures or use one filesystem's surplus for another filesystem's deficit.
 
-Keep `auto_create_tenant` absent or false. Add no OBProxy, OBAgent, monitoring, OCP, or other component unless explicitly requested and budgeted separately; the verified generator's Observer memory calculation does not automatically reserve every colocated component.
+Keep `auto_create_tenant` absent or false. Add no OBProxy, OBAgent, monitoring, Config Server, or other retained optional component unless explicitly requested and budgeted separately; the verified generator's Observer memory calculation does not automatically reserve every colocated component.
 
 ## Execute
 
@@ -237,7 +237,7 @@ The explicit common values are authoritative. The consistency flag is only an ad
 
 Do not pass an automatic-tenant option. An explicit tenant request starts only after Observer acceptance and follows [tenant management](../../tenant-management/SKILL.md) as a separate operation.
 
-On failure, freeze retries and preserve the OBD trace, exact command, input checksum, registered/generated configuration, status, per-host processes/listeners/mounts/disk use, and ownership. Classify the reached state before changing anything. Do not use `init4env`, force, cleanup, redeploy, path deletion, or another deployment as generic recovery. Route an environment-check finding through [host environment initialization](environment-initialization.md) with an exact reviewed persistent diff; when initialization is necessary to the requested deployment, do not request duplicate confirmation solely because the diff persists.
+On failure, freeze retries and preserve the OBD trace, exact command, input checksum, registered/generated configuration, status, per-host processes/listeners/mounts/disk use, and ownership. Classify the reached state before changing anything. Do not use force, cleanup, path deletion, or another deployment as generic recovery. Report the exact environment-check diff and apply only a separately reviewed host change that is necessary to the requested deployment.
 
 ## Verify
 

@@ -13,11 +13,10 @@ Each skill is a self-contained directory with a `SKILL.md` file (plus optional `
 | Skill | Description |
 |-------|-------------|
 | [`oceanbase-deploy`](./skills/oceanbase-deploy/) | Overview & routing — start here if unsure which skill to use |
-| [`cluster-management`](./skills/oceanbase-deploy/cluster-management/) | Cluster lifecycle: deploy, multi-node maximum-utilization sizing, start, stop, upgrade, component changes, OCP CE takeover, monitoring |
-| [`obd-administration`](./skills/oceanbase-deploy/obd-administration/) | OBD installation, update, repositories, credentials, tools, Web/API, runtime, and telemetry |
+| [`cluster-management`](./skills/oceanbase-deploy/cluster-management/) | Community Edition deployment, multi-node maximum-utilization sizing, lifecycle, configuration, upgrade, component changes, Config Server, and monitoring |
+| [`obd-administration`](./skills/oceanbase-deploy/obd-administration/) | Tested OBD installation, update/rollback, repositories, dynamic-tool, Trace, and runtime-state workflows |
 | [`obdiag-diagnostics`](./skills/oceanbase-deploy/obdiag-diagnostics/) | Bounded diagnostic collection, checks, analysis, scenes, ASH, and RCA through `obd obdiag` |
 | [`tenant-management`](./skills/oceanbase-deploy/tenant-management/) | Tenant CRUD, backup, restore, workload optimization |
-| [`obd-seekdb`](./skills/oceanbase-deploy/seekdb/) | OBD-managed SeekDB deployment, lifecycle, takeover, and primary-standby HA; distinct from the product skill `seekdb` |
 | [`testing-and-benchmark`](./skills/oceanbase-deploy/testing-and-benchmark/) | Sysbench, TPC-H, TPC-C, mysqltest benchmarks |
 
 ### seekdb — SeekDB Full Lifecycle Skills (install / build / docs / CLI / import / query)
@@ -111,15 +110,11 @@ After loading the skills, ask your agent for concrete tasks. Below are examples 
 ### Cluster Management
 
 ```text
-Deploy a local OceanBase community edition — just get it running quickly
+Deploy a three-node OceanBase Community Edition cluster with maximum safe resource utilization
 ```
 
 ```text
 Use config.yaml to deploy an OceanBase community edition cluster named test-cluster
-```
-
-```text
-Help me deploy OCP
 ```
 
 ```text
@@ -138,20 +133,6 @@ Create a tenant named mysql on test-cluster
 
 ```text
 Configure the backup path for the mysql tenant on test-cluster and run a backup
-```
-
-### obd-seekdb (OBD-managed lifecycle and HA)
-
-```text
-Deploy and start a SeekDB instance
-```
-
-```text
-Create a SeekDB primary-standby cluster and tell me how to deploy the primary and standby separately
-```
-
-```text
-Show the topology of seekdb-test — if the primary goes down, should I use switchover or failover
 ```
 
 ### SeekDB (standalone install / build)
@@ -230,9 +211,6 @@ oceanbase-skills/
     │   │   ├── SKILL.md
     │   │   └── references/
     │   ├── tenant-management/         # Tenant ops
-    │   │   ├── SKILL.md
-    │   │   └── references/
-    │   ├── seekdb/                    # Skill name: obd-seekdb; stable directory path
     │   │   ├── SKILL.md
     │   │   └── references/
     │   └── testing-and-benchmark/     # Benchmarks

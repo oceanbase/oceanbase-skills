@@ -52,11 +52,10 @@ For the classified state, decide whether the safe action is to continue the orig
 
 The following are never generic recovery steps:
 
-- `redeploy` or a second deploy;
+- a second deploy;
 - `destroy`, tenant drop, or metadata deletion;
 - `--force` or ignore-safety options;
 - mirror/repository clean or broad cache deletion;
-- clearing OBD environment state, locks, or stored credentials;
 - editing hidden `.obd` metadata or installed plugins;
 - changing unrelated network, path, resource, or kernel parameters.
 

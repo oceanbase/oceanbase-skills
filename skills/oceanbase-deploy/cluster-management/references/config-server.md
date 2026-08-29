@@ -5,7 +5,7 @@ Use this workflow for the OBD component commonly named `ob-configserver`. It sup
 ## Capability and Scope Gate
 
 1. Verify the exact component key, installed plugin/schema/workflow, package version/release/architecture/hash, and repository source.
-2. Establish version compatibility with the selected community or commercial OceanBase product, OBProxy/ODP, and the exact metadata protocol expected by each consumer.
+2. Establish version compatibility with the selected OceanBase Community Edition deployment, OBProxy, and the exact metadata protocol expected by each consumer.
 3. Record deployment, Config Server nodes, listen and advertised addresses, ports, canonical home/log/storage paths, resources, TLS/authentication or network-access boundary, and every intended consumer.
 4. Check host identity, path/port conflicts, disk/resources, network reachability, metadata-store ownership, and exposure boundary.
 5. Decide whether this is a combined new deployment, incremental component add, Config-Server-only deployment, restart/reload, address replacement, or deletion. Use only the installed supported workflow.
@@ -41,7 +41,7 @@ For multiple Config Server nodes, configure and prove a reachable load balancer 
 
 ## Select One V4.6.0 Topology Branch
 
-### Combined OceanBase, ODP, and Config Server
+### Combined OceanBase, OBProxy, and Config Server
 
 The official V4.6.0 community example uses these dependency edges:
 
@@ -58,7 +58,7 @@ obproxy-ce:
     - ob-configserver
 ```
 
-Use the exact database and proxy component keys exposed for the selected community or commercial product; do not rename the community example speculatively. A non-empty database `appname` is required for registration in this branch. Omit `rs_list` when the reviewed intent is for ODP to start through the Config Server URL; verify the installed proxy schema derives that URL and preserves the required database/proxy authentication relationship.
+Use the exact database and proxy component keys exposed for the selected Community Edition plugins; do not rename the released example speculatively. A non-empty database `appname` is required for registration in this branch. Omit `rs_list` when the reviewed intent is for OBProxy to start through the Config Server URL; verify the installed proxy schema derives that URL and preserves the required database/proxy authentication relationship.
 
 ### Add Config Server to an Existing OBD Deployment
 
@@ -68,13 +68,13 @@ Use a config file containing only the reviewed Config Server stanza and the inst
 obd cluster component add <deploy_name> --config=<config_server.yaml>
 ```
 
-Do not redeploy merely to add Config Server. In the V4.6.0 documented flow, a deployment with ODP can prompt to restart `obproxy-ce,oceanbase-ce` so ODP changes from root-server-list mode to the Config Server URL; declining leaves the prior ODP mode in place. Resolve the exact installed restart set, outage, and consumer transition, then authorize it separately.
+In the V4.6.0 documented flow, a deployment with OBProxy can prompt to restart `obproxy-ce,oceanbase-ce` so OBProxy changes from root-server-list mode to the Config Server URL; declining leaves the prior mode in place. Resolve the exact installed restart set, outage, and consumer transition, then authorize it separately.
 
 Do not add `--confirm` as a generic non-interactive flag. In inspected implementations it can accept restart-causing behavior rather than mean “do not restart”; without a proved selector, an empty restart selection can widen to the whole deployment. Stop when the exact transition cannot be controlled.
 
 ### Deploy Config Server Alone
 
-Deploy and start the reviewed `ob-configserver` configuration as its own OBD deployment. It does not register an existing database merely by becoming healthy. Register only an already running, identified OceanBase cluster through the version-supported `obconfig_url`/SQL workflow, then configure each intended ODP with the reviewed `obproxy_config_server_url`. Treat the database reload/restart and ODP route change as separate availability/configuration operations. Preserve the previous endpoint or `rs_list` route until rollback is proved.
+Deploy and start the reviewed `ob-configserver` configuration as its own OBD deployment. It does not register an existing database merely by becoming healthy. Register only an already running, identified OceanBase cluster through the version-supported `obconfig_url`/SQL workflow, then configure each intended OBProxy with the reviewed `obproxy_config_server_url`. Treat the database reload/restart and OBProxy route change as separate availability/configuration operations. Preserve the previous endpoint or `rs_list` route until rollback is proved.
 
 ## Acceptance
 
@@ -90,11 +90,11 @@ Initialization or registration may be asynchronous. Poll a documented bounded st
 
 ## Version-Gated Removal
 
-Before address replacement or removal, list every configuration, runtime, database, ODP, and external reference; migrate consumers first and preserve the prior endpoint/configuration as rollback. The official V4.6.0 Web component guide states that uninstalling Config Server is not supported there. Do not infer that the generic CLI component-delete path provides a complete lifecycle.
+Before address replacement or removal, list every configuration, runtime, database, OBProxy, and external reference; migrate consumers first and preserve the prior endpoint/configuration as rollback. The official V4.6.0 component guide states that Config Server removal is not supported there. Do not infer that the generic CLI component-delete path provides a complete lifecycle.
 
 Config Server addition can insert reverse dependency references such as `oceanbase-ce.depends: [ob-configserver]`, and other database or proxy components can also depend on it. Use this guarded sequence for an installed version that exposes component deletion:
 
-1. Capture the complete dependency graph, both OBD configuration files, Config Server process/listener/path state, registered clusters, and every ODP or external consumer.
+1. Capture the complete dependency graph, both OBD configuration files, Config Server process/listener/path state, registered clusters, and every OBProxy or external consumer.
 2. Migrate consumers away from the endpoint and verify their replacement route and authenticated data plane.
 3. Use the reviewed [configuration-change workflow](configuration-changes.md) to remove every `ob-configserver` dependency reference, not only the first database reference. Validate the edited graph before applying it.
 4. If the installed version requires reload or restart for that dependency/route change, display and authorize the exact affected set, apply it, and verify consumers again before deletion.
@@ -103,4 +103,4 @@ Config Server addition can insert reverse dependency references such as `oceanba
 
 In the reviewed 4.7 development checkout, `ob-configserver` exposes add/start/stop/restart workflows but no `delete_component` workflow, while the generic deletion path can ignore that missing stage and still remove the component from registered configuration. Treat this as version-specific implementation evidence. If registration disappears while the process or listener remains, report `FAIL — lifecycle gap`; do not report a complete removal or kill/delete the residual runtime without a separately authorized recovery action. Apply [cleanup and ownership boundaries](../../references/cleanup-boundaries.md) to every supported removal.
 
-On failure preserve trace, plugin/configuration, component logs, actual endpoint, metadata response, registration state, and consumer errors. Do not remove the component, edit consumer files ad hoc, or redeploy until the failed layer is identified.
+On failure preserve trace, plugin/configuration, component logs, actual endpoint, metadata response, registration state, and consumer errors. Do not remove the component or edit consumer files ad hoc until the failed layer is identified.

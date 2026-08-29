@@ -4,19 +4,19 @@ Use this workflow for the installed OBD build's supported obdiag collection, ana
 
 ## 1. Identify the Installed Tool
 
-Use the installed OBD build's normal inventory, `obd obdiag --help`, or version path to identify the available diagnostic command families. Some builds may install or update the dynamic obdiag tool while resolving the alias; record any resulting package change and verify the final tool identity before collection.
+Use the installed OBD build's normal inventory, `obd obdiag --help`, or version path to identify the available diagnostic command families. Some builds may install the dynamic obdiag tool while resolving the alias; record any resulting package change and verify the final tool identity before collection.
 
 First record:
 
 - controller host/user, exact OBD executable/build, `OBD_HOME`, and active tasks;
-- OBD automatic-confirm, developer-mode, telemetry/network, and mirror enabled state relevant to discovery;
+- OBD automatic-confirm, network, and mirror enabled state relevant to discovery;
 - `obd tool list` output or the installed build's equivalent core inventory;
-- the selected repository candidate when an install or update is needed, including version, architecture, source, and install prefix;
+- the selected repository candidate when an install is needed, including version, architecture, source, and install prefix;
 - the resulting obdiag executable path and version.
 
 If obdiag is absent, follow [the tool lifecycle](../../obd-administration/references/tool-lifecycle.md) through the supported install path, then verify the resulting package and executable before diagnostic use.
 
-Tool installation or update does not authorize collection, inspection of a deployment, or access to diagnostic data. Establish that scope separately.
+Tool installation does not authorize collection, inspection of a deployment, or access to diagnostic data. Establish that scope separately.
 
 The available command families and options are determined by the resulting OBD/tool combination, not by examples from another release. Use its help to select the exact syntax and record the version used for the diagnostic result.
 

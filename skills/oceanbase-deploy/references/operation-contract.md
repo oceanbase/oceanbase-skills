@@ -44,7 +44,7 @@ Deduplicate physical hosts by observed host identity, not only by IP. Normalize 
 
 For an OBD-based cluster deployment, preserve the user's target-host order. Unless the user explicitly selected a separate controller, the controller must be one of those cluster deployment hosts. Before choosing or installing it, inspect every reachable target for `obd` executables, package-manager ownership, candidate controller homes under the unchanged login environment, registered deployments, and active tasks. Prefer the target host whose registration identifies the intended deployment. If there is no such registration, reuse an otherwise unambiguous usable OBD installation on a target host. If multiple target hosts remain plausible controllers with conflicting or unrelated state, present the observed ambiguity and ask only after completing the safe inspection.
 
-Only when every supplied cluster host has been reached and confirmed to contain no OBD executable, package record, controller metadata, or registration may the workflow select the first supplied host and install OBD there without asking. This default applies regardless of whether the later deployment uses a configuration file, interactive mode, autodeploy, demo, perf, an online repository, or local packages. Do not install or run OBD on the automation runner as a fallback. A host that is unreachable has not been confirmed empty.
+Only when every supplied cluster host has been reached and confirmed to contain no OBD executable, package record, controller metadata, or registration may the workflow select the first supplied host and install OBD there without asking. This default applies to configuration-file and maximum-utilization autodeploy workflows with either online repositories or local packages. Do not install or run OBD on the automation runner as a fallback. A host that is unreachable has not been confirmed empty.
 
 For each target where the user supplied neither an SSH user nor an SSH password, first attempt bounded, non-interactive passwordless SSH as `root`, using only the runner's existing key or agent and disabling password prompts. Do not ask for credentials before this attempt. If it fails, record whether the failure was name resolution, route, timeout, host-key, authentication, or remote execution, then ask the user for the missing or corrected access information for that host. Do not guess alternate users, passwords, private keys, privilege escalation, or tunnels. When the user supplied an SSH user, preserve it; when the user supplied authentication material, use only its approved protected path.
 
@@ -84,7 +84,7 @@ Treat these as separate risk classes:
 - availability impact, restart, role change, or failover;
 - deployment configuration, repository, or artifact replacement;
 - persistent host, account, systemd, kernel, limit, or runtime-environment change;
-- credential encryption, passkey rotation, secret migration, or exposure change;
+- secret exposure or replacement;
 - network listener, firewall, whitelist, download, or other external side effect.
 
 Immediately before a high-impact mutation, state the exact target, observed current state, intended change, impact, rollback or recovery boundary, and validation plan. For a requested non-destructive workflow, this record does not trigger duplicate confirmation for its intrinsic persistent changes. Obtain new authorization only when the action is destructive, forced, materially broader than the request, or belongs to another risk class that the request did not cover.

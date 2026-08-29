@@ -1,10 +1,10 @@
 # Tenant Deletion
 
-Tenant deletion removes database data and can invalidate applications, backup jobs, CDC consumers, and standby relationships. Read the installed `obd cluster tenant drop --help` before proposing syntax.
+Tenant deletion removes database data and can invalidate applications, backup jobs, external consumers, and standby relationships. Read the installed `obd cluster tenant drop --help` before proposing syntax.
 
 ## Preflight
 
-Resolve the deployment, cluster identity, exact tenant ID/name, compatibility mode, current role and status, the complete set of resource pools and Unit Configs, their reference counts and ownership, Units, active sessions, application routes, scheduled work, backup/archive tasks, restore tasks, OCP records, CDC consumers, and the complete physical-standby graph.
+Resolve the deployment, cluster identity, exact tenant ID/name, compatibility mode, current role and status, the complete set of resource pools and Unit Configs, their reference counts and ownership, Units, active sessions, application routes, scheduled work, backup/archive tasks, restore tasks, external management registrations and consumers, and the complete physical-standby graph.
 
 Inspect the installed drop plugin's resource-deletion algorithm before execution. Verified current plugin code fetches only one pool, issues `DROP TENANT ... FORCE`, and then attempts to drop that pool and its Unit Config. If the tenant has multiple pools, a shared Unit Config, ambiguous ownership, or any topology that violates the plugin's single-pool/exclusive-config assumption, stop before the irreversible tenant drop and use a separately reviewed supported procedure. Do not discover this mismatch after deleting the tenant.
 
@@ -22,7 +22,7 @@ Use the long option confirmed by installed help:
 obd cluster tenant drop <deploy_name> --tenant-name=<tenant_name>
 ```
 
-Do not infer permission to remove backup sets, archive logs, external storage, CDC state, application configuration, or retained credentials. Those are separately owned objects.
+Do not infer permission to remove backup sets, archive logs, external storage, external-consumer state, application configuration, or retained credentials. Those are separately owned objects.
 
 ## Accept or Recover
 

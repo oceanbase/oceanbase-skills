@@ -2,16 +2,16 @@
 <a id="monitoring-setup-prometheus-grafana"></a>
 <a id="monitoring-setup-prometheus--grafana"></a>
 
-# Monitoring and Alerting
+# Monitoring
 
-Use this workflow for OBAgent collection, Prometheus storage/query, Grafana visualization, and Alertmanager delivery. Treat each as optional; deploy only the subset required for the requested outcome.
+Use this workflow for OBAgent collection, Prometheus storage/query, and Grafana visualization. Treat each as optional; deploy only the subset required for the requested outcome.
 
 ## Resolve Scope and Compatibility
 
 1. Record OBD build, deployment/product form, selected component plugins, registered components, and current monitoring integrations.
 2. Confirm exact component keys, versions, releases, architectures, hashes, dependency graph, and incremental add/delete/upgrade support from installed plugins and repositories.
-3. Establish compatibility among OceanBase, OBAgent metric schema/authentication, Prometheus scrape/auth, Grafana datasource/dashboards, Alertmanager integration, OBD, OS, and architecture.
-4. Record per-component hosts, ports, canonical home/data/log paths, retention, disk/inode growth budget, CPU/memory, credentials, TLS, datasource, receiver, network ingress/egress, and co-location impact.
+3. Establish compatibility among OceanBase, OBAgent metric schema/authentication, Prometheus scrape/auth, Grafana datasource/dashboards, OBD, OS, and architecture.
+4. Record per-component hosts, ports, canonical home/data/log paths, retention, disk/inode growth budget, CPU/memory, credentials, TLS, datasource, network access, and co-location impact.
 5. Identify existing OBAgent endpoints and configuration ownership. Derive endpoint, path, authentication, and labels from the installed plugin and effective configuration; do not guess a universal scrape URL.
 
 Repository availability does not establish compatibility. Do not copy a monitoring YAML from another product form/version or expose generated credentials in a report.
@@ -21,15 +21,14 @@ Repository availability does not establish compatibility. Do not copy a monitori
 Validate every field with the installed component schema. The rendered incremental YAML must include only requested monitoring components and required dependencies. In particular, resolve:
 
 - OBAgent target OceanBase endpoints, credentials/secret references, metric listener, and ownership;
-- Prometheus listener, data path, retention, scrape targets, authentication/TLS, and Alertmanager reference when requested;
+- Prometheus listener, data path, retention, scrape targets, and authentication/TLS;
 - Grafana listener, persistent data, administrator credential source, Prometheus datasource, and dashboard compatibility;
-- Alertmanager listener, data path, routing tree, grouping/inhibition, receiver type, protected receiver credentials, and egress.
 
 Do not treat placeholders as deployable YAML. Validate the complete rendered configuration with the selected plugins before execution.
 
 ## Official V4.6.0 Example Baselines
 
-Prefer the examples shipped by the resolved OBD installation, normally under `/usr/obd/example/` for RPM/direct installs or the selected All-in-One installation's `obd/usr/obd/example/` directory:
+Prefer the examples shipped by the retained RPM OBD installation under `/usr/obd/example/`:
 
 - `prometheus/distributed-with-obagent-and-prometheus-example.yaml`;
 - `grafana/all-components-with-prometheus-and-grafana.yaml`;
@@ -91,7 +90,7 @@ The official V4.6.0 existing-cluster paths above create a separate monitoring de
 obd cluster component add <deploy_name> --config=<monitoring_increment.yaml>
 ```
 
-Never use redeploy as the default way to add monitoring: it destroys and rebuilds deployment-owned state. If the installed build lacks a safe incremental path, stop and present that limitation; do not edit `.obd` metadata or replace the full deployment configuration.
+If the installed build lacks a safe incremental path, stop; do not edit `.obd` metadata or replace the full deployment configuration.
 
 For an existing OBAgent, add only the requested downstream components and configure them against the observed endpoints. Do not deploy a duplicate agent merely to match an example.
 
@@ -105,10 +104,9 @@ Verify each requested layer independently:
 2. OBAgent exposes current OceanBase metrics for the intended cluster/tenant scope;
 3. every intended Prometheus target is healthy and an expected OceanBase series returns current samples;
 4. Grafana uses the intended datasource and a compatible dashboard returns current data;
-5. for alerting, Prometheus fires a controlled test alert, Alertmanager receives/routes it, the receiver accepts it, and the resolution notification is observed when configured;
-6. existing OceanBase, OBProxy, OCP, and client paths remain healthy.
+5. existing OceanBase, OBProxy, and client paths remain healthy.
 
-Prometheus `/-/ready`, a Grafana login page, or an Alertmanager UI proves only that local service layer. None proves collection, query, visualization, or delivery end to end.
+Prometheus `/-/ready` or a Grafana login page proves only that local service layer. Neither proves collection, query, or visualization end to end.
 
 When Grafana API access is available and within scope, prefer an additional datasource-proxy evidence chain:
 
@@ -134,8 +132,8 @@ obd cluster component del <deploy_name> grafana prometheus
 obd cluster component del <deploy_name> obagent
 ```
 
-Do not apply this order blindly to a different version, a deployment with Alertmanager or other dependants, or a shared OBAgent.
+Do not apply this order blindly to a different version, a deployment with other dependants, or a shared OBAgent.
 
 ## Failure Recovery
 
-Preserve trace, before/after configuration, artifact identities, processes/listeners, OBAgent endpoint evidence, Prometheus target/query state, Grafana datasource state, and Alertmanager delivery evidence. Do not delete components, directories, monitoring data, or redeploy as generic cleanup; choose recovery from the observed failed layer.
+Preserve trace, before/after configuration, artifact identities, processes/listeners, OBAgent endpoint evidence, Prometheus target/query state, and Grafana datasource state. Do not delete components, directories, or monitoring data as generic cleanup; choose recovery from the observed failed layer.

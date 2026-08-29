@@ -1,34 +1,23 @@
 # OBD Runtime Environment
 
-Treat `obd env` values and developer mode as persistent controller-wide policy. They can change later commands for every deployment and user of the same OBD home.
+Use this workflow for the tested controller-identity behavior around `OBD_HOME` and for narrowly scoped automatic-confirm handling.
 
-## Baseline and Concurrency Gate
+## Resolve OBD_HOME
 
-Before a change, record the controller, user, executable/build, resolved `OBD_HOME`, whether that variable was originally unset or explicit, active CLI/Web/API tasks, developer-mode state, and the installed version's complete OBD environment view. Determine the storage scope and which processes read values only at startup.
+Record the controller host, user, exact OBD executable/build, registered deployments, trace location, and whether `OBD_HOME` was originally unset or explicitly configured. Resolve controller state under the unchanged caller environment first.
 
-Resolve the controller home under the unchanged caller environment through the shared operation contract. Do not export an observed metadata directory as `OBD_HOME`; a value such as `/root/.obd` can be interpreted as a base and produce an unintended `/root/.obd/.obd`. If a scoped operation requires an explicit override, verify the resulting registration and trace location before continuing and restore the original unset/value state afterward.
+Do not export an observed metadata directory as `OBD_HOME`. A path such as `/root/.obd` can be interpreted as a base and create an unintended `/root/.obd/.obd`. If a scoped operation requires an explicit override, verify the resulting registration and trace location before continuing and restore the original unset/value state afterward.
 
-If another task depends on a value or the baseline cannot be read, do not mutate it. Prefer a command-local option when the installed build provides an equivalent.
+Re-resolve controller identity after an SSH hop, user change, executable replacement, or environment change. A new empty OBD home is not evidence that no deployment exists and must not be used as repair.
 
-## Change One Policy at a Time
+## Automatic Confirmation
 
-- Use exact set or unset operations for the required key. Never use environment clear as cleanup.
-- Automatic confirmation can suppress destructive prompts for unrelated later commands. Do not enable it as a benchmark or automation prerequisite, and never treat it as user authorization. If temporarily approved, restore its exact prior state immediately after the scoped command.
-- Developer mode can expose hidden commands, accept undefined options, or weaken validation. Enable it only for an explicit development workflow with a reviewed reason and stop condition; restore it afterward.
-- Lock-mode changes can weaken controller concurrency protection. Do not downgrade or disable locks to bypass an active task or lock error.
-- Transfer, repository-install, SSH-algorithm, base-directory, and Web-idle settings can change persistent paths, security, or runtime behavior. Review the installed meaning and consumers before changing one.
-- `OBD_HOME` is part of controller identity, not a convenience switch for finding state. Never change it to make a deployment or trace appear, and do not treat a new empty home as repair.
+Automatic confirmation is persistent controller state and can suppress prompts for unrelated later commands. Do not enable it merely because automation lacks a TTY, and never treat it as user authorization.
 
-Do not guess an environment key or value from another OBD version. Save whether the key was absent as well as its value so restoration can distinguish `unset` from a configured default.
+Use it only when the exact target and mutation have already been authorized, the installed version proves which prompt it answers, no unrelated OBD task is active, and a command-local public confirmation form is unavailable. Record whether the key was absent as well as its value, run only the scoped command, then restore the exact prior state immediately.
 
-## Telemetry
+For interactive commands, prefer a real PTY. If a confirmation session stalls, identify and stop only the caller-owned waiting OBD process, reconcile server-side state, and retry only after proving that the original mutation did not continue.
 
-Before work in an offline, regulated, or sensitive environment, inspect the installed build's telemetry submission and local telemetry logging behavior. Record the current organizational policy, configured values, local log path, and operations that can attempt submission.
+## Accept
 
-Preserve the existing policy by default. Change telemetry submission, logging, or reporter settings only when the user or organization requires it. Submission and local logging are independent; disabling one does not prove the other is disabled. When no-egress behavior matters, verify it under the environment's approved network controls.
-
-Redact deployment names, addresses, usernames, paths, command parameters, and business data before sharing telemetry artifacts. A telemetry failure does not by itself mean the requested OBD operation failed, and telemetry success does not prove it succeeded.
-
-## Restore and Accept
-
-After the scoped operation, restore every temporary key and developer/lock setting to the recorded baseline, including removal of keys that were originally absent. Compare the final environment with the baseline and report intentional persistent differences. Verify that no unrelated active task or deployment changed because of the temporary policy.
+Compare final `OBD_HOME`, registration visibility, trace location, automatic-confirm state, and active tasks with the baseline. Report intentional differences and verify that no unrelated deployment or controller setting changed.

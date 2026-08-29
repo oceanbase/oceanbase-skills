@@ -1,6 +1,6 @@
 # Product and Capability Resolution
 
-Use this gate before selecting commands, YAML keys, packages, or upgrade paths. It supports community and commercial OceanBase deployments without duplicating the common operating workflow.
+Use this gate before selecting commands, YAML keys, packages, or upgrade paths for the tested OceanBase Community Edition workflows.
 
 Before obtaining evidence from a live controller, host, deployment, SSH session, SQL endpoint, API, repository, or network, read the [operation contract](operation-contract.md). Supplied files and already available local evidence may be reviewed without live access. Product resolution does not itself authorize a discovery command whose side effects have not been classified.
 
@@ -8,7 +8,7 @@ Before obtaining evidence from a live controller, host, deployment, SSH session,
 
 When the request is to install OBD on a new controller, first use non-OBD inventory to determine whether any executable, package-manager record, installation prefix, `OBD_HOME`, metadata owner, registered deployment data, or active OBD process already exists. If none exists, route to the [OBD installation workflow](../obd-administration/references/installation.md). Do not require `obd --version`, subcommand help, plugins, or repository state from a tool that is not installed. After installation acceptance, return here and build the normal installed capability record before any cluster, tenant, test, or diagnostic execution.
 
-If an executable or metadata exists, this is controller maintenance or takeover, not a clean bootstrap. Preserve that identity and do not hide it with a fresh `OBD_HOME`.
+If an executable or metadata exists, this is controller maintenance, not a clean bootstrap. Preserve that identity and do not hide it with a fresh `OBD_HOME`.
 
 ## Establish the Controller Identity
 
@@ -16,19 +16,17 @@ Record the controller host, current user, exact `obd` executable, OBD version an
 
 For development builds, record the source revision as additional evidence. A source revision does not replace the identity of the installed executable and plugin tree.
 
-## Resolve the Product Form
+## Resolve the Community Component
 
-Determine the product form from the user's stated goal plus observable evidence:
+Resolve the Community Edition component from the user's stated goal plus observable evidence:
 
 - registered deployment configuration and component keys;
 - package names, version, release, architecture, and hashes;
 - installed component plugins, schemas, and workflows;
-- repository source and any commercial all-in-one or local artifact set;
-- the existing process identity when taking over or maintaining a deployment.
+- repository source and any local artifact set;
+- the existing process identity when maintaining a deployment.
 
-OBD builds commonly use `oceanbase-ce` for community distributed deployments, `oceanbase` for commercial distributed deployments, and `oceanbase-standalone` for the standalone or centralized commercial form. Treat these as candidates, not universal aliases: confirm the exact component key in the installed build before using it.
-
-Do not copy a community template and replace only the component name. Product forms can differ in package closure, topology, required parameters, supported lifecycle commands, and compatibility rules.
+OBD builds commonly use `oceanbase-ce` for Community Edition distributed deployments. Treat it as a candidate rather than a universal alias: confirm the exact component key in the installed build before using it.
 
 ## Build a Capability Record
 
@@ -59,13 +57,13 @@ For every package acquired online from the OceanBase public repositories, use th
 1. `https://mirrors.oceanbase.com`;
 2. the direct package directories under `https://mirrors.aliyun.com/oceanbase`.
 
-For an RPM or another package family that publishes EL operating-system suffixes, preserve the exact product form, component, version, release, and architecture, then select the suffix in this order:
+For an RPM or another package family that publishes EL operating-system suffixes, preserve the exact component, version, release, and architecture, then select the suffix in this order:
 
 1. the suffix matching the observed target operating-system major version;
 2. EL8 when no exact-suffix artifact exists;
 3. EL7 when neither an exact-suffix nor EL8 artifact exists.
 
-This suffix order applies to the OBD RPM and every OBD-managed component RPM; packages that do not publish EL suffixes retain their own format/platform compatibility rules. It is a candidate-selection policy, not proof of compatibility: for an EL8 or EL7 fallback, inspect the exact RPM requirements and verify the target package manager, executable format, dynamic loader, GLIBC and required libraries/symbols before use. Stop if the fallback changes product/component/version/release/architecture, crosses the community/commercial boundary, or cannot be proved runnable.
+This suffix order applies to the OBD RPM and every retained OBD-managed component RPM; packages that do not publish EL suffixes retain their own format/platform compatibility rules. It is a candidate-selection policy, not proof of compatibility: for an EL8 or EL7 fallback, inspect the exact RPM requirements and verify the target package manager, executable format, dynamic loader, GLIBC and required libraries/symbols before use. Stop if the fallback changes component/version/release/architecture or cannot be proved runnable.
 
 For each candidate suffix, attempt the two mirror sources in the fixed order above. Keep the current source until the same exact package acquisition has failed three times, then move to the next source; after both sources fail three times, move to the next suffix. A generic Internet-connectivity test cannot precede or substitute for the first actual source request. Across the attempts on one source, do not repeat only the same failed path: after normal OBD/repository acquisition fails, try controller-local `curl`, `wget`, the operating-system package manager, or another applicable downloader. Downloading an Aliyun-hosted `.repo` file does not count as source 2 if its effective package `baseurl` points to source 1. Follow the detailed [fixed online package-source workflow](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order).
 
@@ -79,12 +77,6 @@ Before classifying an exact artifact or platform path as `UNSUPPORTED`, complete
 
 This revision was reviewed against the official OBD V4.6.0 Quick Start, User Guide, Command Guide, and OBD Upgrade Guide, plus an explicitly identified development checkout under the [source-evidence boundary](source-baselines.md#source-evidence-boundary). The documentation is not mapped to that checkout or to an RPM release. Use development-source observations to explain implementation details, not to impose release-wide restrictions without matching runtime evidence.
 
-## Commercial Artifact Boundary
-
-Commercial requests are supported, but the skill must not invent unavailable commercial material. Determine how the user supplies the artifacts: an approved repository, all-in-one bundle, local RPM/TAR set, or an already registered deployment. Verify provenance, license/access boundary, checksum, dependency closure, and the target operating system before generating a commercial configuration.
-
-Do not fall back to public community packages when a required commercial component is missing. Report the exact missing component, version, release, architecture, plugin, or compatibility evidence.
-
 ## Component Scope
 
 Start from the components explicitly requested by the user. Additional components require a reason tied to the requested outcome and a review of dependencies, resources, ports, paths, credentials, and lifecycle impact.
@@ -95,11 +87,9 @@ Before execution, present the final component manifest and map every component t
 
 Stop before mutation when:
 
-- the product form or target deployment identity is ambiguous;
+- the target deployment or Community Edition component identity is ambiguous;
 - the installed OBD build does not expose the required command or option;
 - the exact package set or compatibility relationship cannot be proved;
-- a schema or workflow for another product form would have to be guessed;
-- the required commercial artifact or authorization boundary is unavailable;
 - current deployment state makes the proposed transition unsupported.
 
-Offer only alternatives proven for the resolved product form. Do not translate the request into another product merely because its artifacts are easier to obtain.
+Offer only alternatives proven for the resolved Community Edition component and installed OBD build.

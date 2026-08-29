@@ -28,4 +28,4 @@ Do not treat permission to benchmark or create a tenant as permission to optimiz
 
 Reconnect to the exact tenant using the same credential source and verify the task, authenticated tenant identity, effective database-side parameter values, tenant status, SQL availability, application routing, and representative workload health. Report any parameter whose effective value differs from the requested scenario. Revoke or rotate a short-lived credential according to the predeclared plan after both the OBD operation and postflight SQL verification are complete.
 
-Restore the previous values only when the user requested temporary tuning or recovery from a failed change. Restore only values changed by this operation and verify them independently; do not restart or redeploy the cluster as generic cleanup.
+Restore the previous values only when the user requested temporary tuning or recovery from a failed change. Restore only values changed by this operation and verify them independently.

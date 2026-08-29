@@ -4,8 +4,8 @@ Use this workflow to prepare and validate all artifacts required for an OBD oper
 
 ## Build the Closure Outside the Offline Operation
 
-1. Resolve the exact OBD build and the requested product form, topology, components, versions, releases, architectures, plugins, and package dependencies.
-2. Include the OBD installation artifact separately from component artifacts when the controller is not yet installed. Include any approved commercial bundle or private packages without replacing missing items with community packages.
+1. Resolve the exact OBD build and the requested Community Edition topology, components, versions, releases, architectures, plugins, and package dependencies.
+2. Include the OBD RPM separately from component artifacts when the controller is not yet installed.
 3. Record provenance, checksums/signatures, sizes, licenses/access boundaries, and the expected repository identity of every file. A directory containing similarly named packages is not a dependency closure.
 4. Inspect the transfer destination, free space, ownership, permissions, mount boundaries, and symlinks. Use a manifest with an exact file count and checksum for transfer verification.
 

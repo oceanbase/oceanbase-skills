@@ -1,6 +1,6 @@
 # Physical Primary/Standby Tenants
 
-Use this workflow for tenant-level physical standby creation, topology inspection, switchover, failover, decouple, recovery-target changes, log-source changes, or protection-mode changes. Do not confuse it with deployment topology or SeekDB HA.
+Use this workflow for Community Edition tenant-level physical standby creation, topology inspection, switchover, failover, decouple, recovery-target changes, log-source changes, or protection-mode changes. Do not confuse it with deployment topology.
 
 ## Prove Both Compatibility Layers
 
@@ -11,7 +11,7 @@ Verify separately:
 1. **OceanBase kernel compatibility:** the exact product forms and versions support the requested replication relationship and protection mode.
 2. **OBD orchestration compatibility:** the installed OBD core and both selected component plugins support the exact component pair in the requested direction.
 
-Healthy clusters and kernel support do not prove that OBD can orchestrate a heterogeneous pair. If release-specific evidence for that pair and direction is unavailable, stop before `create-standby`. Do not rename registered components, inject an unrelated component, redeploy healthy clusters, or change network/resource fields as a workaround.
+Healthy clusters and kernel support do not prove that OBD can orchestrate a heterogeneous pair. If release-specific evidence for that pair and direction is unavailable, stop before `create-standby`. Do not rename registered components, inject an unrelated component, or change network/resource fields as a workaround.
 
 ## Preflight the Relationship
 
@@ -99,4 +99,4 @@ Use `recover`, `switch-log-source`, or `set-sync-mode` only when installed help 
 
 Before dropping either tenant or upgrading/destroying either deployment, inspect the complete relationship graph and the version-specific standby guards. Never add `--ignore-standby` automatically. Show every affected tenant, availability or orphaning consequence, required order, and recovery path.
 
-On any partial result, preserve both deployment configurations, roles, graph, task/trace, replay state, resources, and accounts. Do not drop a partial standby, fail over, decouple, or redeploy either cluster merely to retry creation.
+On any partial result, preserve both deployment configurations, roles, graph, task/trace, replay state, resources, and accounts. Do not drop a partial standby, fail over, or decouple merely to retry creation.
