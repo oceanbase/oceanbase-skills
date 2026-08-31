@@ -13,9 +13,10 @@ Each skill is a self-contained directory with a `SKILL.md` file (plus optional `
 | Skill | Description |
 |-------|-------------|
 | [`oceanbase-deploy`](./skills/oceanbase-deploy/) | Overview & routing — start here if unsure which skill to use |
-| [`cluster-management`](./skills/oceanbase-deploy/cluster-management/) | Cluster lifecycle: deploy, start, stop, upgrade, scale out, OCP CE takeover, monitoring |
+| [`cluster-management`](./skills/oceanbase-deploy/cluster-management/) | Community Edition deployment, multi-node maximum-utilization sizing, lifecycle, configuration, upgrade, component changes, Config Server, and monitoring |
+| [`obd-administration`](./skills/oceanbase-deploy/obd-administration/) | Tested OBD installation, update/rollback, repositories, dynamic-tool, Trace, and runtime-state workflows |
+| [`obdiag-diagnostics`](./skills/oceanbase-deploy/obdiag-diagnostics/) | Bounded diagnostic collection, checks, analysis, scenes, ASH, and RCA through `obd obdiag` |
 | [`tenant-management`](./skills/oceanbase-deploy/tenant-management/) | Tenant CRUD, backup, restore, workload optimization |
-| [`seekdb (obd)`](./skills/oceanbase-deploy/seekdb/) | obd-managed SeekDB: primary-standby HA (switchover / failover / decouple) |
 | [`testing-and-benchmark`](./skills/oceanbase-deploy/testing-and-benchmark/) | Sysbench, TPC-H, TPC-C, mysqltest benchmarks |
 
 ### seekdb — SeekDB Full Lifecycle Skills (install / build / docs / CLI / import / query)
@@ -39,7 +40,7 @@ Each skill is a self-contained directory with a `SKILL.md` file (plus optional `
 ### Install via skills.sh (recommended)
 
 ```bash
-# Install the oceanbase-deploy skill (includes all sub-skills)
+# Install the oceanbase-deploy bundle (includes every child skill and reference)
 npx skills add oceanbase/oceanbase-skills --skill oceanbase-deploy
 
 # Install the seekdb standalone skill (install / build from source)
@@ -59,7 +60,7 @@ instead of fetching agent instructions over the network at runtime.
 git clone https://github.com/oceanbase/oceanbase-skills.git
 cd oceanbase-skills
 
-# oceanbase-deploy (includes all sub-skills)
+# oceanbase-deploy (copy the complete routed bundle)
 mkdir -p .claude/skills
 cp -R skills/oceanbase-deploy .claude/skills/
 
@@ -70,9 +71,11 @@ cp -R skills/seekdb .claude/skills/
 Cursor and Windsurf use the same layout under `.cursor/skills/` and
 `.windsurf/skills/` respectively.
 
+`oceanbase-deploy` is a routed bundle, not a standalone `SKILL.md`. Its root entrypoint, shared `references/`, and child skill directories must remain together. If any required child or reference is missing, agents must fail closed and provide only non-executable orientation.
+
 ### Browse the skills on GitHub
 
-Read or download individual `SKILL.md` files directly in the repository:
+Inspect or clone the complete skill bundle in the repository:
 
 ```
 https://github.com/oceanbase/oceanbase-skills/tree/master/skills/oceanbase-deploy
@@ -92,12 +95,11 @@ npx skills add oceanbase/oceanbase-skills --skill oceanbase-deploy
 
 ### Claude Code (manual)
 
-Use the clone-and-copy steps in [Manual install](#manual-install--clone-and-copy) above, or manually place `SKILL.md` files into `.claude/skills/oceanbase-deploy/`.
+Use the clone-and-copy steps in [Manual install](#manual-install--clone-and-copy) above. Copy the complete `skills/oceanbase-deploy/` directory into `.claude/skills/`; do not place only its root `SKILL.md`.
 
 ### Other Agents
 
-- **System prompt / rules file**: paste the content of `SKILL.md`.
-- **In-conversation context**: paste the `SKILL.md` content at the start of your session.
+Use an integration that preserves and resolves the complete `oceanbase-deploy/` directory tree. A platform that accepts only one pasted rules file cannot safely execute this routed bundle; the root file alone is suitable only for non-executable orientation.
 
 ---
 
@@ -108,15 +110,11 @@ After loading the skills, ask your agent for concrete tasks. Below are examples 
 ### Cluster Management
 
 ```text
-Deploy a local OceanBase community edition — just get it running quickly
+Deploy a three-node OceanBase Community Edition cluster with maximum safe resource utilization
 ```
 
 ```text
 Use config.yaml to deploy an OceanBase community edition cluster named test-cluster
-```
-
-```text
-Help me deploy OCP
 ```
 
 ```text
@@ -135,20 +133,6 @@ Create a tenant named mysql on test-cluster
 
 ```text
 Configure the backup path for the mysql tenant on test-cluster and run a backup
-```
-
-### SeekDB (obd-managed HA)
-
-```text
-Deploy and start a SeekDB instance
-```
-
-```text
-Create a SeekDB primary-standby cluster and tell me how to deploy the primary and standby separately
-```
-
-```text
-Show the topology of seekdb-test — if the primary goes down, should I use switchover or failover
 ```
 
 ### SeekDB (standalone install / build)
@@ -216,13 +200,17 @@ oceanbase-skills/
     │   ├── SKILL.md                   # Overview & routing
     │   ├── README.md
     │   ├── package.json
+    │   ├── references/                # Shared safety, capability, and evidence gates
     │   ├── cluster-management/        # Cluster lifecycle
     │   │   ├── SKILL.md
     │   │   └── references/
-    │   ├── tenant-management/         # Tenant ops
+    │   ├── obd-administration/         # OBD controller administration
     │   │   ├── SKILL.md
     │   │   └── references/
-    │   ├── seekdb/                    # obd-managed SeekDB HA
+    │   ├── obdiag-diagnostics/         # Diagnostics through obd obdiag
+    │   │   ├── SKILL.md
+    │   │   └── references/
+    │   ├── tenant-management/         # Tenant ops
     │   │   ├── SKILL.md
     │   │   └── references/
     │   └── testing-and-benchmark/     # Benchmarks
@@ -279,4 +267,4 @@ Please keep skill content factual, concise, and safe — especially for destruct
 
 ## License
 
-[MIT](./LICENSE)
+[Apache License 2.0](./LICENSE)

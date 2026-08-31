@@ -1,6 +1,6 @@
 ---
 name: seekdb
-description: Overview skill for OceanBase SeekDB. Routes to specialized sub-skills covering the full SeekDB lifecycle — install/deploy on a target machine, build from source, look up documentation, use the seekdb-cli for SQL/schema/vector ops, import CSV/Excel data, and query/export results. Use as a starting point when the user mentions seekdb, pyseekdb, "install seekdb", "build seekdb", "seekdb docs", "seekdb-cli", "import to seekdb", "query seekdb", or wants a lightweight standalone OceanBase-compatible database. For obd-managed seekdb deployments and primary-standby HA, see the separate oceanbase-deploy/seekdb skill instead.
+description: Overview skill for OceanBase SeekDB. Routes to specialized sub-skills covering the full SeekDB lifecycle — install/deploy on a target machine, build from source, look up documentation, use the seekdb-cli for SQL/schema/vector ops, import CSV/Excel data, and query/export results. Use as a starting point when the user mentions seekdb, pyseekdb, "install seekdb", "build seekdb", "seekdb docs", "seekdb-cli", "import to seekdb", "query seekdb", or wants a lightweight standalone OceanBase-compatible database. For deployments and primary-standby HA managed through obd seekdb, use the separate obd-seekdb child skill in the oceanbase-deploy bundle.
 compatibility: Standalone product skill. Each sub-skill has its own platform requirements — see the sub-skill SKILL.md for details.
 metadata:
   author: oceanbase
@@ -35,7 +35,7 @@ This is the entry point. Pick the sub-skill that matches the user's task.
 | "Connect to seekdb from shell" / "run SQL via CLI" / "list tables" / "profile this table" | [cli](cli/SKILL.md) |
 | "Import this CSV / Excel into seekdb" / "vectorize a column" | [importing](importing/SKILL.md) |
 | "Search this collection" / "filter by metadata" / "export search results to Excel" | [querying](querying/SKILL.md) |
-| "Deploy seekdb primary-standby with obd, do switchover/failover" | use the separate **`oceanbase-deploy/seekdb`** skill at [`../oceanbase-deploy/seekdb/SKILL.md`](../oceanbase-deploy/seekdb/SKILL.md). That skill is for obd-managed HA clusters; this skill is for the SeekDB product itself. |
+| "Deploy seekdb primary-standby with obd, do switchover/failover" | Use the separate **`obd-seekdb`** child skill at [`../oceanbase-deploy/seekdb/SKILL.md`](../oceanbase-deploy/seekdb/SKILL.md). Its directory path remains `oceanbase-deploy/seekdb/`, but its skill name and responsibility are OBD lifecycle/HA management; this skill is for the SeekDB product itself. |
 
 ## Two Directions Under This Skill
 

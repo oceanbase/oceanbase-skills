@@ -21,30 +21,34 @@ oceanbase-skills/
 ├── package.json          # npm: oceanbase-skills
 ├── LICENSE
 ├── skills/
-│   └── oceanbase-deploy/         # obd-based skill family
+│   ├── oceanbase-deploy/         # obd-based skill family
+│   │   ├── SKILL.md              # Overview & routing
+│   │   ├── README.md
+│   │   ├── package.json          # npm: oceanbase-deploy (legacy)
+│   │   ├── references/           # shared safety and capability gates
+│   │   ├── cluster-management/   # Cluster lifecycle
+│   │   │   ├── SKILL.md
+│   │   │   └── references/
+│   │   ├── obd-administration/   # OBD controller administration
+│   │   │   ├── SKILL.md
+│   │   │   └── references/
+│   │   ├── obdiag-diagnostics/   # Diagnostics through obd obdiag
+│   │   │   ├── SKILL.md
+│   │   │   └── references/
+│   │   ├── tenant-management/    # Tenant ops
+│   │   │   ├── SKILL.md
+│   │   │   └── references/
+│   │   └── testing-and-benchmark/ # Benchmarks
+│   │       ├── SKILL.md
+│   │       └── references/
+│   └── seekdb/                   # SeekDB product skill family (standalone)
 │       ├── SKILL.md              # Overview & routing
-│       ├── README.md
-│       ├── package.json          # npm: oceanbase-deploy (legacy)
-│       ├── cluster-management/   # Cluster lifecycle
-│       │   ├── SKILL.md
-│       │   └── references/
-│       ├── tenant-management/    # Tenant ops
-│       │   ├── SKILL.md
-│       │   └── references/
-│       ├── seekdb/               # obd-managed SeekDB: lifecycle & HA
-│       │   ├── SKILL.md
-│       │   └── references/
-│       └── testing-and-benchmark/ # Benchmarks
-│           ├── SKILL.md
-│           └── references/
-└── seekdb/                       # SeekDB product skill family (standalone)
-    ├── SKILL.md                  # Overview & routing
-    ├── install/                  # Install on Linux/macOS/Windows
-    │   ├── SKILL.md
-    │   └── references/
-    └── build/                    # Build from source
-        ├── SKILL.md
-        └── references/
+│       ├── install/              # Install on Linux/macOS/Windows
+│       ├── build/                # Build from source
+│       ├── docs/                 # Documentation lookup
+│       ├── cli/                  # seekdb-cli operations
+│       ├── importing/            # CSV/Excel import
+│       └── querying/             # Query and export
 ```
 
 ### Conventions
@@ -53,6 +57,8 @@ oceanbase-skills/
 - **`SKILL.md` is the primary artifact.** It uses YAML frontmatter (`name`, `description`, `compatibility`, `metadata`) and is written for AI agents to read and follow.
 - **`references/*.md`** contains supplemental documentation loaded on demand — keeps `SKILL.md` under 500 lines.
 - **`README.md`** (where present) explains how end-users install and integrate the skill. It is human-facing.
+- **`oceanbase-deploy` is a complete routed bundle.** Packaging and manual-install instructions must retain its root entrypoint, shared references, and child skill directories; do not instruct users to paste only the root `SKILL.md`.
+- **The root `package.json` is the published npm package authority.** Keep its release version and SPDX license synchronized with the intended release and root `LICENSE`; the nested legacy package is not a substitute.
 
 ---
 
@@ -61,13 +67,18 @@ oceanbase-skills/
 | Directory | Skill Name | Domain |
 |-----------|------------|--------|
 | `skills/oceanbase-deploy` | `oceanbase-deploy` | Overview and routing to specialized skills |
-| `skills/oceanbase-deploy/cluster-management` | `cluster-management` | Cluster deploy, start, stop, upgrade, OCP CE, monitoring |
+| `skills/oceanbase-deploy/cluster-management` | `cluster-management` | Community Edition cluster deploy, multi-node maximum-utilization sizing, lifecycle, upgrade, retained components, and monitoring |
+| `skills/oceanbase-deploy/obd-administration` | `obd-administration` | Tested OBD controller installation, update/rollback, repositories, exact tool provisioning, traces, and runtime identity |
+| `skills/oceanbase-deploy/obdiag-diagnostics` | `obdiag-diagnostics` | Diagnostic collection, checks, analysis, scenes, ASH, and RCA through OBD |
 | `skills/oceanbase-deploy/tenant-management` | `tenant-management` | Tenant CRUD, backup, restore |
-| `skills/oceanbase-deploy/seekdb` | `seekdb` | obd-managed SeekDB lifecycle, primary-standby HA |
 | `skills/oceanbase-deploy/testing-and-benchmark` | `testing-and-benchmark` | Sysbench, TPC-H, TPC-C, mysqltest |
-| `seekdb` | `seekdb` (product) | Standalone SeekDB product: overview and routing |
-| `seekdb/install` | `seekdb-install` | Install SeekDB on Linux/macOS/Windows (Homebrew / Docker / yum / apt / MSI / pip) |
-| `seekdb/build` | `seekdb-build` | Build SeekDB from source: macOS, Linux, Android cross, Windows, Python wheel |
+| `skills/seekdb` | `seekdb` (product) | Standalone SeekDB product: overview and routing |
+| `skills/seekdb/install` | `seekdb-install` | Install SeekDB on Linux/macOS/Windows (Homebrew / Docker / yum / apt / MSI / pip) |
+| `skills/seekdb/build` | `seekdb-build` | Build SeekDB from source: macOS, Linux, Android cross, Windows, Python wheel |
+| `skills/seekdb/docs` | `seekdb-docs` | SeekDB documentation lookup |
+| `skills/seekdb/cli` | `seekdb-cli` | SQL, schema, vector, and AI operations through seekdb-cli |
+| `skills/seekdb/importing` | `importing-to-seekdb` | CSV/Excel import and vectorization |
+| `skills/seekdb/querying` | `querying-from-seekdb` | Collection querying and export |
 
 ---
 
@@ -89,7 +100,7 @@ oceanbase-skills/
 ### What NOT to Do
 
 - Do not add application source code (this repo is documentation only).
-- Do not remove or soften safety warnings (e.g., confirmation before `destroy`, `redeploy`, `failover`).
+- Do not remove or soften safety warnings for retained destructive operations, or the current-Skill-version unsupported boundary for removed workflows such as `redeploy`.
 - Do not invent undocumented commands or flags.
 - Do not commit secrets, credentials, or environment-specific configuration.
 
@@ -103,6 +114,6 @@ A high-quality `SKILL.md` should:
 - **Be safe**: destructive operations must have explicit safety warnings and require user confirmation.
 - **Be agent-friendly**: clear, imperative language an LLM can follow without ambiguity.
 - **Include examples**: realistic usage patterns for common and edge-case scenarios.
-- **Define terminology**: overlapping or confusing terms (e.g., OCP CE vs. OCP Express) must be defined clearly.
+- **Define terminology**: overlapping or confusing retained terms must be defined clearly.
 - **Stay focused**: only cover the domain of that specific skill; cross-skill concerns belong in separate skills.
 - **Cross-reference**: link to related skills for adjacent functionality.

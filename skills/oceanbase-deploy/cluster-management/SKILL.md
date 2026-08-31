@@ -1,180 +1,99 @@
 ---
 name: cluster-management
-description: Manage OceanBase cluster lifecycle using obd. Deploy, start, stop, restart, destroy, redeploy, upgrade, scale out, and configure clusters. Includes OCP CE takeover and monitoring setup. Use when creating, operating, or maintaining OceanBase CE clusters via obd, or when users mention obd, OceanBase deployment, cluster management, OCP, or monitoring.
-compatibility: Requires obd CLI installed on the control machine.
+description: Deploy and operate tested OceanBase Community Edition clusters with obd, including multi-node maximum-utilization sizing, lifecycle changes, configuration, upgrades, component changes, monitoring, network access, and Config Server. Use for OceanBase cluster control-plane work; route tenant, benchmark, diagnostic, and controller-administration workflows elsewhere.
 metadata:
   author: oceanbase
-  version: "1.0"
+  version: "3.0"
 ---
 
-# OceanBase Cluster Management (obd)
+<!-- Compatibility anchors retained for published 2.x deep links. -->
+<a id="oceanbase-cluster-management-obd"></a>
+<a id="when-to-use-this-skill"></a>
+<a id="critical-safety-rules"></a>
+<a id="installation"></a>
+<a id="cluster-lifecycle-commands"></a>
+<a id="os-environment-requirements"></a>
+<a id="os--environment-requirements"></a>
+<a id="monitoring"></a>
+<a id="mirror-repository-management"></a>
+<a id="mirror--repository-management"></a>
+<a id="usage-examples"></a>
+<a id="deploy-with-config-file"></a>
+<a id="destroying-a-cluster-requires-confirmation"></a>
+<a id="related-skills"></a>
 
-Manage OceanBase CE cluster lifecycle using the `obd` command-line tool.
+# OceanBase Cluster Management with obd
 
-Official quick-start guide: [https://www.oceanbase.com/docs/common-obd-cn-1000000005246289](https://www.oceanbase.com/docs/common-obd-cn-1000000005246289)
+This skill covers the tested OceanBase Community Edition workflows. Confirm the installed component key, package, YAML field, and lifecycle command before execution.
 
-## When to Use This Skill
+When OBD or the version-matched plugin is unavailable, you may still prepare a clearly labeled, non-executable decision blueprint containing placeholders and unresolved evidence. Do not claim schema validation, artifact compatibility, precheck success, or runtime support until those inputs exist.
 
-- Deploying a new OceanBase CE cluster (demo, config file, or interactive)
-- Starting, stopping, restarting, or destroying clusters
-- Upgrading cluster components or scaling out
-- Preparing clusters for OCP CE takeover
-- Setting up monitoring (Prometheus + Grafana)
-- Managing mirrors and repositories
+Before treating an unlisted cluster, product, or component operation as executable, read the shared [current Skill-version unsupported capabilities](../references/current-version-unsupported.md). Do not use a generic component, upgrade, reinstall, configuration, or lifecycle command to recreate a workflow that the current Skill version does not support.
 
-**For tenant operations (create, drop, backup, restore):** Use [tenant-management](../tenant-management/SKILL.md).
-**For seekdb:** Use [seekdb](../seekdb/SKILL.md).
-**For benchmarks and testing:** Use [testing-and-benchmark](../testing-and-benchmark/SKILL.md).
-**Overview & routing:** See [oceanbase-deploy](../SKILL.md).
+## Default Controller, SSH, and Cluster Discovery
 
----
+Across every cluster deployment path, default the OBD controller to one of the user-supplied cluster hosts, never the automation runner. Inspect all target hosts in supplied order before selecting it. Reuse the host that owns the intended OBD registration or another unambiguous existing target-host controller; when all targets are reachable and every target is confirmed to have no OBD executable, package record, or metadata, install OBD on the first target host without asking. An explicit user-selected controller overrides this default.
 
-## OCP Terminology Convention
+If both SSH user and password are omitted, first try passwordless `root` SSH with the existing key or agent and ask for access details only after that host-specific attempt fails. Do not ask whether the cluster is already deployed: inspect OBD registrations plus target-host processes, listeners, services, deployment paths, and reachable database identity. Read and apply the shared [default controller, SSH, and cluster discovery contract](../references/operation-contract.md#default-controller-ssh-and-cluster-discovery) before choosing a controller or classifying a target as clean, deployed, stopped, or unmanaged.
 
-- When users say "deploy OCP", "OCP", or similar without further qualification, always use **OCP CE** (`ocp-ce` component in obd config).
-- **`ocp-express`** is a legacy lightweight web console. When users explicitly ask for "OCP Express" / "ocp-express" / "lightweight OCP", do NOT deploy it. Explain: **`ocp-express` has been replaced by `obshell dashboard` — deploy OceanBase CE directly and access the dashboard on port `2886`.**
-- Never default "deploy OCP" to `ocp-express`.
-- `obd cluster check4ocp` / `export-to-ocp` target a running **OCP CE** (or enterprise OCP) control plane, not `ocp-express`.
+## Default New-Cluster Sizing
 
-See [references/ocp-ce.md](references/ocp-ce.md) for OCP CE deployment and takeover details.
+When a new OceanBase deployment request does not specify resource values, a cap, or a non-maximum profile, select [maximum-utilization sizing](references/maximum-utilization.md) by default and do not ask the user to choose a deployment size. Preserve explicit user sizing. Apply maximum sizing only to the resolved target hosts and requested database component; do not infer extra nodes, optional components, or tenants.
 
----
+## Default New-Cluster Zone Placement
 
-## Critical Safety Rules
+For a new distributed deployment with multiple user-supplied Observer hosts and no explicit zone mapping, assign each distinct host to a distinct new zone in deterministic host order. Do not ask the user to choose this default. Preserve explicit placement, do not infer extra hosts or replicas, and do not claim high availability when logical zones share one physical failure domain.
 
-**WARNING**: These commands are destructive and require explicit user confirmation:
+## Deployment Package Closure
 
-1. `obd cluster destroy` — Destroys a cluster and deletes data.
-2. `obd cluster redeploy` — Destroys and redeploys a cluster, deleting data.
-3. `obd cluster prune-config` — Deletes configuration files of destroyed clusters.
+Before the first package lookup, download, or import for a deployment, component addition, upgrade, or reinstall, read the shared [deployment package closure](../references/deployment-package-sets.md). Expand the final requested component graph into every primary and companion artifact before acquisition. A database RPM without its applicable `*-libs`, or a test client without its required client library, is not a complete local/offline package plan.
 
-**Always ask the user for confirmation before running these commands.**
+## Online Package Source Priority
 
----
+Before any package network request, apply the shared [fixed mirror-source and acquisition-fallback workflow](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order). Try normal OBD/repository acquisition on the selected controller first. If that path fails, try the exact artifact there with `curl`, `wget`, the operating-system package manager, or another applicable downloader; verify it, import an OBD-consumed RPM with `obd mirror clone <path>` or use the artifact's proved local registration/install path, and continue through local resolution. If every controller-local method fails, use another reachable host only as a checksummed artifact relay from the same ordered sources; do not move OBD or deployment execution. Never use `obd mirror` as a network downloader.
 
-## Installation
+## Default Database Bootstrap Password
 
-If `obd` is not installed, download the RPM from the OceanBase mirror:
-[https://mirrors.oceanbase.com/community/stable/el/](https://mirrors.oceanbase.com/community/stable/el/)
+For a new OceanBase deployment, do not ask for an initial database `root`/`sys` password unless the user explicitly supplied one. By default, omit the password field and let the installed OBD workflow generate the random value; never replace that path with an agent-generated or empty password. Follow the detailed [database bootstrap-password default](references/config-deployment.md#database-bootstrap-password-default).
 
----
+## Shared Gates
 
-## Quick Start
+Read these references at the indicated point:
 
-```bash
-obd demo
-```
+- Before selecting a product form, command, plugin, artifact, or YAML key, read [product and capability resolution](../references/product-and-capability-resolution.md).
+- Before any live controller/host/deployment query, SSH/SQL/API/network access, download, external action, or mutation, read the [operation contract](../references/operation-contract.md).
+- Define acceptance before execution with the [completion criteria](../references/completion-criteria.md).
+- After a failure, timeout, interruption, or mixed result, read [failure recovery and evidence](../references/failure-recovery-and-evidence.md) before retrying or cleaning.
+- Before cleanup, removal, destroy, prune, or deletion, read [cleanup and ownership boundaries](../references/cleanup-boundaries.md).
 
-- Use `-c` to specify components (e.g., `oceanbase-ce`, `obproxy-ce`, `obagent`). For OCP use `ocp-ce` by default.
-- Example: `obd demo -c oceanbase-ce,obproxy-ce`
-- Default ports: 2881 (MySQL), 2882 (RPC), 2886 (obshell). If ports are in use, deploy with a config file using alternate ports.
+Treat `oceanbase-ce` as a version-dependent candidate component key. Confirm the installed plugin and repository entry rather than relying on a remembered example.
 
----
+## Route by Operation
 
-## Cluster Lifecycle Commands
+Read only the references needed for the request.
 
-| Command | Description |
-|---------|-------------|
-| `obd cluster deploy <name> -c <config>` | Register config and deploy cluster |
-| `obd cluster deploy <name> -i` | Interactive deploy (guided config) |
-| `obd cluster start <name>` | Start a deployed cluster |
-| `obd cluster stop <name>` | Stop a running cluster |
-| `obd cluster restart <name>` | Restart a running cluster |
-| `obd cluster list` | List all registered clusters |
-| `obd cluster display <name>` | Show cluster status |
-| `obd cluster edit-config <name>` | Edit cluster configuration |
-| `obd cluster reload <name>` | Reload config on running cluster |
-| `obd cluster upgrade <name> -c <component> -V <version>` | Upgrade a component |
-| `obd cluster scale_out <name> -c <config>` | Scale out a component |
-| `obd cluster component add <name> -c <config>` | Add a new component |
-| `obd cluster component del <name> <component>` | Delete a component |
+| Request | Reference |
+|---|---|
+| Determine or validate every package needed by a deployment topology before acquisition | [deployment-package-sets.md](../references/deployment-package-sets.md) |
+| Default sizing for a new cluster with no user-specified resources, or an explicitly requested dedicated-host/capped maximum-utilization deployment | [maximum-utilization.md](references/maximum-utilization.md) |
+| A new Community Edition configuration-file deployment | [config-deployment.md](references/config-deployment.md) |
+| `edit-config`, `reload`, parameter classification, or `chst` | [configuration-changes.md](references/configuration-changes.md) |
+| Start, stop, restart, display, destroy, or prune | [lifecycle.md](references/lifecycle.md) |
+| Add or delete retained `obproxy-ce`, `obagent`, `prometheus`, `grafana`, or `ob-configserver` components | [component-changes.md](references/component-changes.md) plus the owning OBProxy, monitoring, or Config Server reference |
+| OceanBase Community Edition cluster rolling upgrade | [upgrade.md](references/upgrade.md) |
+| Change a deployed `obproxy-ce` artifact with `cluster reinstall` | [component-reinstall.md](references/component-reinstall.md) |
+| OBAgent, Prometheus, or Grafana | [monitoring.md](references/monitoring.md) |
+| SQL/RPC/obshell access or OBProxy | [network-access.md](references/network-access.md) |
+| OceanBase Config Server | [config-server.md](references/config-server.md) |
 
-See [references/config-deployment.md](references/config-deployment.md) for detailed deployment steps and config file examples.
+## Essential Boundaries
 
----
+- Prefer a uniquely named, reviewed configuration-file deployment.
+- Add optional components only when the user requested them or accepted their explained purpose and impact. Monitoring, Config Server, and OBProxy are never implicit.
+- Destroy, prune, component deletion, and forced operations require authorization bound to the exact observed target and impact. An explicit request to execute an ordinary non-destructive cluster workflow already authorizes its necessary in-scope persistent changes and expected rolling restarts; do not ask again only because those effects persist.
+- Adding or removing Observer servers from an already registered deployment is not supported by the current Skill version. Report `UNSUPPORTED — current Skill version` before mutation; do not simulate the topology change through SQL, obshell, `edit-config`, component operations, process control, metadata edits, or path deletion.
+- A successful command, registered deployment, or running process is not sufficient. Verify the applicable control-plane, runtime, and data-plane outcomes.
 
-## OS & Environment Requirements
+## Out of Scope
 
-- **GLIBC**: OceanBase CE 4.3+ el8 packages require GLIBC 2.27+ (RHEL/CentOS 8+). AliOS 7 / CentOS 7 ship GLIBC 2.17 — use the **el7 package of OceanBase CE ≤4.3.x** (e.g., `4.3.5.5`).
-- OBD only needs to run on the control machine; it SSHes to remote nodes.
-- **OCP CE packages**: `ocp-ce` is not in the public mirror by default. Use `obd mirror list` to verify availability.
-- **Port isolation on same host**: When co-deploying multiple OB stacks, ensure distinct ports for MySQL (2881), RPC (2882), and obshell (2886). Pass `obshell_port` in config to override.
-
----
-
-## Monitoring
-
-Add GUI-based monitoring with OBAgent, Prometheus, and Grafana.
-
-- **Without OBAgent**: Add `obagent`, `prometheus`, and `grafana` to config and redeploy/start.
-- **With OBAgent already deployed**: Add `prometheus` and `grafana`, configure Prometheus to scrape OBAgent.
-- OBD enables HTTP basic auth for Prometheus. Credentials are shown in `obd cluster display <name>`.
-- **Deletion order**: Delete `grafana` and `prometheus` before `obagent` (dependency order).
-
-See [references/monitoring.md](references/monitoring.md) for setup details.
-
----
-
-## Mirror & Repository Management
-
-| Command | Description |
-|---------|-------------|
-| `obd mirror list [repo]` | List mirrors |
-| `obd mirror update` | Update mirrors |
-| `obd mirror clone <rpm> [-f]` | Clone RPM to local |
-| `obd mirror create -n <name> -p <path> -V <version>` | Create mirror |
-| `obd mirror enable <repo>` / `disable <repo>` | Enable/disable mirror |
-| `obd mirror clean` | Clean mirrors |
-
-See [references/mirror-management.md](references/mirror-management.md) for details.
-
----
-
-## OCP CE Takeover
-
-Prepare an OBD-deployed cluster to be managed by OCP CE (or enterprise OCP).
-
-1. **Check**: `obd cluster check4ocp <name> -V <ocp_version>`
-2. **Export**: `obd cluster export-to-ocp <name> -a <ocp_address> -u <user> -p <password>`
-
-See [references/ocp-ce.md](references/ocp-ce.md) for complete OCP CE deployment and takeover procedures.
-
----
-
-## Usage Examples
-
-### Quick Demo
-```bash
-obd demo
-```
-
-### Deploy with Config File
-```bash
-obd cluster deploy my-cluster -c config.yaml
-obd cluster start my-cluster
-```
-
-### Interactive Deploy
-```bash
-obd cluster deploy demo-cluster -i
-```
-
-### Explicitly Requesting OCP Express
-User: "Help me deploy ocp-express."
-Agent: "`ocp-express` has been replaced by `obshell dashboard`. Deploy OceanBase CE directly and access the dashboard on port `2886`."
-
-### Destroying a Cluster (Requires Confirmation)
-User: "Destroy my-cluster."
-Agent: "This will destroy 'my-cluster' and all its data. Are you sure?"
-User: "Yes."
-```bash
-obd cluster destroy my-cluster
-```
-
----
-
-## Related Skills
-
-- [tenant-management](../tenant-management/SKILL.md) — Tenant CRUD, backup, restore
-- [seekdb](../seekdb/SKILL.md) — seekdb lifecycle and HA
-- [testing-and-benchmark](../testing-and-benchmark/SKILL.md) — Sysbench, TPC-H, TPC-C benchmarks; mysqltest functional tests
+Route tenant CRUD, backup/restore, and tenant replication to [tenant-management](../tenant-management/SKILL.md), and benchmarks or mysqltest to [testing-and-benchmark](../testing-and-benchmark/SKILL.md). Return ambiguous requests to the [oceanbase-deploy overview](../SKILL.md).

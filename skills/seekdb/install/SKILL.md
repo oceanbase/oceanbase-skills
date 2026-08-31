@@ -113,6 +113,16 @@ mysql -h 127.0.0.1 -u root -P "$SEEKDB_PORT" -A -Dtest -e "SELECT 1;"
 
 Report the actual selected port in the final connection information; never continue showing 2881 after switching ports.
 
+### Report database and management components separately
+
+Do not collapse database readiness and the optional OBShell/dashboard endpoint into one result. The database installation is usable only after the process/service check and an authenticated SQL probe pass. If those checks pass but the OBShell process, port 2886, or its HTTP root returns an error such as HTTP 500:
+
+1. Preserve the working database process and data; do not reinstall, clean, or restart it merely to repair the dashboard.
+2. Report **SeekDB SQL ready; OBShell/dashboard degraded** with the separate evidence for each component.
+3. Inspect the management-process state and logs and continue with a bounded component-specific diagnosis. Do not claim the whole installation is fully healthy until the requested management endpoint also passes.
+
+For the macOS Homebrew Thrift linkage case, follow the official-formula recovery in [references/macos-homebrew.md](references/macos-homebrew.md); do not create an ad hoc symlink in the shared Thrift keg or rewrite the signed SeekDB binary.
+
 ---
 
 ## OS / method compatibility
