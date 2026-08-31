@@ -3,7 +3,7 @@ name: oceanbase-deploy
 description: Route tested OceanBase Community Edition deployment and operations through obd. Use for general or multi-domain OceanBase/obd requests or when the correct specialized skill is unclear. Route concrete work to cluster management, OBD administration, tenant management, testing, or diagnostics.
 metadata:
   author: oceanbase
-  version: "3.0"
+  version: "2.0.1"
 ---
 
 <!-- Compatibility anchors retained for published 2.x deep links. -->

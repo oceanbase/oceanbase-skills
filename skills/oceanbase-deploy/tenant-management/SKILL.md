@@ -3,7 +3,7 @@ name: tenant-management
 description: Manage tested OceanBase Community Edition tenant lifecycle, workload optimization, backup and restore, and physical primary/standby relationships through obd. Use for tenant creation, deletion, inspection, optimization, backup, restore, switchover, failover, or related disaster-recovery requests; route cluster deployment lifecycle elsewhere.
 metadata:
   author: oceanbase
-  version: "3.0"
+  version: "2.0.1"
 ---
 
 <!-- Compatibility anchors retained for published 2.x deep links. -->
