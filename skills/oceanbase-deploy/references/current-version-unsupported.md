@@ -6,10 +6,6 @@ When a request requires one of the capabilities below, report `UNSUPPORTED — t
 
 If a request mixes retained and unsupported work, handle the retained portion through its normal route and report the unsupported portion separately.
 
-## Execution Environment
-
-- any live workflow that would install or invoke OBD on a required machine when its login user is neither root nor able to run usable non-interactive sudo; report `UNSUPPORTED — the current Skill version does not support using OBD with a login user that lacks root or usable non-interactive sudo privileges`, do not attempt an unprivileged fallback, and ask the user to switch the login user or configure usable sudo.
-
 ## Cluster and Product Workflows
 
 - commercial distributed OceanBase, commercial standalone/centralized OceanBase, related license handling, and commercial-tenant operations;

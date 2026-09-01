@@ -24,10 +24,6 @@ metadata:
 
 # OceanBase Cluster Management with obd
 
-## Highest-Priority Gate: OBD Requires root or sudo
-
-Before applying any other live rule in this Skill, resolve and log in to every machine the workflow must access, then verify that the same login-session user is root with `id -u == 0` or can run `sudo -n true`. Only the minimum host/login identity and authentication checks may precede this gate. If any required machine fails it, do not invoke OBD and do not begin package acquisition, installation, controller-to-node SSH setup, storage discovery, host initialization, YAML work, or deployment operations. Report `UNSUPPORTED — the current Skill version does not support using OBD with a login user that lacks root or usable non-interactive sudo privileges` and ask the user to switch the login user or configure usable sudo. Do not edit sudoers or use a user-local/all-in-one/source/manual-extraction workaround. After the gate passes, keep the login-session user as the OBD owner and use sudo only for privileged commands. Apply the shared [highest-priority OBD privilege gate](../references/operation-contract.md#highest-priority-obd-privilege-gate).
-
 This skill covers the tested OceanBase Community Edition workflows. Confirm the installed component key, package, YAML field, and lifecycle command before execution.
 
 When OBD or the version-matched plugin is unavailable, you may still prepare a clearly labeled, non-executable decision blueprint containing placeholders and unresolved evidence. Do not claim schema validation, artifact compatibility, precheck success, or runtime support until those inputs exist.
@@ -42,7 +38,11 @@ For other OBD-managed component RPMs, default online mode lets the installed OBD
 
 ## New-Deployment Host Initialization
 
-Before a configuration-file deployment or integrated maximum-utilization `autodeploy`, complete the public OBD [host-environment initialization](references/config-deployment.md#host-environment-initialization) for every target as the actual deployment user and verify persistent limits in a fresh login session. Do not use `autodeploy` as the first host-environment probe and then repair the state it leaves behind. Once deployment initialization has created the storage topology, preserve the registered `home_path`, `data_dir`, and `redo_dir`; a failed start is not permission to remove those values or manually create Observer-internal `store`, `clog`, `slog`, or `sstable` paths. Follow the linked storage and recovery rules instead.
+Before a configuration-file deployment or integrated maximum-utilization `autodeploy`, complete the public OBD [host-environment initialization](references/config-deployment.md#host-environment-initialization) for every target as the actual deployment user and verify persistent limits in a fresh login session. Do not use `autodeploy` as the first host-environment probe and then repair the state it leaves behind.
+
+For Observer storage, reserve `<home_path>/store` as OBD's canonical data entry. Never place `data_dir` or `redo_dir` below that path. `data_dir` may equal the canonical entry when the installed plugin uses it as the direct data root; `redo_dir` may equal it only as the same plugin-supported single-root topology. When automatically deriving explicit custom values, use disjoint home, data, and redo siblings and keep a supported separately selected redo filesystem separate. Observer starting with `-d <home_path>/store` is not evidence that the installed plugin ignores `data_dir` or no longer supports `redo_dir`; OBD can realize the configured topology through canonical links. Apply the detailed [Observer storage-path invariant](references/config-deployment.md#observer-storage-path-invariant) before rendering YAML.
+
+Once deployment initialization has created the storage topology, preserve the registered `home_path`, `data_dir`, and `redo_dir`; a failed start is not permission to remove those values or manually create Observer-internal `store`, `clog`, `slog`, or `sstable` paths. Follow the linked storage and recovery rules instead.
 
 Before treating an unlisted cluster, product, or component operation as executable, read the shared [current Skill-version unsupported capabilities](../references/current-version-unsupported.md). Do not use a generic component, upgrade, reinstall, configuration, or lifecycle command to recreate a workflow that the current Skill version does not support.
 
@@ -54,7 +54,7 @@ Use the user's supplied SSH login user on every deployment machine; if no login 
 
 ## Default New-Deployment Directory
 
-When a new deployment has no user-specified paths, select each target's [default deployment base directory](references/config-deployment.md#default-deployment-base-directory) under the established login-session user before sizing or rendering YAML. Choose the writable persistent filesystem with the greatest usable free capacity, create a new deployment-specific base there, and keep deployment-owned paths beneath it as the installed schema permits. Do not prefer the login user's home over a larger writable filesystem, assume `/data/1`, change ownership of an existing directory merely to make it eligible, or relocate registered paths.
+When a new deployment has no user-specified paths, select each target's [default deployment base directory](references/config-deployment.md#default-deployment-base-directory) under the established login-session user before sizing or rendering YAML. Choose the writable persistent filesystem with the greatest usable free capacity and create new deployment-specific paths there as the installed schema permits. For Observer, derive disjoint home/data/redo siblings rather than nesting custom storage below the reserved `<home_path>/store`; a separately selected eligible redo filesystem remains separate. Do not prefer the login user's home over a larger writable filesystem, assume `/data/1`, change ownership of an existing directory merely to make it eligible, or relocate registered paths.
 
 ## Default New-Cluster Sizing
 

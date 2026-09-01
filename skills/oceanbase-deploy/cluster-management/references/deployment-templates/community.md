@@ -41,6 +41,8 @@ Copy the complete selected example to a new reviewed work path, record its check
 
 The released V4.6.0 community distributed examples use the following real key structure. Values marked `CHANGE_ME` must be replaced, resource sizes must be recalculated, and every key must still be checked against the installed `oceanbase-ce` plugin before execution.
 
+Before replacing the path placeholders, apply the [Observer storage-path invariant](../config-deployment.md#observer-storage-path-invariant). For explicit custom paths, use disjoint home/data/redo siblings and never place `data_dir` or `redo_dir` below `<home_path>/store`; that path is reserved as OBD's canonical data entry. A direct-root equality is valid only in the installed plugin's supported data/single-root layout. Keep a separately selected redo filesystem separate when the installed schema accepts `redo_dir`.
+
 ```yaml
 # Configure this block only for remote login.
 user:
@@ -77,6 +79,7 @@ oceanbase-ce:
     mysql_port: CHANGE_ME_SQL_PORT
     rpc_port: CHANGE_ME_RPC_PORT
     obshell_port: CHANGE_ME_OBSHELL_PORT
+    # Use disjoint paths; never put data_dir or redo_dir under home_path/store.
     home_path: CHANGE_ME_CANONICAL_HOME_PATH
     data_dir: CHANGE_ME_CANONICAL_DATA_PATH
     redo_dir: CHANGE_ME_CANONICAL_REDO_PATH

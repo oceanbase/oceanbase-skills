@@ -8,10 +8,6 @@ metadata:
 
 # Diagnostics with obd obdiag
 
-## Highest-Priority Gate: OBD Requires root or sudo
-
-Before any live discovery or operation in this Skill, resolve and log in to every machine the workflow must access, then verify that the same login-session user is root with `id -u == 0` or can run `sudo -n true`. Only the minimum host/login identity and authentication checks may precede this gate. If any required machine fails it, do not invoke OBD and do not resolve, download, install, or run obdiag. Report `UNSUPPORTED — the current Skill version does not support using OBD with a login user that lacks root or usable non-interactive sudo privileges` and ask the user to switch the login user or configure usable sudo. Do not edit sudoers or use a user-local/all-in-one/source/manual-extraction workaround. After the gate passes, retain that login-session user and use sudo only for privileged commands. Apply the shared [highest-priority OBD privilege gate](../references/operation-contract.md#highest-priority-obd-privilege-gate).
-
 Choose the smallest evidence scope that can answer the question. Tool availability, tool installation, collection, analysis, a tool finding, and independently confirmed root cause are separate results.
 
 Before resolving or acquiring obdiag, read the shared [deployment package closure](../references/deployment-package-sets.md) and identify the exact dynamic diagnostic-tool artifact and installation path required by the retained workflow.

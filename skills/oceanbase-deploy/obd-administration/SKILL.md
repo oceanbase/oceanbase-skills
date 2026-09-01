@@ -8,10 +8,6 @@ metadata:
 
 # OBD Administration
 
-## Highest-Priority Gate: OBD Requires root or sudo
-
-Before applying any other live rule in this Skill, resolve and log in to every machine the workflow must access, then verify that the same login-session user is root with `id -u == 0` or can run `sudo -n true`. Only the minimum host/login identity and authentication checks may precede this gate. If any required machine fails it, do not install or invoke OBD and do not begin package lookup, download, repository work, controller discovery, or another OBD operation. Report `UNSUPPORTED — the current Skill version does not support using OBD with a login user that lacks root or usable non-interactive sudo privileges` and ask the user to switch the login user or configure usable sudo. Do not edit sudoers or use a user-local/all-in-one/source/manual-extraction workaround. After the gate passes, keep the login-session user as the OBD owner and use sudo only for privileged commands. Apply the shared [highest-priority OBD privilege gate](../references/operation-contract.md#highest-priority-obd-privilege-gate).
-
 Operate the OBD control plane without silently changing a managed deployment. Controller installation, repository state, tool inventory, trace evidence, and tested OBD environment values have independent lifecycles and authorization boundaries.
 
 Before the first package lookup or acquisition for controller installation, maintenance, offline preparation, or dynamic-tool provisioning, read the shared [deployment package closure](../references/deployment-package-sets.md). Before treating an unlisted controller operation as executable, read the shared [current Skill-version unsupported capabilities](../references/current-version-unsupported.md).

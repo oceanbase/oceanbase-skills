@@ -2,15 +2,11 @@
 
 Apply this contract to every OceanBase/OBD workflow. Domain references add operation-specific checks; they do not weaken these rules.
 
-<a id="highest-priority-obd-privilege-gate"></a>
+## Evaluate Privilege Per Command
 
-## Highest-Priority OBD Privilege Gate
+Do not run a root/sudo eligibility precheck before discovering or invoking an existing OBD, and do not make elevated privilege a prerequisite for cluster lifecycle, tenant, test, diagnostic, repository-inventory, or other operations that the established login-session user can perform. Run OBD under its resolved controller owner and evaluate permissions only when the workflow reaches an exact command that requires a protected host, package-manager, service, kernel, account, or filesystem mutation.
 
-For any request that would install or invoke OBD, this gate precedes every other live discovery, preflight, acquisition, or operation. First resolve only the exact machine, login user, authentication path, and remote identity needed to establish a bounded login. On every machine the workflow must log in to, record `id -un` and run `id -u`. UID 0 passes. Otherwise, verify usable non-interactive sudo with `sudo -n true`; group membership, a remembered policy, `sudo -l` alone, or sudo that prompts for a password does not pass.
-
-If any required machine fails, stop the entire OBD workflow without invoking OBD. Do not look up or download packages, install software, modify repositories, bootstrap controller-to-node SSH, scan storage, initialize hosts, render configuration, query a deployment through OBD, or make another workflow change. Report the affected host and login user with `UNSUPPORTED — the current Skill version does not support using OBD with a login user that lacks root or usable non-interactive sudo privileges`, then ask the user to provide a different login user or configure usable sudo. Do not edit sudoers, infer another user, accept password-prompt-only sudo, move OBD to another machine, or substitute a user-local, all-in-one, source, or manually extracted installation.
-
-After every required machine passes, retain each successful login-session user for that machine. Keep OBD, its metadata, and user-owned files under the selected controller login user, and use sudo only around the exact commands that require privilege; do not silently switch the OBD owner to root. Explain/review work that does not install or invoke OBD is outside this live gate.
+For such a command, use an already available narrowly scoped elevation path only when needed and keep the OBD/controller owner unchanged. If the exact mutation cannot be completed with the current access, report that step as `BLOCKED`, request only the missing access, and preserve or continue any unaffected in-scope work where safe. Never classify OBD or the whole Skill as unsupported solely because the login user is not root or has no usable sudo.
 
 ## Preserve the Requested Mode
 

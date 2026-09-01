@@ -15,14 +15,6 @@ metadata:
 
 # OceanBase Deployment and Operations with obd
 
-## Highest-Priority Gate: OBD Requires root or sudo
-
-Apply this gate before every other live OBD rule in this Skill. If the request would install or invoke OBD, first resolve the exact machine and login user, log in, and check that user's effective privilege. The only actions allowed before this gate are the minimum host/login identity and authentication checks needed to run it.
-
-On every machine that the workflow must log in to, `id -u` must return `0`, or the same login-session user must pass a non-interactive sudo check such as `sudo -n true`. If either condition is true, keep that login-session user as the OBD and file owner and use sudo only for commands that require privilege. If any required machine satisfies neither condition, stop before invoking OBD or performing any package lookup, download, installation, repository change, SSH-key bootstrap, storage scan, host initialization, configuration rendering, or other workflow action. Report `UNSUPPORTED — the current Skill version does not support using OBD with a login user that lacks root or usable non-interactive sudo privileges`, then ask the user to provide a different login user or configure usable sudo.
-
-Do not edit sudoers, switch users implicitly, accept password-prompt-only sudo, or work around this boundary with a user-local/all-in-one/source/manual-extraction OBD installation. Read the detailed [highest-priority OBD privilege gate](references/operation-contract.md#highest-priority-obd-privilege-gate).
-
 Use this entry point to identify the target, execution mode, and owning skill. Do not turn an explanation, configuration review, or diagnostic request into a deployment.
 
 ## Mandatory Package Acquisition Order

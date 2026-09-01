@@ -25,10 +25,6 @@ metadata:
 
 # OceanBase Testing and Benchmarking
 
-## Highest-Priority Gate: OBD Requires root or sudo
-
-Before any live discovery or operation in this Skill, resolve and log in to every machine the workflow must access, then verify that the same login-session user is root with `id -u == 0` or can run `sudo -n true`. Only the minimum host/login identity and authentication checks may precede this gate. If any required machine fails it, do not invoke OBD and do not resolve, download, install, or import test prerequisites. Report `UNSUPPORTED — the current Skill version does not support using OBD with a login user that lacks root or usable non-interactive sudo privileges` and ask the user to switch the login user or configure usable sudo. Do not edit sudoers or use a user-local/all-in-one/source/manual-extraction workaround. After the gate passes, retain that login-session user and use sudo only for privileged commands. Apply the shared [highest-priority OBD privilege gate](../references/operation-contract.md#highest-priority-obd-privilege-gate).
-
 Before resolving or acquiring any test prerequisite, read the shared [deployment package closure](../references/deployment-package-sets.md) and expand the selected test into its complete controller-side toolchain and runtime dependencies.
 
 Before any package network request, select the effective artifact source before the acquisition mechanism and apply the shared [fixed package-source workflow](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order). This applies to every test prerequisite. A `.repo` file is configuration rather than a package source; prove the effective package URL, and keep operating-system dependency repositories separate. For a missing prerequisite such as `ob-sysbench`, remain on the current required source while trying applicable controller-local OBD/tool, `curl`, `wget`, or package-manager paths. Verify and import/register the exact artifact locally before retrying `obd test`. Do not move OBD or test execution off the selected controller, and never use `obd mirror` as a network downloader.

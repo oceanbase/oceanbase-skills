@@ -26,10 +26,6 @@ metadata:
 
 # OceanBase Tenant Management
 
-## Highest-Priority Gate: OBD Requires root or sudo
-
-Before any live discovery or operation in this Skill, resolve and log in to every machine the workflow must access, then verify that the same login-session user is root with `id -u == 0` or can run `sudo -n true`. Only the minimum host/login identity and authentication checks may precede this gate. If any required machine fails it, do not invoke OBD or continue with tenant work. Report `UNSUPPORTED — the current Skill version does not support using OBD with a login user that lacks root or usable non-interactive sudo privileges` and ask the user to switch the login user or configure usable sudo. Do not edit sudoers or use a user-local/all-in-one/source/manual-extraction workaround. After the gate passes, retain that login-session user and use sudo only for privileged commands. Apply the shared [highest-priority OBD privilege gate](../references/operation-contract.md#highest-priority-obd-privilege-gate).
-
 Resolve the installed OBD build, Community Edition deployment, and tenant before selecting a command. Confirm the requested operation against the installed command and component plugin.
 
 This Skill version retains tenant workflows only for OceanBase Community Edition. Commercial OceanBase tenant operations and OBD-managed SeekDB HA are [not supported by the current Skill version](../references/current-version-unsupported.md); do not translate either into the Community Edition tenant commands below.
