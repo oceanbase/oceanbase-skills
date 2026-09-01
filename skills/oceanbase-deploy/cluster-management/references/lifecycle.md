@@ -21,7 +21,7 @@ Confirm these forms with the installed help. They can initialize or reconcile co
 
 ## Start, Stop, and Restart
 
-Before start, establish whether the deployment is fully installed or partially initialized, whether ports and paths remain owned by it, and whether dependencies are ready. Before stop/restart, identify application routing, active workload, replication/management relationships, and the acceptable outage.
+Before start, establish whether the deployment is fully installed or partially initialized, whether ports and paths remain owned by it, and whether dependencies are ready. For the first start or recovery from a failed initial start, apply the configuration-deployment [host-environment](config-deployment.md#host-environment-initialization) and [storage-topology](config-deployment.md#storage-initialization-invariants) rules; do not change initialized storage paths or create Observer-internal directories as a retry shortcut. Before stop/restart, identify application routing, active workload, replication/management relationships, and the acceptable outage.
 
 For unattended execution or measured availability, read [non-interactive automation execution](../../references/automation-execution.md). Record command events separately from the last successful authenticated probe, listener loss, expected PID transition, listener recovery, and first successful authenticated probe; command duration is not database downtime.
 

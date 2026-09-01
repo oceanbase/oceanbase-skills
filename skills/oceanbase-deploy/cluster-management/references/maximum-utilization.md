@@ -41,6 +41,7 @@ Before sizing, prove:
 - the exact OBD executable/build, `OBD_HOME`, installed `autodeploy` and strict-check options, selected component plugin, generator path, and generator checksum;
 - one exact compatible OceanBase artifact, release, architecture, hash, repository source, and dependency closure for every node;
 - every management address maps to a unique physical host;
+- when the user supplied no deployment paths, each host's base directory was selected through the configuration-deployment [largest writable persistent filesystem rule](config-deployment.md#default-deployment-base-directory) under the established login-session user before any disk formula was evaluated;
 - the deployment name, app identity, ports, and canonical home/data/redo paths do not collide with registered or unmanaged state;
 - each selected path is new or empty, non-symlinked, owned by the deployment user, and located on the intended filesystem;
 - blocks, inodes, user/project quota, mount identity, and future commitments are known for every selected filesystem;
@@ -54,6 +55,8 @@ Stop instead of calculating an executable maximum when the selected generator ca
 ## Capture One Sizing Snapshot
 
 Use the same SSH identity OBD will use. Capture every node in one bounded window and repeat the volatile checks immediately before execution:
+
+Resolve omitted deployment paths before this snapshot. The default path selection is per host: choose that host's eligible writable persistent filesystem with the greatest usable free capacity, then use the resulting canonical home/data/redo parents in the commands and formulas below. Do not measure an arbitrary home-directory path first and call that maximum utilization.
 
 ```bash
 hostname
@@ -224,6 +227,8 @@ Keep `auto_create_tenant` absent or false. Add no OBProxy, OBAgent, monitoring, 
 
 Immediately before execution, repeat effective CPU/cgroup, `MemAvailable`, filesystems/quotas, competing processes, ports, path ownership, and mount identity. If any allowance decreased, workload appeared, or mount changed, stop and recompute all affected candidates and cluster minima.
 
+Complete the configuration-deployment [host-environment initialization](config-deployment.md#host-environment-initialization) on every target before invoking `autodeploy`. Run the installed public precheck as the actual deployment user, apply the owning public OBD initializer for reported host or user-limit findings, reconnect when login limits changed, and prove the repeated precheck passes. Because `autodeploy` combines configuration generation, deployment initialization, and start, it must not be used as the first environment probe. Retain the reviewed `home_path`, `data_dir`, and `redo_dir` plus their canonical mount identities before execution.
+
 Inspect the final YAML and its checksum. Confirm all seven common values, the exact artifacts, and that automatic tenant creation is absent. Apply the authorization rules from the shared operation contract, then use only syntax proved by installed help, commonly:
 
 ```bash
@@ -237,7 +242,7 @@ The explicit common values are authoritative. The consistency flag is only an ad
 
 Do not pass an automatic-tenant option. An explicit tenant request starts only after Observer acceptance and follows [tenant management](../../tenant-management/SKILL.md) as a separate operation.
 
-On failure, freeze retries and preserve the OBD trace, exact command, input checksum, registered/generated configuration, status, per-host processes/listeners/mounts/disk use, and ownership. Classify the reached state before changing anything. Do not use force, cleanup, path deletion, or another deployment as generic recovery. Report the exact environment-check diff and apply only a separately reviewed host change that is necessary to the requested deployment.
+On failure, freeze retries and preserve the OBD trace, exact command, input checksum, registered/generated configuration, status, per-host processes/listeners/mounts/disk use, initialized paths, symlinks, and ownership. Classify the reached state before changing anything. Do not use force, cleanup, path deletion, removal of generated custom storage values, manual creation of Observer-internal directories, or another deployment as generic recovery. If the failure reached deployment initialization or start, apply the [failed-initial-start and storage-topology recovery](../../references/failure-recovery-and-evidence.md#failed-initial-start-and-storage-topology).
 
 ## Verify
 

@@ -6,6 +6,10 @@ When a request requires one of the capabilities below, report `UNSUPPORTED — t
 
 If a request mixes retained and unsupported work, handle the retained portion through its normal route and report the unsupported portion separately.
 
+## Execution Environment
+
+- any live workflow that would install or invoke OBD on a required machine when its login user is neither root nor able to run usable non-interactive sudo; report `UNSUPPORTED — the current Skill version does not support using OBD with a login user that lacks root or usable non-interactive sudo privileges`, do not attempt an unprivileged fallback, and ask the user to switch the login user or configure usable sudo.
+
 ## Cluster and Product Workflows
 
 - commercial distributed OceanBase, commercial standalone/centralized OceanBase, related license handling, and commercial-tenant operations;
@@ -26,6 +30,6 @@ If a request mixes retained and unsupported work, handle the retained portion th
 - OBD stored-credential encryption or encryption-passkey management;
 - generic dynamic-tool update or uninstall;
 - deployment-bound helper commands such as `obd tool command`, `obd tool db_connect`, or `obd tool dooba`;
-- top-level `obd host` precheck, initialization, or user-management operations;
+- standalone or general-purpose top-level `obd host` administration outside the bounded new-deployment precheck and initialization routed by cluster management;
 - OBD Web or its API;
 - developer mode, generic environment/lock/transfer-policy administration, and telemetry administration.

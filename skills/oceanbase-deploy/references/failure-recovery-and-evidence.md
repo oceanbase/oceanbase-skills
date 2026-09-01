@@ -61,6 +61,16 @@ The following are never generic recovery steps:
 
 If recovery would introduce a new destructive, availability, persistent-host, repository, or credential mutation, present it as a new operation and obtain its own authorization.
 
+<a id="failed-initial-start-and-storage-topology"></a>
+
+### Failed Initial Start and Storage Topology
+
+When a new deployment's precheck or first start fails, separate host-environment findings from storage initialization. If the failure is limited to a reported kernel value or deployment-user limit, keep the registered configuration and initialized paths unchanged, apply only the owning public OBD host/user initializer or its exact documented fallback, verify persistence and a fresh deployment-user login, then repeat the public precheck before considering a start retry.
+
+For `OB_NO_SUCH_FILE_OR_DIRECTORY`, a missing storage object, or contradictory path evidence, first inventory the deploy-time and current registered values for `home_path`, `data_dir`, and `redo_dir`; the deploy trace and configuration checksum; the canonical `home_path/store`, data, `sstable`, `clog`, and `slog` paths; symlink targets; owners, modes, mount identities, and contents on every server. Do not remove custom storage values, delete an empty-looking initialized directory, replace a symlink, manually create `store/{clog,slog,sstable}`, edit hidden OBD metadata, or rerun deploy merely because one of those actions can make a fresh empty instance start.
+
+If only the registered configuration changed after a successful deploy initialization and the original initialized topology remains intact, restore the exact deploy-time path values through the installed supported configuration workflow, verify the topology, and then evaluate a start retry. If initialization itself is partial or contradictory, a newly created, uniquely owned, never-bootstrapped, data-free test deployment may be destroyed and recreated only under authorization for that exact removal set. Any existing data, bootstrap ambiguity, unknown ownership, or inability to prove the original topology requires stopping with the preserved evidence rather than reconstructing Observer storage by hand.
+
 ## Retry Rules
 
 Before retrying:
@@ -75,7 +85,7 @@ One unexplained repeated failure is enough to stop automated retries when anothe
 
 ### Network and Artifact-Acquisition Failures
 
-A DNS, connection, proxy, TLS, HTTP, metadata, or download failure establishes only one failed package-source attempt and observation window; it does not by itself prove that the controller has no usable network path. For OBD packages and components, keep the selected controller and follow the repository workflow's [fixed mirror-source order](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order): three meaningful acquisition attempts on source 1 before source 2, then three on source 2 before advancing to another compatible suffix. After the normal OBD/repository path fails, use controller-local `curl`, `wget`, the operating-system package manager, or another applicable downloader rather than blindly repeating that same path. A generic connectivity probe neither counts as an attempt nor permits a source to be skipped.
+A DNS, connection, proxy, TLS, HTTP, metadata, or download failure establishes only one failed package-source attempt and observation window; it does not by itself prove that the controller has no usable network path. For every OceanBase public package, keep the selected controller and follow the [fixed artifact-source order](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order): three meaningful acquisition attempts on source 1 before source 2, then three on source 2 before advancing to another compatible suffix. Select the effective package source before varying applicable controller-local OBD/tool, `curl`, `wget`, or package-manager mechanisms. A `.repo`-definition download, operating-system repository change, or generic connectivity probe neither counts as an OceanBase package attempt nor permits a source to be skipped.
 
 After all applicable controller-local mechanisms, required source attempts, and compatible suffixes are exhausted, use another reachable host only as a bounded artifact relay for the same exact package from the same ordered sources. Verify it on the relay and again on the controller before local import/install. Do not install or run OBD on the relay, introduce a third source, or select another controller as recovery. Ask the user only when the relay also fails, an unlisted source is needed, or the exact artifact remains ambiguous.
 

@@ -6,7 +6,7 @@ Use this blueprint only after the installed OBD build proves the community distr
 
 - approved OceanBase Community Edition version, release, architecture, artifact hash, repository source, and plugin identity;
 - one-node development or multi-node availability topology, target hosts, and any explicit zone/failure-domain mapping; when no mapping is supplied for multiple Observer hosts, assign each distinct host to a distinct new zone in deterministic host order without asking;
-- target host identities, SSH account, canonical paths, and ports, plus any explicitly supplied resource values or caps; when sizing is omitted, derive the resource budget through the default maximum-utilization workflow;
+- target host identities, SSH account, canonical paths, and ports, plus any explicitly supplied resource values or caps; when paths are omitted, derive each host's base through the [largest writable persistent filesystem rule](../config-deployment.md#default-deployment-base-directory), and when sizing is omitted, derive the resource budget through the default maximum-utilization workflow;
 - any user-specified initial cluster/administrator password override and any explicitly requested tenant behavior; do not request an override when none was supplied because OBD owns random generation by default;
 - optional OBProxy/OBAgent/monitoring components, each separately justified.
 
