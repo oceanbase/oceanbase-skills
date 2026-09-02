@@ -3,7 +3,7 @@ name: cluster-management
 description: Deploy and operate tested OceanBase Community Edition clusters with obd, including multi-node maximum-utilization sizing, lifecycle changes, configuration, upgrades, component changes, monitoring, network access, and Config Server. Use for OceanBase cluster control-plane work; route tenant, benchmark, diagnostic, and controller-administration workflows elsewhere.
 metadata:
   author: oceanbase
-  version: "2.0.1"
+  version: "2.0.2"
 ---
 
 <!-- Compatibility anchors retained for published 2.x deep links. -->

@@ -1,6 +1,6 @@
 {
   "name": "oceanbase-deploy",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Tested OceanBase Community Edition OBD deployment, lifecycle, tenant, administration, diagnostics, and benchmark skills",
   "keywords": [
     "oceanbase",

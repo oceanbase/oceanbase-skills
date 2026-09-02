@@ -3,7 +3,7 @@ name: obd-administration
 description: Install, update, and administer the tested OBD controller workflows, including mirrors and repositories, offline artifacts, exact dynamic-tool provisioning for retained workflows, trace evidence, OBD_HOME discovery, and scoped automatic-confirm handling. Use for controller-scoped OBD work; use the specialized cluster, tenant, testing, or obdiag skill for those domains.
 metadata:
   author: oceanbase
-  version: "2.0.1"
+  version: "2.0.2"
 ---
 
 # OBD Administration

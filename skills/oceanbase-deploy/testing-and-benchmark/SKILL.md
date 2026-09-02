@@ -3,7 +3,7 @@ name: testing-and-benchmark
 description: Run OceanBase functional tests and performance benchmarks through obd test, including mysqltest, Sysbench, TPC-H, and TPC-C. Use for correctness testing, benchmark preparation, load execution, result analysis, or cleanup. Do not use for ordinary tenant or cluster lifecycle work.
 metadata:
   author: oceanbase
-  version: "2.0.1"
+  version: "2.0.2"
 ---
 
 <!-- Compatibility anchors retained for published 2.x deep links. -->
