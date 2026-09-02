@@ -29,7 +29,7 @@ Read the [Community Edition distributed blueprint](deployment-templates/communit
 
 ## Discover the Controller and Existing Cluster
 
-Apply the shared [default controller, SSH, and cluster discovery rule](../../references/operation-contract.md#default-controller-ssh-and-cluster-discovery) before package acquisition or YAML construction. OBD stays on a cluster target host by default, and if every target is proved to have no OBD, install it on the first supplied host without asking. When both SSH user and password are absent, try passwordless `root` first and ask only after that attempt fails.
+Apply the shared [default controller, SSH, and cluster discovery rule](../../references/operation-contract.md#default-controller-ssh-and-cluster-discovery) before package acquisition or YAML construction. OBD stays on a cluster target host by default, and if every target is proved to have no OBD, install it on the first supplied host with package-manager non-interactive acceptance and without asking. Use the user's supplied SSH login user on every deployment machine; if no login user is specified, use `root`, and if no authentication material is supplied, use passwordless SSH. After login, retain that login-session user for every operation, including OBD ownership and controller-to-node SSH. If passwordless controller-to-node access is absent, directly append the controller login user's public key to the same login user's `authorized_keys` through already-verified access without another prompt.
 
 Do not ask whether the cluster is already deployed or whether the machines are clean. Inspect candidate OBD controllers, all target runtimes, listeners, services, relevant paths, and reachable database identity, then classify the observed state. A new deployment can proceed only after the intended name, paths, ports, and machine identities are proved non-conflicting; a registered, stopped, partial, or unmanaged cluster is discovered state to report and handle through its owning workflow, not a question to delegate back to the user.
 
@@ -38,6 +38,50 @@ Do not ask whether the cluster is already deployed or whether the machines are c
 If the user supplies resource values, a cap, reserve, or a non-maximum profile, preserve that sizing. Otherwise, do not ask the user to choose a deployment size and do not fall back to mini or arbitrary OBD defaults. Select the [maximum-utilization workflow](maximum-utilization.md) and derive the largest verified configuration that fits the resolved target hosts, installed product/plugin behavior, filesystem commitments, and required operational reserves.
 
 This default changes resource sizing only. It does not infer additional hosts, replicas, optional components, tenants, or unneeded persistent host mutations. For a new distributed deployment with multiple user-supplied Observer hosts and no explicit zone mapping, assign each distinct host to a distinct new zone in deterministic host order without asking; preserve any explicit mapping. For multi-node sizing, derive every node's candidate independently and take the minimum across all target nodes separately for each resource key. When a target is shared and safe maximum sizing requires an unknown reserve or cap, inspect existing commitments first and ask only for the missing reserve/cap decision if it cannot be derived; do not ask the user to choose a general deployment profile.
+
+## Default Deployment Base Directory
+
+Apply this default only to a new deployment when the user did not specify the relevant deployment or storage paths. Preserve every explicit user path. Never apply it to an existing registered, stopped, partial, or unmanaged deployment, and never relocate an initialized `home_path`, `data_dir`, `redo_dir`, log path, or other owned path as a repair or optimization.
+
+Resolve the base independently on every target while logged in as the same login-session user that will run OBD and own the deployment:
+
+1. Enumerate canonical mounted filesystems and their available bytes, inode capacity, mount options, quota visible to the login user, persistence, and underlying mount identity. Rank candidates by usable free bytes after known commitments and required reserves—not by directory entry count, `du`, nominal device size, or a remembered path name.
+2. Exclude read-only, virtual, pseudo, volatile-memory, package-image, container-overlay, inaccessible, unknown-ownership, symlinked, non-empty deployment, or conflicting filesystems and paths. A network or shared filesystem is eligible only when the selected component and operational model explicitly support it.
+3. On each remaining filesystem, resolve a safe canonical parent that the login-session user can read, write, and traverse. In implementation mode, prove those effective permissions with a bounded uniquely named create/remove probe in that parent before rendering YAML. Do not `chmod` or `chown` an existing directory merely to make a larger filesystem win.
+4. Select the eligible filesystem with the greatest usable free capacity. On an exact tie, prefer the candidate with greater usable inode capacity, then the lexically first canonical parent for determinism. Do not fall back to the login user's home while a larger eligible filesystem exists, and do not assume that `/data/1`, `/data`, or `/mnt` exists or is largest without inspection.
+5. Create new, empty, non-symlinked, deployment-specific paths beneath the selected parent, owned by the login-session user. Resolve component `home_path`, `data_dir`, `redo_dir`, log, cache, and temporary paths as the installed schema and component layout permit. For Observer defaults, make home, data, and redo disjoint siblings such as `<base>/home`, `<base>/data`, and `<base>/redo`; when an eligible separate redo filesystem is selected, use a deployment-specific redo path on that filesystem instead of forcing it under the home/data filesystem. When the schema supports host-specific paths, retain each host's independently selected paths; when it requires one common path string, use a path that is eligible on every target and record that constraint.
+
+Record the selected canonical base, filesystem, usable free bytes, ownership, mode, quota, and rejected larger candidates for each host. If no eligible persistent parent has enough capacity for the verified deployment commitments, stop and request a path or permission decision instead of silently using a smaller or unwritable location.
+
+<a id="observer-storage-path-invariant"></a>
+
+### Observer Storage-Path Invariant
+
+Apply this invariant before creating directories or rendering any Observer YAML, including generated maximum-utilization input:
+
+- Treat `<home_path>/store` as OBD's canonical Observer data entry. If `data_dir` is omitted and the installed plugin defaults it to `<home_path>/store`, that path may be the real data root. If an explicit `data_dir` differs from the default, keep `<home_path>/store` available for OBD to make it resolve to that data directory, normally through a symlink.
+- Never set `data_dir` or `redo_dir` below `<home_path>/store`, and never pre-create `<home_path>/store` as the parent of either one. An explicit `data_dir` may equal `<home_path>/store` when the installed plugin supports that direct-root layout; `redo_dir` may equal it only when it intentionally equals that same data root in a plugin-supported single-root layout. Reject any other layout that requires the same path to be both a real parent directory and OBD's canonical data alias. In particular, `<home_path>/store/data` and `<home_path>/store/redo` are invalid custom-path defaults.
+- For automatically derived custom paths, use disjoint sibling paths. A safe shape is `<base>/home`, `<base>/data`, and `<base>/redo`; with a separate log mount, use `<log-parent>/<deploy-name>/redo` while keeping home and data under their selected parents. Canonicalize path boundaries and reject cycles or ancestor relationships that would make OBD initialization, linking, or cleanup traverse another owned path.
+- A plugin/schema that accepts `redo_dir` supports a separate redo topology unless version-matched authoritative behavior proves a narrower constraint. The observer command's `-d <home_path>/store` is the canonical entry point, not proof that `redo_dir` is ignored. Do not collapse a valid separate redo path onto the data filesystem merely because the start command uses that entry point.
+
+For example:
+
+```text
+invalid:
+  home_path = /data/1/demo
+  data_dir  = /data/1/demo/store/data
+  redo_dir  = /data/1/demo/store/redo
+
+valid siblings on one filesystem:
+  home_path = /data/1/demo/home
+  data_dir  = /data/1/demo/data
+  redo_dir  = /data/1/demo/redo
+
+valid separate redo filesystem:
+  home_path = /data/1/demo/home
+  data_dir  = /data/1/demo/data
+  redo_dir  = /data/log1/demo/redo
+```
 
 ## Database Bootstrap Password Default
 
@@ -78,7 +122,7 @@ Record these inputs before downloading artifacts or writing YAML:
 | Artifacts | component, version, release, operating-system suffix when applicable, architecture, hash, source, dependency closure |
 | Topology | deployment name, app/cluster identity, zones, server-to-component mapping |
 | SSH | target machine identity, management IP, SSH user/port/key and privilege boundary |
-| Paths | canonical home, data, log, redo, cache, and temporary paths |
+| Paths | explicit user paths, or each host's verified largest writable persistent deployment base and the canonical home, data, log, redo, cache, and temporary paths beneath it |
 | Network | management, SQL, RPC, obshell, proxy, monitoring, and component-specific addresses/ports |
 | Resources | CPU, memory, disk, inode, filesystem/mount, cgroup/container limits, and headroom; explicit user sizing when supplied, otherwise the verified maximum-utilization derivation |
 | Optional scope | requested OBProxy, OBAgent, monitoring, or Config Server |
@@ -91,14 +135,24 @@ Every component in the manifest must map to a requested outcome or a proved pack
 
 1. Read `obd --version`, the selected `obd cluster deploy --help`, and the installed public component schema/validation surface. Inspect a packaged workflow only when those interfaces cannot establish an execution-critical behavior.
 2. Confirm exactly one compatible artifact for every required entry in the expanded deployment package closure, not only every YAML component. Record version, release, operating-system suffix, architecture, hash, and repository source; repository presence alone does not prove compatibility. Apply the shared exact-suffix, EL8, then EL7 fallback and the [fixed mirror-source order](../../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order), and verify every fallback's runtime dependencies.
-3. Prove each target's hostname/machine identity, management address, OS, architecture, runtime libraries, time synchronization, routes, firewall boundary, and SSH behavior. Apply the default passwordless-`root` attempt when the user omitted both SSH user and password; do not preemptively ask for credentials.
-4. Resolve every path canonically. Inspect owner, mode, free space, inode capacity, mount identity, symlinks, non-empty contents, overlap with other deployments, and cleanup ownership.
+3. Prove each target's hostname/machine identity, management address, OS, architecture, runtime libraries, time synchronization, routes, firewall boundary, and SSH behavior. Record the successful login-session user with `id -un`, retain it as the OBD and host-operation user, and complete the shared bounded passwordless bootstrap from that controller user to the same user on every target without a separate permission prompt when access is absent.
+4. Resolve every path canonically. When paths were omitted for a new deployment, first apply the default deployment-base selection above under the login-session user. For Observer, enforce the [storage-path invariant](#observer-storage-path-invariant) before any directory creation: prove that data/redo paths do not descend from `<home_path>/store`, validate any direct-root equality against the installed plugin, and ensure every selected home/data/redo path maps to the intended filesystem without a cycle or conflicting ancestor. Inspect owner, effective read/write/traverse access, mode, free space, inode capacity, mount identity, quota, symlinks, non-empty contents, overlap with other deployments, and cleanup ownership.
 5. Map every proposed port to its host and namespace. Check real listeners and processes, not only registered deployments.
 6. Check available CPU, memory, log/data capacity, cgroup/container constraints, and topology failure domains. Do not infer usable resources from host totals alone. When the user supplied no sizing, complete the maximum-utilization workflow before rendering resource values.
 7. Determine existing cluster state yourself by correlating OBD registrations with remote package/service records, processes, listeners, deployment paths, and SQL/obshell identity when reachable. The deployment name, app identity, paths, and ports must not collide with an existing, stopped, partial, or unmanaged service. Do not ask the user whether deployment already happened in place of these checks.
 8. Run only the public version-supported precheck/strict-check path. In reusable deployment instructions spell `--strict-check` in full when the installed command exposes it; never transfer the short option `-S` from another subcommand.
 
-Declare the package-resolution mode before execution. In online mode, prove the exact expected remote winner and retain the source, mechanism, and attempt evidence for each exhausted mirror source; do not require a local download before the first normal online attempt. If online fetch fails but controller-local `curl`, `wget`, the package manager, another applicable downloader, or the bounded relay obtains the exact artifact, switch the complete closure to local-package mode. In a remote workflow, `local-package` and `local closure` mean controller-local, not relay- or runner-local. In local-package mode, prove the complete local closure, disable participating remote repositories through the reviewed mirror workflow, immediately verify their disabled state and the local winning hashes, and keep that isolation through the final package-selecting stage. Stop rather than allowing unresolved local/remote competition. Restore a temporary remote-mirror change after the workflow unless persistent disablement was separately requested.
+<a id="host-environment-initialization"></a>
+
+### Initialize the Host Environment Before Deployment
+
+Do not wait for `deploy`, `start`, or integrated `autodeploy` to fail before preparing the targets. Read the installed help and run the narrow public OBD host-environment path supported by that build for every target under the same user and login mechanism the deployment will use. The bounded new-deployment capability family includes `obd host precheck`, `obd host user init`, and `obd host init`. Do not invent syntax or run every initializer indiscriminately: start with the public precheck, apply the supported user-limit or host-environment initializer that owns the reported findings, then repeat the precheck. This narrow deployment preflight does not restore the separately unsupported `cluster init4env` or general-purpose host-administration workflows.
+
+If an initializer prompts, use the real-PTY rules in [automation execution](../../references/automation-execution.md), not an ordinary input pipe. Record every affected node and setting. Derive required and recommended values from the installed OBD/plugin output rather than hard-coding one test run's thresholds. Verify current kernel values directly, verify their persistent configuration, and establish a new SSH/login session as the deployment user before accepting PAM limits such as `nofile` or `nproc`; an old shell does not prove the persisted limit. Complete this flow before an integrated `autodeploy`, because that command can register or initialize deployment state before a later environment/start check fails.
+
+If the installed public initializer is unavailable or reaches a proved failure, use manual remediation only for the exact reported setting and documented value. Preserve the prior value and persistence owner, apply the narrow equivalent change on every affected target, open a fresh deployment-user session when required, and rerun the public precheck. Do not replace this with broad guessed `sysctl`, limits, firewall, SELinux, repository, or path changes.
+
+Declare the package-resolution mode before execution. In online mode, select the effective artifact source before the mechanism, prove the exact expected remote winner and final package URL, and retain source, mechanism, and attempt evidence for each exhausted source; do not require a local download when an enabled repository is proved to resolve the right source and candidate. If one online mechanism fails, keep the current source while trying another applicable controller-local `curl`, `wget`, package-manager, or OBD path. If an explicit download or bounded relay obtains the exact artifact, switch the complete closure to local-package mode. In a remote workflow, `local-package` and `local closure` mean controller-local, not relay- or runner-local. In local-package mode, prove the complete local closure, disable participating remote repositories through the reviewed mirror workflow, immediately verify their disabled state and the local winning hashes, and keep that isolation through the final package-selecting stage. Stop rather than allowing unresolved local/remote competition. Restore a temporary remote-mirror change after the workflow unless persistent disablement was separately requested.
 
 Stop when the plugin schema, artifact closure, compatibility, host identity, path ownership, or topology cannot be proved. Do not use `--force` or path deletion as a preflight workaround.
 
@@ -110,7 +164,7 @@ Review the rendered file semantically:
 
 - exact component keys and dependency relationships;
 - server and zone identity, management versus service addresses;
-- canonical per-server paths and ports;
+- canonical per-server paths and ports, including the Observer storage-path invariant and intended data/redo mount separation;
 - version/release constraints and the separately locked artifact hashes;
 - resource values and units;
 - the database bootstrap-password field absent unless the user explicitly supplied an override, and every displayed credential value redacted;
@@ -119,6 +173,16 @@ Review the rendered file semantically:
 A syntactically valid YAML is not enough. For an executable plan, use the installed OBD/plugin parsing and precheck path; do not install or start a component merely to discover whether a key exists. In static-review mode, do not invoke OBD parsing, plugin precheck, or any workflow: report schema/runtime validation as not performed and keep every unsupported conclusion conditional.
 
 Keep unrequested persistent startup behavior absent from the rendered configuration.
+
+<a id="storage-initialization-invariants"></a>
+
+### Preserve the Initialized Storage Topology
+
+Treat `home_path`, `data_dir`, and `redo_dir` as initialization-time storage topology, not ordinary retry knobs. Before deployment, retain their canonical parent paths, mount identities, expected ownership, and empty-state evidence. After the deploy stage initializes the component and before a separate start, compare the registered configuration and deploy trace with the actual version-matched layout. When `data_dir` is omitted and defaults to `<home_path>/store`, verify that canonical data root directly. When an explicit `data_dir` differs, verify that `<home_path>/store` resolves to it rather than remaining a conflicting real parent directory. Verify the data path's `sstable` location, and when the installed plugin maps redo separately, verify that the canonical data-side `clog` path resolves to the plugin-derived redo-side `clog` path; verify `slog` according to that same version-matched initializer. Record every link target, owner, mode, mount identity, and content boundary.
+
+Do not invoke `start` until this graph matches the registered deploy-time values. A start command containing `-d <home_path>/store` is expected canonical behavior and does not establish that `redo_dir` is unsupported. If the graph is missing, cyclic, or contradictory, classify deployment initialization as incomplete or the manifest as path-conflicting; preserve evidence and enter failure recovery without one unchanged start attempt.
+
+Changing or deleting a registered storage-path value after deploy does not prove that OBD will rerun initialization or migrate the existing layout during start. Do not remove custom `data_dir` or `redo_dir`, replace initialized symlinks, delete an empty-looking `store`, or manually create `store/{clog,slog,sstable}` as a generic way around a start error. If the storage topology differs from the deploy-time configuration, preserve both states and use the [failed-initial-start recovery](../../references/failure-recovery-and-evidence.md#failed-initial-start-and-storage-topology) before another command.
 
 ## Execute
 
@@ -131,11 +195,11 @@ obd cluster start <deploy_name> --strict-check
 
 When this workflow is entered from an intentionally created `configured` registration, use the stored configuration only after revalidating its parsed semantics and checksum against the approved candidate. If the installed help supports deployment from a registered configuration, use `obd cluster deploy <deploy_name>` without `--config`; do not replace or silently accept different stored content. Keep `start` separate and invoke it only after deployment acceptance.
 
-Use `--strict-check` only when the installed `cluster start --help` exposes it; OBD V4.6.0 documents it on start, not deploy. Preserve the configuration checksum and trace ID for each command. After `deploy`, establish what was registered, copied, installed, or initialized before deciding whether `start` is safe. Do not blindly issue `start` after a partial deploy.
+Use `--strict-check` only when the installed `cluster start --help` exposes it; OBD V4.6.0 documents it on start, not deploy. Preserve the configuration checksum and trace ID for each command. After `deploy`, establish what was registered, copied, installed, or initialized and verify the [initialized storage topology](#storage-initialization-invariants) before deciding whether `start` is safe. Do not blindly issue `start` after a partial deploy.
 
 ### Maximum-Utilization Autodeploy
 
-The retained maximum-utilization workflow uses `autodeploy` as an integrated configuration-generation, deployment, and startup path. Use it only through [maximum-utilization.md](maximum-utilization.md), after checking name/path/port collisions, complete package closure, generated defaults, and all three transitions.
+The retained maximum-utilization workflow uses `autodeploy` as an integrated configuration-generation, deployment, and startup path. Use it only through [maximum-utilization.md](maximum-utilization.md), after completing host-environment initialization and checking name/path/port collisions, complete package closure, generated defaults, and all three transitions.
 
 Keep optional destructive or convenience branches absent. Do not add `--force`, `--clean`, `--force-delete`, or `--auto-create-tenant`. Preserve the generated and registered configuration, and verify the same deployment, runtime, topology, SQL, and resource outcomes required for a configuration-file deployment.
 

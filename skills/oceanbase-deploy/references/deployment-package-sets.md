@@ -36,10 +36,12 @@ The fallback is accepted only after verifying package-manager compatibility, exe
 
 ## Resolve and Acquire the Complete Closure
 
+Keep the package consumer explicit. Install only the verified `ob-deploy` controller RPM directly through the controller's operating-system package manager. Let OBD consume component RPMs: online mode resolves and fetches the proved remote winners through the owning OBD/repository workflow; local-package mode imports already-downloaded controller-local component RPMs with `obd mirror clone` and then runs that same OBD workflow. Install operating-system dependencies through the package manager on the machine that consumes them, and use the version-proved registration or installation path for non-RPM tools and images. Do not turn every downloaded RPM into a package-manager installation on every cluster node.
+
 1. Freeze the requested topology or operation and enumerate every selected component, companion requirement, test tool, external prerequisite, current artifact, target artifact, rollback artifact, and already-satisfied dependency.
 2. Record component/package name, version, release, architecture, platform suffix, source, size, and hash for every candidate.
-3. In online mode, prove one exact remote winner for every closure entry before the package-selecting operation. The normal OBD/repository path may fetch it directly.
-4. If normal online fetching fails but controller-local `curl`, `wget`, the operating-system package manager, another applicable downloader, or the bounded checksummed relay obtains the exact artifact, transition the complete operation to local-package mode.
+3. In online mode, prove one exact remote winner and its effective artifact URL for every closure entry before the package-selecting operation. Select the required source before the mechanism; an enabled repository may fetch the package directly only when its effective URL follows the fixed source order.
+4. If one online mechanism fails, keep the current source while trying another applicable controller-local OBD/tool, `curl`, `wget`, or package-manager path. If an explicit download or the bounded checksummed relay obtains the exact artifact, transition the complete operation to local-package mode.
 5. In local-package mode, place and verify every required RPM on the selected controller, import each already-local OBD-consumed RPM with `obd mirror clone <path>`, use the proved local registration/install path for other artifact types, disable participating remote repositories for the selection window, and verify the local hashes are the only winners.
 6. Re-list repository/tool inventory and compare it with the final component graph or test plan immediately before execution. Do not mix proved local artifacts with unresolved remote candidates.
 7. Restore any temporary remote-repository state after the final package-selecting stage unless persistent local-only behavior was explicitly requested.

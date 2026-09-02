@@ -12,7 +12,7 @@ Choose the smallest evidence scope that can answer the question. Tool availabili
 
 Before resolving or acquiring obdiag, read the shared [deployment package closure](../references/deployment-package-sets.md) and identify the exact dynamic diagnostic-tool artifact and installation path required by the retained workflow.
 
-Before any package network request, apply the shared [fixed mirror-source and acquisition-fallback workflow](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order). Try normal OBD/tool acquisition on the selected controller first; if it fails, use controller-local `curl`, `wget`, the operating-system package manager, or another applicable downloader, verify and import/register the exact artifact locally, then retry. If no controller-local method works, use another reachable host only as a checksummed artifact relay from the same ordered sources. Keep OBD and obdiag execution on the selected controller, and never use `obd mirror` as a network downloader.
+Before any package network request, select the effective artifact source before the acquisition mechanism and apply the shared [fixed package-source workflow](../obd-administration/references/mirror-and-repositories.md#fixed-online-package-source-order). A `.repo` file is configuration rather than a package source; prove the effective package URL, and keep operating-system dependency repositories separate. Remain on the current required source while trying applicable controller-local OBD/tool, `curl`, `wget`, or package-manager paths; verify and import/register the exact artifact locally before retrying. Keep OBD and obdiag execution on the selected controller, and never use `obd mirror` as a network downloader.
 
 ## Required Shared Gates
 

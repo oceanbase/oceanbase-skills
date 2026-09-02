@@ -26,6 +26,6 @@ If a request mixes retained and unsupported work, handle the retained portion th
 - OBD stored-credential encryption or encryption-passkey management;
 - generic dynamic-tool update or uninstall;
 - deployment-bound helper commands such as `obd tool command`, `obd tool db_connect`, or `obd tool dooba`;
-- top-level `obd host` precheck, initialization, or user-management operations;
+- standalone or general-purpose top-level `obd host` administration outside the bounded new-deployment precheck and initialization routed by cluster management;
 - OBD Web or its API;
 - developer mode, generic environment/lock/transfer-policy administration, and telemetry administration.
