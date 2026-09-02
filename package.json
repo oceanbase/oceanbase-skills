@@ -1,6 +1,6 @@
 {
   "name": "oceanbase-skills",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "OceanBase and SeekDB AI Agent Skills for OBD administration, deployment, tenant operations, diagnostics, testing, and standalone SeekDB workflows",
   "main": "skills/oceanbase-deploy/SKILL.md",
   "workspaces": [
